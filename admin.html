@@ -457,7 +457,10 @@ window.__edit=docId=>{
   wrap.innerHTML='';
   (p.blocks||[]).forEach(b=>window.addBlock(b.type,b));
   document.getElementById('fmTitle').textContent='패치노트 수정';
+  // sv 호출 전 editId 임시 저장
+  const _eid=docId;
   sv('new',null);
+  document.getElementById('editId').value=_eid;
 };
 
 window.__del=async docId=>{
@@ -630,7 +633,7 @@ function sv(name,linkEl){
   VS.forEach(v=>document.getElementById('v-'+v).style.display=v===name?'':'none');
   document.querySelectorAll('.snav a').forEach(a=>a.classList.remove('active'));
   if(linkEl)linkEl.classList.add('active');
-  if(name==='new'){resetForm();document.getElementById('fmTitle').textContent='새 패치노트';}
+  if(name==='new'&&!document.getElementById('editId').value){resetForm();document.getElementById('fmTitle').textContent='새 패치노트';}
 }
 window.sv=sv;
 
