@@ -65,23 +65,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .addr-copy.copied{border-color:#6ee06e;color:#6ee06e}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 footer{background:rgba(10,4,8,.85);border-top:1px solid rgba(244,132,158,.1);backdrop-filter:blur(20px);padding:40px 48px 32px;text-align:center}
-.footer-sns{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:24px}
-.sns-btn{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);text-decoration:none;transition:background .2s,border-color .2s,color .2s;font-size:18px}
-.sns-btn:hover{background:rgba(244,132,158,.15);border-color:rgba(244,132,158,.4);color:var(--pink)}
-.footer-divider{display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:20px}
-.footer-divider a{font-size:12px;color:rgba(255,255,255,.4);text-decoration:none;transition:color .2s}
-.footer-divider a:hover{color:rgba(255,255,255,.7)}
-.footer-divider span{color:rgba(255,255,255,.15)}
 .footer-biz{font-size:11px;color:rgba(255,255,255,.25);line-height:1.9;margin-bottom:20px}
 .footer-biz span{margin:0 8px}
 .footer-copy{font-size:11px;color:rgba(255,255,255,.2)}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(244,132,158,.3);border-radius:3px}
-@media(max-width:768px){nav{padding:0 20px}.nav-links li:not(:last-child){display:none}.server-status{flex-direction:column;gap:16px;padding:20px}.ss-divider{width:40px;height:1px}footer{padding:32px 20px 24px}}
+@media(max-width:768px){nav{padding:0 20px}.nav-links li:not(:last-child):not(.nav-keep){display:none}.server-status{flex-direction:column;gap:16px;padding:20px}.ss-divider{width:40px;height:1px}footer{padding:32px 20px 24px}}
 
-/* 모집 배너 */
 .recruit-inner{max-width:680px;margin:0 auto}
 .recruit-title{font-family:"Nunito",sans-serif;font-size:20px;font-weight:800;text-align:center;margin-bottom:20px;background:linear-gradient(135deg,var(--pink),var(--peach));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.recruit-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.recruit-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .recruit-card{display:flex;align-items:center;gap:14px;padding:20px 24px;background:rgba(255,255,255,.05);border:1px solid rgba(244,132,158,.2);border-radius:16px;text-decoration:none;color:#fff;transition:border-color .2s,background .2s,transform .15s;backdrop-filter:blur(12px)}
 .recruit-card:hover{border-color:rgba(244,132,158,.5);background:rgba(244,132,158,.08);transform:translateY(-3px)}
 .rc-icon{font-size:28px;flex-shrink:0}
@@ -90,48 +82,11 @@ footer{background:rgba(10,4,8,.85);border-top:1px solid rgba(244,132,158,.1);bac
 .rc-desc{font-size:12px;color:rgba(255,255,255,.5)}
 .rc-arrow{font-size:18px;color:rgba(244,132,158,.6);transition:transform .2s}
 .recruit-card:hover .rc-arrow{transform:translateX(4px)}
-@media(max-width:500px){.recruit-cards{grid-template-columns:1fr}}
-
-/* 운영팀 섹션 */
-.team-section{position:relative;z-index:10;padding:0 24px 80px}
-.team-inner{max-width:1100px;margin:0 auto}
-.team-header{text-align:center;margin-bottom:48px}
-.team-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--pink);font-weight:600;margin-bottom:10px}
-.team-title{font-family:'Nunito',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:900;margin-bottom:10px}
-.team-desc{font-size:14px;color:rgba(255,255,255,.5);line-height:1.7}
-.team-group{margin-bottom:40px}
-.team-group-name{font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:16px;display:flex;align-items:center;gap:10px}
-.team-group-name::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08)}
-.team-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
-.team-card{background:rgba(255,255,255,.04);border:1px solid rgba(244,132,158,.15);border-radius:16px;padding:24px 16px;text-align:center;transition:border-color .2s,transform .15s,background .2s;backdrop-filter:blur(8px)}
-.team-card:hover{border-color:rgba(244,132,158,.4);background:rgba(244,132,158,.06);transform:translateY(-4px)}
-.team-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid rgba(244,132,158,.3);margin:0 auto 12px;display:block;background:rgba(255,255,255,.08)}
-.team-avatar-ph{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,rgba(244,132,158,.3),rgba(249,168,122,.2));margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid rgba(244,132,158,.2)}
-.team-nick{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:4px}
-.team-rank{font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;background:rgba(244,132,158,.15);color:var(--pink);display:inline-block;margin-bottom:8px}
-.team-discord{font-size:11px;color:rgba(255,255,255,.35);font-family:'Nunito',sans-serif}
-.team-empty{text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:14px}
-@media(max-width:600px){.team-cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.recruit-cards{grid-template-columns:1fr}}
 </style>
 
-<!-- 캐시된 배경/아이콘 즉시 적용 (깜빡임 없음) -->
 <script>
-(function(){
-  try{
-    const cache = JSON.parse(localStorage.getItem('mochi_assets')||'{}');
-    if(cache.icon){
-      // 아이콘 preload
-      const l=document.createElement('link');l.rel='preload';l.as='image';l.href=cache.icon;document.head.appendChild(l);
-    }
-    if(cache.bgVideo){
-      // 배경영상 preload
-      const l=document.createElement('link');l.rel='preload';l.as='video';l.href=cache.bgVideo;document.head.appendChild(l);
-    } else if(cache.bgImage){
-      // 배경이미지 preload
-      const l=document.createElement('link');l.rel='preload';l.as='image';l.href=cache.bgImage;document.head.appendChild(l);
-    }
-  }catch{}
-})();
+(function(){try{const cache=JSON.parse(localStorage.getItem('mochi_assets')||'{}');if(cache.icon){const l=document.createElement('link');l.rel='preload';l.as='image';l.href=cache.icon;document.head.appendChild(l);}if(cache.bgVideo){const l=document.createElement('link');l.rel='preload';l.as='video';l.href=cache.bgVideo;document.head.appendChild(l);}else if(cache.bgImage){const l=document.createElement('link');l.rel='preload';l.as='image';l.href=cache.bgImage;document.head.appendChild(l);}}catch{}})();
 </script>
 </head>
 <body>
@@ -149,6 +104,7 @@ footer{background:rgba(10,4,8,.85);border-top:1px solid rgba(244,132,158,.1);bac
   </a>
   <ul class="nav-links">
     <li><a href="patchnote.html">패치노트</a></li>
+    <li class="nav-keep"><a href="team.html">운영팀 소개</a></li>
     <li><a href="https://mochi-fivem.gitbook.io/mochi-docs" target="_blank">서버 법률 📋</a></li>
     <li><a href="fivem://connect/fivem-mochi.kr" class="nav-cta">서버 입장 🐾</a></li>
   </ul>
@@ -184,28 +140,23 @@ footer{background:rgba(10,4,8,.85);border-top:1px solid rgba(244,132,158,.1);bac
     <button class="addr-copy" id="copyBtn" onclick="copyAddr()">복사</button>
   </div>
 </section>
-<!-- 모집 배너 -->
-
-<!-- 운영팀 소개 -->
-<section class="team-section">
-  <div class="team-inner">
-    <div class="team-header">
-      <div class="team-label">Our Team</div>
-      <h2 class="team-title">운영팀 소개</h2>
-      <p class="team-desc">모찌서버를 함께 만들어가는 운영진입니다.</p>
-    </div>
-    <div id="teamWrap"><div class="team-empty">불러오는 중...</div></div>
-  </div>
-</section>
 
 <section class="recruit" style="position:relative;z-index:10;padding:0 24px 80px">
   <div class="recruit-inner">
-    <div class="recruit-title">🎉 현재 모집 중!</div>
+    <div class="recruit-title">🎉 바로가기</div>
     <div class="recruit-cards">
+      <a href="team.html" class="recruit-card">
+        <div class="rc-icon">👥</div>
+        <div class="rc-info">
+          <div class="rc-name">운영팀 소개</div>
+          <div class="rc-desc">운영진을 만나보세요</div>
+        </div>
+        <div class="rc-arrow">→</div>
+      </a>
       <a href="staff.html" class="recruit-card">
         <div class="rc-icon">⭐</div>
         <div class="rc-info">
-          <div class="rc-name">스태프</div>
+          <div class="rc-name">스태프 지원</div>
           <div class="rc-desc">서버 운영을 함께해요</div>
         </div>
         <div class="rc-arrow">→</div>
@@ -213,7 +164,7 @@ footer{background:rgba(10,4,8,.85);border-top:1px solid rgba(244,132,158,.1);bac
       <a href="newbie.html" class="recruit-card">
         <div class="rc-icon">🌱</div>
         <div class="rc-info">
-          <div class="rc-name">뉴비도우미</div>
+          <div class="rc-name">뉴비도우미 지원</div>
           <div class="rc-desc">새 플레이어를 도와줘요</div>
         </div>
         <div class="rc-arrow">→</div>
@@ -231,141 +182,35 @@ footer{background:rgba(10,4,8,.85);border-top:1px solid rgba(244,132,158,.1);bac
 </footer>
 
 <script type="module">
-// ── Firebase config는 빌드 시 주입됨 (build.js가 처리)
-// 로컬 테스트용 폴백
-async function getCfg(){
-  try{
-    const res=await fetch('/api/config');
-    return await res.json();
-  }catch{return null;}
-}
-
+async function getCfg(){try{const res=await fetch('/api/config');return await res.json();}catch{return null;}}
 async function init(){
-  // 1. 캐시에서 즉시 표시
-  const CACHE_KEY='mochi_assets';
-  const CACHE_TTL=30*60*1000; // 30분
-  let cache={};
-  try{cache=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');}catch{}
-
-  // 캐시된 아이콘 즉시 표시
-  if(cache.icon){
-    ['navIcon','heroIcon'].forEach(id=>{
-      const el=document.getElementById(id);
-      if(el){el.src=cache.icon;el.style.display='';}
-    });
-  }
-  // 캐시된 배경 즉시 표시
-  if(cache.bgVideo){
-    const v=document.getElementById('bgVideo');v.src=cache.bgVideo;v.style.display='block';
-  } else if(cache.bgImage){
-    const i=document.getElementById('bgImage');i.src=cache.bgImage;i.style.display='block';
-  }
-
-  // 캐시가 신선하면 Firebase 호출 스킵
-  const now=Date.now();
-  if(cache.ts && now-cache.ts < CACHE_TTL) return;
-
-  // 2. 백그라운드에서 Firebase 업데이트
+  const CACHE_KEY='mochi_assets';const CACHE_TTL=30*60*1000;
+  let cache={};try{cache=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');}catch{}
+  if(cache.icon){['navIcon','heroIcon'].forEach(id=>{const el=document.getElementById(id);if(el){el.src=cache.icon;el.style.display='';}});}
+  if(cache.bgVideo){const v=document.getElementById('bgVideo');v.src=cache.bgVideo;v.style.display='block';}
+  else if(cache.bgImage){const i=document.getElementById('bgImage');i.src=cache.bgImage;i.style.display='block';}
+  const now=Date.now();if(cache.ts&&now-cache.ts<CACHE_TTL)return;
   try{
-    const cfg=await getCfg();
-    if(!cfg||!cfg.apiKey) return;
-
+    const cfg=await getCfg();if(!cfg||!cfg.apiKey)return;
     const{initializeApp}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
     const{getStorage,ref,getDownloadURL}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
-    const app=initializeApp(cfg);
-    const storage=getStorage(app);
-
-    const newCache={ts:now};
-
-    // 아이콘
-    try{
-      const url=await getDownloadURL(ref(storage,'site/icon.png'));
-      newCache.icon=url;
-      ['navIcon','heroIcon'].forEach(id=>{
-        const el=document.getElementById(id);
-        if(el){el.src=url;el.style.display='';}
-      });
-    }catch{}
-
-    // 배경 (영상 우선)
-    try{
-      const vUrl=await getDownloadURL(ref(storage,'site/bg_video.mp4'));
-      newCache.bgVideo=vUrl;
-      delete newCache.bgImage;
-      const v=document.getElementById('bgVideo');
-      if(!v.src){v.src=vUrl;v.style.display='block';}
-    }catch{
-      try{
-        const iUrl=await getDownloadURL(ref(storage,'site/bg_image.jpg'));
-        newCache.bgImage=iUrl;
-        const i=document.getElementById('bgImage');
-        if(!i.src){i.src=iUrl;i.style.display='block';}
-      }catch{}
-    }
-
+    const app=initializeApp(cfg);const storage=getStorage(app);const newCache={ts:now};
+    try{const url=await getDownloadURL(ref(storage,'site/icon.png'));newCache.icon=url;['navIcon','heroIcon'].forEach(id=>{const el=document.getElementById(id);if(el){el.src=url;el.style.display='';}});}catch{}
+    try{const vUrl=await getDownloadURL(ref(storage,'site/bg_video.mp4'));newCache.bgVideo=vUrl;delete newCache.bgImage;const v=document.getElementById('bgVideo');if(!v.src){v.src=vUrl;v.style.display='block';}}
+    catch{try{const iUrl=await getDownloadURL(ref(storage,'site/bg_image.jpg'));newCache.bgImage=iUrl;const i=document.getElementById('bgImage');if(!i.src){i.src=iUrl;i.style.display='block';}}catch{}}
     localStorage.setItem(CACHE_KEY,JSON.stringify(newCache));
   }catch{}
 }
-
-async function loadTeam(){
-  try{
-    const cfg=await getCfg();
-    if(!cfg||!cfg.apiKey){document.getElementById('teamWrap').innerHTML='<div class="team-empty">설정 오류</div>';return;}
-    const{initializeApp:ia}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-    const{getFirestore:gf,collection:col,getDocs:gd}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    let app;try{app=ia(cfg);}catch{app=ia(cfg,'team');}
-    const db=gf(app);
-    const sn=await gd(col(db,'team_members'));
-    const members=sn.docs.map(d=>({id:d.id,...d.data()}));
-    if(!members.length){document.getElementById('teamWrap').innerHTML='<div class="team-empty">등록된 운영팀이 없습니다.</div>';return;}
-    const groups={};
-    members.forEach(m=>{const g=m.team||'운영팀';if(!groups[g])groups[g]=[];groups[g].push(m);});
-    const order=['운영자','관리팀','스태프','뉴비도우미','휴가자'];
-    const sorted=Object.keys(groups).sort((a,b)=>{const ai=order.indexOf(a),bi=order.indexOf(b);return(ai===-1?99:ai)-(bi===-1?99:bi);});
-    document.getElementById('teamWrap').innerHTML=sorted.map(g=>`<div class="team-group"><div class="team-group-name">${g}</div><div class="team-cards">${groups[g].map(m=>`<div class="team-card">${m.photo?`<img class="team-avatar" src="${m.photo}" alt="${m.nick}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}  <div class="team-avatar-ph" ${m.photo?'style="display:none"':''}>${(m.nick||'?')[0]}</div><div class="team-nick">${m.nick||'-'}</div><div class="team-rank">${m.rank||'-'}</div>${m.discord?`<div class="team-discord">${m.discord}</div>`:''}</div>`).join('')}</div></div>`).join('');
-  }catch(e){document.getElementById('teamWrap').innerHTML='<div class="team-empty">불러오기 실패: '+e.message+'</div>';}
-}
-
 init();
-loadTeam();
 </script>
 
 <script data-cfasync="false">
-// 서버 상태
-function applyStatus(d){
-  if(!d)return;
-  try{
-    document.getElementById('statusBadge').className='ss-badge '+(d.online?'online':'offline');
-    document.getElementById('statusText').textContent=d.online?'온라인':'오프라인';
-    document.getElementById('curPlayers').textContent=d.online?d.current:'—';
-    document.getElementById('maxPlayers').textContent=d.online&&d.max?d.max:'—';
-    if(d.ts){var t=new Date(d.ts);document.getElementById('lastUpdated').textContent=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0')+':'+String(t.getSeconds()).padStart(2,'0');}
-  }catch(e){}
-}
-function fetchStatus(){
-  fetch('/api/server-status')
-    .then(function(r){return r.json();})
-    .then(function(d){d.ts=Date.now();applyStatus(d);})
-    .catch(function(){try{document.getElementById('statusText').textContent='확인 불가';}catch{}});
-}
-window.addEventListener('DOMContentLoaded',function(){
-  fetchStatus();
-  setInterval(fetchStatus,30000);
-});
-
-function copyAddr(){
-  navigator.clipboard.writeText('connect fivem-mochi.kr').then(()=>{
-    const btn=document.getElementById('copyBtn');
-    btn.textContent='복사됨 ✓';btn.classList.add('copied');
-    setTimeout(()=>{btn.textContent='복사';btn.classList.remove('copied');},2000);
-  });
-}
+function applyStatus(d){if(!d)return;try{document.getElementById('statusBadge').className='ss-badge '+(d.online?'online':'offline');document.getElementById('statusText').textContent=d.online?'온라인':'오프라인';document.getElementById('curPlayers').textContent=d.online?d.current:'—';document.getElementById('maxPlayers').textContent=d.online&&d.max?d.max:'—';if(d.ts){var t=new Date(d.ts);document.getElementById('lastUpdated').textContent=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0')+':'+String(t.getSeconds()).padStart(2,'0');}}catch{}}
+function fetchStatus(){fetch('/api/server-status').then(function(r){return r.json();}).then(function(d){d.ts=Date.now();applyStatus(d);}).catch(function(){try{document.getElementById('statusText').textContent='확인 불가';}catch{}});}
+window.addEventListener('DOMContentLoaded',function(){fetchStatus();setInterval(fetchStatus,30000);});
+function copyAddr(){navigator.clipboard.writeText('connect fivem-mochi.kr').then(()=>{const btn=document.getElementById('copyBtn');btn.textContent='복사됨 ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent='복사';btn.classList.remove('copied');},2000);});}
 window.copyAddr=copyAddr;
-
-window.addEventListener('scroll',()=>{
-  document.getElementById('mainNav').style.boxShadow=
-    window.scrollY>10?'0 4px 24px rgba(0,0,0,.4)':'none';
-});
+window.addEventListener('scroll',()=>{document.getElementById('mainNav').style.boxShadow=window.scrollY>10?'0 4px 24px rgba(0,0,0,.4)':'none';});
 </script>
 </body>
 </html>
