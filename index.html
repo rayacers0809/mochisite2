@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -77,9 +78,24 @@ footer{background:rgba(10,4,8,.85);border-top:1px solid rgba(244,132,158,.1);bac
 .footer-copy{font-size:11px;color:rgba(255,255,255,.2)}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(244,132,158,.3);border-radius:3px}
 @media(max-width:768px){nav{padding:0 20px}.nav-links li:not(:last-child){display:none}.server-status{flex-direction:column;gap:16px;padding:20px}.ss-divider{width:40px;height:1px}footer{padding:32px 20px 24px}}
+
+/* 모집 배너 */
+.recruit-inner{max-width:680px;margin:0 auto}
+.recruit-title{font-family:“Nunito”,sans-serif;font-size:20px;font-weight:800;text-align:center;margin-bottom:20px;background:linear-gradient(135deg,var(–pink),var(–peach));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.recruit-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.recruit-card{display:flex;align-items:center;gap:14px;padding:20px 24px;background:rgba(255,255,255,.05);border:1px solid rgba(244,132,158,.2);border-radius:16px;text-decoration:none;color:#fff;transition:border-color .2s,background .2s,transform .15s;backdrop-filter:blur(12px)}
+.recruit-card:hover{border-color:rgba(244,132,158,.5);background:rgba(244,132,158,.08);transform:translateY(-3px)}
+.rc-icon{font-size:28px;flex-shrink:0}
+.rc-info{flex:1}
+.rc-name{font-family:“Nunito”,sans-serif;font-size:16px;font-weight:800;margin-bottom:3px}
+.rc-desc{font-size:12px;color:rgba(255,255,255,.5)}
+.rc-arrow{font-size:18px;color:rgba(244,132,158,.6);transition:transform .2s}
+.recruit-card:hover .rc-arrow{transform:translateX(4px)}
+@media(max-width:500px){.recruit-cards{grid-template-columns:1fr}}
 </style>
 
 <!-- 캐시된 배경/아이콘 즉시 적용 (깜빡임 없음) -->
+
 <script>
 (function(){
   try{
@@ -98,6 +114,7 @@ footer{background:rgba(10,4,8,.85);border-top:1px solid rgba(244,132,158,.1);bac
   }catch{}
 })();
 </script>
+
 </head>
 <body>
 
@@ -147,6 +164,30 @@ footer{background:rgba(10,4,8,.85);border-top:1px solid rgba(244,132,158,.1);bac
   <div class="server-addr">
     <span>connect fivem-mochi.kr</span>
     <button class="addr-copy" id="copyBtn" onclick="copyAddr()">복사</button>
+  </div>
+</section>
+<!-- 모집 배너 -->
+<section class="recruit" style="position:relative;z-index:10;padding:0 24px 80px">
+  <div class="recruit-inner">
+    <div class="recruit-title">🎉 현재 모집 중!</div>
+    <div class="recruit-cards">
+      <a href="staff.html" class="recruit-card">
+        <div class="rc-icon">⭐</div>
+        <div class="rc-info">
+          <div class="rc-name">스태프</div>
+          <div class="rc-desc">서버 운영을 함께해요</div>
+        </div>
+        <div class="rc-arrow">→</div>
+      </a>
+      <a href="newbie.html" class="recruit-card">
+        <div class="rc-icon">🌱</div>
+        <div class="rc-info">
+          <div class="rc-name">뉴비도우미</div>
+          <div class="rc-desc">새 플레이어를 도와줘요</div>
+        </div>
+        <div class="rc-arrow">→</div>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -275,5 +316,6 @@ window.addEventListener('scroll',()=>{
     window.scrollY>10?'0 4px 24px rgba(0,0,0,.4)':'none';
 });
 </script>
+
 </body>
 </html>
