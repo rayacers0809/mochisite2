@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스태프 지원서 — 모찌서버</title>
+<meta property="og:title" content="스태프 지원서 | 모찌서버">
+<meta property="og:description" content="모찌서버 스태프에 지원하세요.">
+<meta property="og:image" content="https://www.mochi.me.kr/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0a1a;
+  --card:rgba(255,255,255,.04);
+  --border:rgba(139,92,246,.2);
+  --purple:#8b5cf6;
+  --purple-light:#a78bfa;
+  --pink:#f4849e;
+  --white:#fff;
+  --mu:rgba(255,255,255,.5);
+  --r:14px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--white);font-weight:300;min-height:100vh;overflow-x:hidden}
+
+/* 배경 */
+.bg-wrap{position:fixed;inset:0;z-index:0;overflow:hidden}
+.bg-wrap::before{
+  content:'';position:absolute;top:-20%;left:-10%;
+  width:60%;height:80%;
+  background:radial-gradient(ellipse,rgba(139,92,246,.15) 0%,transparent 70%);
+  pointer-events:none;
+}
+.bg-wrap::after{
+  content:'';position:absolute;bottom:-10%;right:-10%;
+  width:50%;height:60%;
+  background:radial-gradient(ellipse,rgba(244,132,158,.1) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;height:64px;
+  background:rgba(13,10,26,.7);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(139,92,246,.15);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo img{width:34px;height:34px;border-radius:8px;object-fit:cover;display:none}
+.nav-logo-text{font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;background:linear-gradient(135deg,var(--purple-light),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-back{font-size:13px;color:var(--mu);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s}
+.nav-back:hover{color:var(--white)}
+
+/* HERO */
+.hero{
+  position:relative;z-index:10;
+  padding:120px 24px 60px;
+  text-align:center;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.3);
+  padding:6px 16px;border-radius:100px;
+  font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--purple-light);margin-bottom:20px;
+  animation:fadeUp .6s ease both;
+}
+.hero h1{
+  font-family:'Nunito',sans-serif;font-size:clamp(36px,5vw,64px);font-weight:900;
+  line-height:1.1;margin-bottom:16px;
+  animation:fadeUp .6s .05s ease both;
+}
+.hero h1 .grad{background:linear-gradient(135deg,var(--purple-light),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-desc{font-size:15px;color:var(--mu);line-height:1.8;max-width:500px;margin:0 auto 48px;animation:fadeUp .6s .1s ease both}
+
+/* FORM */
+.form-wrap{
+  position:relative;z-index:10;
+  max-width:680px;margin:0 auto;
+  padding:0 24px 80px;
+}
+.form-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;padding:40px;
+  backdrop-filter:blur(12px);
+  animation:fadeUp .6s .15s ease both;
+}
+
+.form-section{margin-bottom:32px}
+.section-title{
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;
+  color:var(--purple-light);letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+.section-title::after{content:'';flex:1;height:1px;background:rgba(139,92,246,.2)}
+
+.form-group{margin-bottom:20px}
+.form-label{
+  display:block;font-size:13px;font-weight:500;
+  color:rgba(255,255,255,.7);margin-bottom:8px;
+}
+.form-label .req{color:var(--pink);margin-left:3px}
+.form-input,.form-select,.form-textarea{
+  width:100%;padding:12px 16px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(139,92,246,.2);
+  border-radius:10px;font-size:14px;
+  font-family:'Noto Sans KR',sans-serif;
+  color:var(--white);outline:none;
+  transition:border-color .2s,background .2s;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  border-color:var(--purple);
+  background:rgba(139,92,246,.08);
+}
+.form-input::placeholder,.form-textarea::placeholder{color:rgba(255,255,255,.25)}
+.form-select{cursor:pointer}
+.form-select option{background:#1a1530;color:var(--white)}
+.form-textarea{resize:vertical;min-height:100px;line-height:1.7}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* 라디오/체크박스 */
+.radio-group,.check-group{display:flex;flex-direction:column;gap:10px}
+.radio-item,.check-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:10px;
+  border:1px solid rgba(139,92,246,.15);
+  cursor:pointer;transition:border-color .15s,background .15s;
+}
+.radio-item:hover,.check-item:hover{border-color:rgba(139,92,246,.4);background:rgba(139,92,246,.06)}
+.radio-item input,.check-item input{accent-color:var(--purple);width:16px;height:16px;cursor:pointer}
+.radio-item span,.check-item span{font-size:13px;color:rgba(255,255,255,.8)}
+
+/* SUBMIT */
+.submit-area{margin-top:32px;text-align:center}
+.btn-submit{
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+  color:var(--white);padding:14px 48px;border-radius:100px;
+  font-size:15px;font-weight:700;border:none;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  box-shadow:0 8px 28px rgba(139,92,246,.4);
+  transition:opacity .2s,transform .15s;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-submit:hover{opacity:.88;transform:translateY(-2px)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.submit-note{font-size:12px;color:var(--mu);margin-top:12px}
+
+/* 결과 */
+.result-box{
+  display:none;text-align:center;padding:48px 24px;
+}
+.result-icon{font-size:56px;margin-bottom:16px}
+.result-title{font-family:'Nunito',sans-serif;font-size:24px;font-weight:800;margin-bottom:8px}
+.result-desc{font-size:14px;color:var(--mu);line-height:1.7}
+
+/* SPIN */
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(139,92,246,.3);border-radius:3px}
+@media(max-width:600px){
+  nav{padding:0 20px}
+  .form-card{padding:24px}
+  .form-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-wrap"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img id="navIcon" alt="모찌">
+    <span class="nav-logo-text">모찌서버</span>
+  </a>
+  <a href="index.html" class="nav-back">← 메인으로</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">⭐ Staff Application</div>
+  <h1>스태프 <span class="grad">지원서</span></h1>
+  <p class="hero-desc">모찌서버의 운영진이 되어 서버를 함께 만들어가요.<br>지원서를 성실히 작성해주세요.</p>
+</div>
+
+<div class="form-wrap">
+  <div class="form-card" id="formCard">
+
+    <!-- 기본 정보 -->
+    <div class="form-section">
+      <div class="section-title">기본 정보</div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">고유번호 및 닉네임 <span class="req">*</span></label>
+          <input class="form-input" id="f_nick" placeholder="게임 닉네임">
+        </div>
+        <div class="form-group">
+          <label class="form-label">나이 <span class="req">*</span></label>
+          <input class="form-input" id="f_age" placeholder="예: 20">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">디스코드 아이디 <span class="req">*</span></label>
+        <input class="form-input" id="f_discord" placeholder="예: mochi#0000 또는 @mochi">
+      </div>
+            <div class="form-group">
+        <label class="form-label">마이크 및 영상 녹화 사용여부 <span class="req">*</span></label>
+        <input class="form-input" id="f_discord" placeholder="예: 가능합니다!, 불가능합니다!">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">서버 플레이 기간 <span class="req">*</span></label>
+        <select class="form-select" id="f_period">
+          <option value="">선택해주세요</option>
+          <option value="1개월 미만">1개월 미만</option>
+          <option value="1~3개월">1~3개월</option>
+          <option value="3~6개월">3~6개월</option>
+          <option value="6개월~1년">6개월~1년</option>
+          <option value="1년 이상">1년 이상</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 지원 이유 -->
+    <div class="form-section">
+      <div class="section-title">지원 내용</div>
+
+      <div class="form-group">
+        <label class="form-label">자기소개를 작성해주세요. <span class="req">*</span></label>
+        <textarea class="form-textarea" id="f_motivation" placeholder="예 : 평일 xx시 ~ xx시, 주말 xx시 ~ xx시" rows="4"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">평균적인 접속시간대를 작성해주세요. <span class="req">*</span></label>
+        <textarea class="form-textarea" id="f_strength" placeholder="예 : 평일 xx시 ~ xx시, 주말 xx시 ~ xx시" rows="4" rows="4"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">파이브엠 경력을 자세히 적어주세요.</label>
+        <textarea class="form-textarea" id="f_experience" placeholder="예 : xx서버 xx팩션 x개월 [ 일반직 / 간부직 / 고위직 ] 등" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">관리팀 경력에 대해 자세히 적어주세요.</label>
+        <textarea class="form-textarea" id="f_experience" placeholder="예 : xx서버 스태프 x개월, xx서버 인게임관리자 x개월 등" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">서버 법률에 대해 얼마나 이해하고 계시나요? <span class="req">*</span></label>
+        <select class="form-select" id="f_period">
+          <option value="">선택해주세요</option>
+          <option value="상">상</option>
+          <option value="중">중</option>
+          <option value="하">하</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">본인이 사건 처리를 하는 도중 유저끼리 분쟁이 일어났을 경우 어떻게 대처 하실건가요?</label>
+        <textarea class="form-textarea" id="f_experience" placeholder="본인이 사건 처리를 하는 도중 유저끼리 분쟁이 일어났을 경우 어떻게 대처 하실건가요?" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">경찰서 앞에서 고의적으로 알피 유도가 지속되었을 경우 어떻게 처리 하실건가요?</label>
+        <textarea class="form-textarea" id="f_experience" placeholder="경찰서 앞에서 고의적으로 알피 유도가 지속되었을 경우 어떻게 처리 하실건가요?" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">만약, 지원자님이 서로를 존중하지 않는 사람과 함께 일하게 된 경우 문제를 어떤 방식으로 해결하시나요?</label>
+        <textarea class="form-textarea" id="f_experience" placeholder="만약, 지원자님이 서로를 존중하지 않는 사람과 함께 일하게 된 경우 문제를 어떤 방식으로 해결하시나요?" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">본인이 스태프가 되었을 때의 포부를 작성해주세요.</label>
+        <textarea class="form-textarea" id="f_extra" placeholder="자유롭게 작성해주세요." rows="3"></textarea>
+      </div>
+    </div>
+
+    <div class="submit-area">
+      <button class="btn-submit" id="submitBtn" onclick="window.submitForm()">📨 지원서 제출하기</button>
+      <div class="submit-note">제출된 지원서는 운영진이 검토 후 디스코드로 연락드립니다.</div>
+    </div>
+  </div>
+
+  <!-- 제출 완료 -->
+  <div class="result-box" id="resultBox">
+    <div class="result-icon">🎉</div>
+    <div class="result-title">지원서가 제출되었습니다!</div>
+    <div class="result-desc">운영진이 검토 후 디스코드로 연락드릴게요.<br>지원해주셔서 감사합니다 🐾</div>
+  </div>
+</div>
+
+<script type="module">
+const WEBHOOK = 'https://discord.com/api/webhooks/1419479026543886346/Sbo_93PQPtV-IfqA3IuvkNQkS9vz5MWovH_nFiuI266NIPDWsEwK3SHgIbkFSj1qckKI';
+
+// Firebase 초기화
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getFirestore,collection,addDoc,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+let db=null;
+async function initFB(){
+  if(db)return;
+  try{
+    const res=await fetch('/api/config');
+    const cfg=await res.json();
+    const app=initializeApp(cfg,'staff');
+    db=getFirestore(app);
+  }catch(e){console.error('Firebase init 실패:',e);}
+}
+initFB();
+
+function getVal(id){ return document.getElementById(id)?.value?.trim()||''; }
+
+async function submitForm(){
+  const nick=getVal('f_nick');
+  const age=getVal('f_age');
+  const discord=getVal('f_discord');
+  const period=getVal('f_period');
+  const position=getVal('f_position');
+  const motivation=getVal('f_motivation');
+  const strength=getVal('f_strength');
+  const playtime=getVal('f_playtime');
+
+  if(!nick||!age||!discord||!period||!position||!motivation||!strength||!playtime){
+    alert('필수 항목을 모두 입력해주세요.');return;
+  }
+
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spin"></span> 제출 중...';
+
+  const embed={
+    title:'📋 스태프 지원서',
+    color:0x8b5cf6,
+    fields:[
+      {name:'닉네임',value:nick,inline:true},
+      {name:'나이',value:age,inline:true},
+      {name:'디스코드',value:discord,inline:true},
+      {name:'플레이 기간',value:period,inline:true},
+      {name:'지원 포지션',value:position,inline:true},
+      {name:'하루 접속 시간',value:playtime,inline:true},
+      {name:'지원 동기',value:motivation},
+      {name:'본인의 강점',value:strength},
+    ],
+    timestamp:new Date().toISOString(),
+    footer:{text:'모찌서버 스태프 지원서'}
+  };
+
+  const experience=getVal('f_experience');
+  const extra=getVal('f_extra');
+  if(experience) embed.fields.push({name:'이전 운영 경험',value:experience});
+  if(extra) embed.fields.push({name:'추가 내용',value:extra});
+
+  try{
+    // 1. 웹훅 전송
+    const whRes=await fetch(WEBHOOK,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({embeds:[embed]})
+    });
+
+    // 2. Firebase 저장
+    if(db){
+      await addDoc(collection(db,'staff_applications'),{
+        nick,age,discord,period,position,motivation,
+        strength:getVal('f_strength'),
+        experience:getVal('f_experience'),
+        playtime,
+        extra:getVal('f_extra'),
+        type:'스태프',
+        createdAt:serverTimestamp()
+      });
+    }
+
+    if(whRes.ok||whRes.status===204){
+      document.getElementById('formCard').style.display='none';
+      document.getElementById('resultBox').style.display='block';
+    }else{
+      throw new Error('전송 실패');
+    }
+  }catch(e){
+    alert('제출에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    btn.disabled=false;
+    btn.innerHTML='📨 지원서 제출하기';
+  }
+}
+window.submitForm=submitForm;
+</script>
+</body>
+</html>
