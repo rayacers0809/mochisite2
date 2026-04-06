@@ -472,6 +472,7 @@ function renderList(){
 
 window.__edit=docId=>{
   const p=patches.find(x=>x.docId===docId);if(!p)return;
+  sv('new',null);
   document.getElementById('editId').value=docId;
   document.getElementById('fVer').value=p.ver||'';
   document.getElementById('fDate').value=p.date||'';
@@ -480,9 +481,6 @@ window.__edit=docId=>{
   wrap.innerHTML='';
   (p.blocks||[]).forEach(b=>window.addBlock(b.type,b));
   document.getElementById('fmTitle').textContent='패치노트 수정';
-  const _eid=docId;
-  sv('new',null);
-  document.getElementById('editId').value=_eid;
 };
 
 window.__del=async docId=>{
@@ -714,7 +712,7 @@ function sv(name,linkEl){
   VS.forEach(v=>document.getElementById('v-'+v).style.display=v===name?'':'none');
   document.querySelectorAll('.snav a').forEach(a=>a.classList.remove('active'));
   if(linkEl)linkEl.classList.add('active');
-  if(name==='new'&&!document.getElementById('editId').value){resetForm();document.getElementById('fmTitle').textContent='새 패치노트';}
+  if(name==='new'){resetForm();document.getElementById('fmTitle').textContent='새 패치노트';}
   if(name==='apps') window.loadApps('staff');
 }
 window.sv=sv;
