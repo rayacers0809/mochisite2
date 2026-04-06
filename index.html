@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -81,21 +80,41 @@ footer{background:rgba(10,4,8,.85);border-top:1px solid rgba(244,132,158,.1);bac
 
 /* 모집 배너 */
 .recruit-inner{max-width:680px;margin:0 auto}
-.recruit-title{font-family:“Nunito”,sans-serif;font-size:20px;font-weight:800;text-align:center;margin-bottom:20px;background:linear-gradient(135deg,var(–pink),var(–peach));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.recruit-title{font-family:"Nunito",sans-serif;font-size:20px;font-weight:800;text-align:center;margin-bottom:20px;background:linear-gradient(135deg,var(--pink),var(--peach));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .recruit-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .recruit-card{display:flex;align-items:center;gap:14px;padding:20px 24px;background:rgba(255,255,255,.05);border:1px solid rgba(244,132,158,.2);border-radius:16px;text-decoration:none;color:#fff;transition:border-color .2s,background .2s,transform .15s;backdrop-filter:blur(12px)}
 .recruit-card:hover{border-color:rgba(244,132,158,.5);background:rgba(244,132,158,.08);transform:translateY(-3px)}
 .rc-icon{font-size:28px;flex-shrink:0}
 .rc-info{flex:1}
-.rc-name{font-family:“Nunito”,sans-serif;font-size:16px;font-weight:800;margin-bottom:3px}
+.rc-name{font-family:"Nunito",sans-serif;font-size:16px;font-weight:800;margin-bottom:3px}
 .rc-desc{font-size:12px;color:rgba(255,255,255,.5)}
 .rc-arrow{font-size:18px;color:rgba(244,132,158,.6);transition:transform .2s}
 .recruit-card:hover .rc-arrow{transform:translateX(4px)}
 @media(max-width:500px){.recruit-cards{grid-template-columns:1fr}}
+
+/* 운영팀 섹션 */
+.team-section{position:relative;z-index:10;padding:0 24px 80px}
+.team-inner{max-width:1100px;margin:0 auto}
+.team-header{text-align:center;margin-bottom:48px}
+.team-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--pink);font-weight:600;margin-bottom:10px}
+.team-title{font-family:'Nunito',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:900;margin-bottom:10px}
+.team-desc{font-size:14px;color:rgba(255,255,255,.5);line-height:1.7}
+.team-group{margin-bottom:40px}
+.team-group-name{font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.team-group-name::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08)}
+.team-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.team-card{background:rgba(255,255,255,.04);border:1px solid rgba(244,132,158,.15);border-radius:16px;padding:24px 16px;text-align:center;transition:border-color .2s,transform .15s,background .2s;backdrop-filter:blur(8px)}
+.team-card:hover{border-color:rgba(244,132,158,.4);background:rgba(244,132,158,.06);transform:translateY(-4px)}
+.team-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid rgba(244,132,158,.3);margin:0 auto 12px;display:block;background:rgba(255,255,255,.08)}
+.team-avatar-ph{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,rgba(244,132,158,.3),rgba(249,168,122,.2));margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid rgba(244,132,158,.2)}
+.team-nick{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:4px}
+.team-rank{font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;background:rgba(244,132,158,.15);color:var(--pink);display:inline-block;margin-bottom:8px}
+.team-discord{font-size:11px;color:rgba(255,255,255,.35);font-family:'Nunito',sans-serif}
+.team-empty{text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:14px}
+@media(max-width:600px){.team-cards{grid-template-columns:repeat(2,1fr)}}
 </style>
 
 <!-- 캐시된 배경/아이콘 즉시 적용 (깜빡임 없음) -->
-
 <script>
 (function(){
   try{
@@ -114,7 +133,6 @@ footer{background:rgba(10,4,8,.85);border-top:1px solid rgba(244,132,158,.1);bac
   }catch{}
 })();
 </script>
-
 </head>
 <body>
 
@@ -167,6 +185,19 @@ footer{background:rgba(10,4,8,.85);border-top:1px solid rgba(244,132,158,.1);bac
   </div>
 </section>
 <!-- 모집 배너 -->
+
+<!-- 운영팀 소개 -->
+<section class="team-section">
+  <div class="team-inner">
+    <div class="team-header">
+      <div class="team-label">Our Team</div>
+      <h2 class="team-title">운영팀 소개</h2>
+      <p class="team-desc">모찌서버를 함께 만들어가는 운영진입니다.</p>
+    </div>
+    <div id="teamWrap"><div class="team-empty">불러오는 중...</div></div>
+  </div>
+</section>
+
 <section class="recruit" style="position:relative;z-index:10;padding:0 24px 80px">
   <div class="recruit-inner">
     <div class="recruit-title">🎉 현재 모집 중!</div>
@@ -276,7 +307,27 @@ async function init(){
   }catch{}
 }
 
+async function loadTeam(){
+  try{
+    const cfg=await getCfg();
+    if(!cfg||!cfg.apiKey){document.getElementById('teamWrap').innerHTML='<div class="team-empty">설정 오류</div>';return;}
+    const{initializeApp:ia}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const{getFirestore:gf,collection:col,getDocs:gd}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    let app;try{app=ia(cfg);}catch{app=ia(cfg,'team');}
+    const db=gf(app);
+    const sn=await gd(col(db,'team_members'));
+    const members=sn.docs.map(d=>({id:d.id,...d.data()}));
+    if(!members.length){document.getElementById('teamWrap').innerHTML='<div class="team-empty">등록된 운영팀이 없습니다.</div>';return;}
+    const groups={};
+    members.forEach(m=>{const g=m.team||'운영팀';if(!groups[g])groups[g]=[];groups[g].push(m);});
+    const order=['총괄','운영팀','개발팀','미디어팀','법률팀','경찰팀','뉴비도우미'];
+    const sorted=Object.keys(groups).sort((a,b)=>{const ai=order.indexOf(a),bi=order.indexOf(b);return(ai===-1?99:ai)-(bi===-1?99:bi);});
+    document.getElementById('teamWrap').innerHTML=sorted.map(g=>`<div class="team-group"><div class="team-group-name">${g}</div><div class="team-cards">${groups[g].map(m=>`<div class="team-card">${m.photo?`<img class="team-avatar" src="${m.photo}" alt="${m.nick}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}  <div class="team-avatar-ph" ${m.photo?'style="display:none"':''}>${(m.nick||'?')[0]}</div><div class="team-nick">${m.nick||'-'}</div><div class="team-rank">${m.rank||'-'}</div>${m.discord?`<div class="team-discord">${m.discord}</div>`:''}</div>`).join('')}</div></div>`).join('');
+  }catch(e){document.getElementById('teamWrap').innerHTML='<div class="team-empty">불러오기 실패: '+e.message+'</div>';}
+}
+
 init();
+loadTeam();
 </script>
 
 <script data-cfasync="false">
@@ -316,6 +367,5 @@ window.addEventListener('scroll',()=>{
     window.scrollY>10?'0 4px 24px rgba(0,0,0,.4)':'none';
 });
 </script>
-
 </body>
 </html>
