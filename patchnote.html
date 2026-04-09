@@ -432,9 +432,7 @@ function applyFilter(){
 window.openDetail=(idx)=>{
   const p=allPatches[idx];
   if(!p) return;
-  document.getElementById('listView').style.display='none';
-  document.getElementById('detailView').style.display='block';
-  window.scrollTo({top:0,behavior:'smooth'});
+  // 모달 방식 - listView 유지
 
   const ti=getTagInfo(p.tags);
   const dtag=document.getElementById('detailTag');
@@ -471,7 +469,7 @@ window.openDetail=(idx)=>{
   } else nav.innerHTML='';
 };
 
-window.closeDetail=()=>{document.getElementById('detailView').style.display='none';document.getElementById('listView').style.display='';window.scrollTo({top:0,behavior:'smooth'});};
+window.closeDetail=()=>{document.getElementById('patchModalOv').classList.remove('open');document.body.style.overflow='';};
 
 window.setFilter=(f,el)=>{
   curFilter=f; curPage=1;
