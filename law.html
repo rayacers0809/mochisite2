@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -97,10 +98,35 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--c-b
 .law-item.open .law-chev{transform:rotate(180deg)}
 .law-body{display:none;border-top:1px solid var(--c-border);background:var(--c-bg-soft)}
 .law-item.open .law-body{display:block}
-.law-body-inner{padding:18px 22px;font-size:13.5px;line-height:1.95;color:var(--c-text-2);white-space:pre-wrap;word-break:break-word}
+.law-body-inner{padding:18px 22px;font-size:13.5px;line-height:1.95;color:var(--c-text-2)}
+
+/* ─ 마크다운 렌더 ─ */
+.md h1{font-size:24px;font-weight:700;margin:28px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--c-border);color:var(--c-text-1)}
+.md h2{font-size:20px;font-weight:700;margin:24px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--c-border);color:var(--c-text-1)}
+.md h3{font-size:17px;font-weight:700;margin:20px 0 8px;color:var(--c-text-1)}
+.md h4,.md h5,.md h6{font-size:15px;font-weight:700;margin:16px 0 6px;color:var(--c-text-1)}
+.md p{margin:10px 0;font-size:14px;line-height:1.85;color:var(--c-text-2)}
+.md ul,.md ol{margin:10px 0 10px 20px;display:flex;flex-direction:column;gap:4px}
+.md li{font-size:14px;line-height:1.8;color:var(--c-text-2)}
+.md li>ul,.md li>ol{margin:4px 0 4px 18px}
+.md strong{color:var(--c-text-1);font-weight:600}
+.md em{color:var(--c-text-2);font-style:italic}
+.md blockquote{margin:14px 0;padding:10px 16px;border-left:3px solid var(--c-brand);background:rgba(59,130,246,.06);border-radius:0 8px 8px 0;color:var(--c-text-2);font-size:14px;line-height:1.8}
+.md blockquote p{margin:0;color:inherit}
+.md code{font-family:'SF Mono','Fira Code',monospace;font-size:12.5px;background:var(--c-bg-mute);color:var(--c-brand-light);padding:2px 6px;border-radius:5px;border:1px solid var(--c-border)}
+.md pre{background:var(--c-bg-mute);border:1px solid var(--c-border);border-radius:10px;padding:16px 20px;margin:14px 0;overflow-x:auto}
+.md pre code{background:none;border:none;padding:0;color:var(--c-text-2);font-size:13px;line-height:1.7}
+.md table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px}
+.md th{text-align:left;padding:9px 14px;background:var(--c-bg-mute);border:1px solid var(--c-border);font-weight:700;color:var(--c-text-1)}
+.md td{padding:9px 14px;border:1px solid var(--c-border);color:var(--c-text-2);line-height:1.7}
+.md tr:hover td{background:rgba(59,130,246,.03)}
+.md a{color:var(--c-brand);text-decoration:none}
+.md a:hover{text-decoration:underline}
+.md hr{border:none;border-top:1px solid var(--c-border);margin:24px 0}
+.md img{max-width:100%;border-radius:8px;margin:8px 0}
 
 /* ─ 단일 문서 내용 ─ */
-.law-doc-content{font-size:14px;line-height:1.95;color:var(--c-text-2);white-space:pre-wrap;word-break:break-word}
+.law-doc-content{font-size:14px;line-height:1.95;color:var(--c-text-2)}
 
 /* ─ 페이저 ─ */
 .pager{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:48px;padding-top:24px;border-top:1px solid var(--c-border)}
@@ -283,7 +309,7 @@ window.showCat=(cat)=>{
           <div class="law-head-title">${esc(l.title||'')}</div>
           <div class="law-chev">▼</div>
         </div>
-        <div class="law-body"><div class="law-body-inner">${esc(l.content||'')}</div></div>
+        <div class="law-body"><div class="law-body-inner md">${md(l.content||'')}</div></div>
       </div>`).join('')}
     <div class="pager">
       <div>${prev?`<a class="pager-btn prev" onclick="showCat('${esc(prev)}')"><div class="pager-lbl">← 이전</div><div class="pager-name">${esc(prev)}</div></a>`:''}</div>
@@ -309,7 +335,7 @@ window.showLaw=(cat,id)=>{
     </div>
     <h1 class="doc-title">${esc(l.title||'')}</h1>
     <div class="doc-meta">${l.updatedAt?.seconds?`🕐 업데이트: ${new Date(l.updatedAt.seconds*1000).toLocaleDateString('ko-KR')}&nbsp;&nbsp;`:''}</div>
-    <div class="law-doc-content">${esc(l.content||'')}</div>
+    <div class="law-doc-content md">${md(l.content||'')}</div>
     <div class="pager">
       <div>${prev?`<a class="pager-btn prev" onclick="showLaw('${esc(cat)}','${prev.id}')"><div class="pager-lbl">← 이전</div><div class="pager-name">${esc(prev.title||'')}</div></a>`:''}</div>
       <div>${next?`<a class="pager-btn next" onclick="showLaw('${esc(cat)}','${next.id}')"><div class="pager-lbl">다음 →</div><div class="pager-name">${esc(next.title||'')}</div></a>`:''}</div>
@@ -357,6 +383,12 @@ const st=localStorage.getItem('vp-t');if(st){document.documentElement.dataset.th
 
 // ── 유틸 ──
 function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function md(t){
+  if(!t)return'';
+  if(typeof marked==='undefined')return`<div style="white-space:pre-wrap">${esc(t)}</div>`;
+  marked.setOptions({breaks:true,gfm:true});
+  return marked.parse(String(t));
+}
 function hl(t,q){if(!q)return t;const r=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return t.replace(new RegExp(`(${r})`,'gi'),'<mark>$1</mark>');}
 
 init();
