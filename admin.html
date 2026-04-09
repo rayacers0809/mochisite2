@@ -219,10 +219,48 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .lpg,.lsg{transition:border-color .15s,box-shadow .15s}
 
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(244,132,158,.2);border-radius:2px}
-@media(max-width:900px){.lay{grid-template-columns:1fr}.side{display:none}.mn{padding:20px}.sg{grid-template-columns:1fr 1fr}.fg{grid-template-columns:1fr}}
+/* ── 어드민 모바일 ── */
+.mob-sidebar-btn{display:none;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.06);cursor:pointer;font-size:18px;position:fixed;top:14px;left:14px;z-index:200}
+.mob-sidebar-overlay{display:none;position:fixed;inset:0;z-index:149;background:rgba(0,0,0,.6);backdrop-filter:blur(2px)}
+.mob-sidebar-overlay.show{display:block}
+.admin-topbar{display:none;position:fixed;top:0;left:0;right:0;height:56px;z-index:150;background:var(--bg2);border-bottom:1px solid var(--border);align-items:center;padding:0 56px 0 56px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+@media(max-width:900px){
+  .lay{grid-template-columns:1fr}
+  .side{display:flex;position:fixed;top:0;bottom:0;left:-260px;width:260px;z-index:160;transition:left .28s cubic-bezier(.4,0,.2,1);box-shadow:none}
+  .side.open{left:0;box-shadow:8px 0 32px rgba(0,0,0,.5)}
+  .mob-sidebar-btn{display:flex}
+  .mob-sidebar-overlay{display:none}
+  .mob-sidebar-overlay.show{display:block}
+  .admin-topbar{display:flex}
+  .mn{padding:72px 20px 80px}
+  .sg{grid-template-columns:1fr 1fr}
+  .fg{grid-template-columns:1fr}
+  .form-card{padding:20px}
+  .mh{margin-bottom:20px}
+  .mtit{font-size:20px}
+}
+@media(max-width:480px){
+  .mn{padding:68px 14px 80px}
+  .sg{grid-template-columns:1fr 1fr}
+  .sc{padding:16px}
+  .sn{font-size:22px}
+  .form-card{padding:16px}
+  .fa{flex-wrap:wrap}
+  .fa .bp,.fa .bca{flex:1;justify-content:center}
+  .mh{flex-direction:column;align-items:flex-start}
+  .mh .bp{width:100%;justify-content:center}
+  .app-tabs{flex-wrap:wrap}
+  .abt{flex-wrap:wrap}
+}
 </style>
 </head>
 <body>
+
+<!-- 어드민 모바일 상단바 -->
+<div class="admin-topbar">Admin Panel</div>
+<button class="mob-sidebar-btn" id="mobSideBtn" onclick="toggleAdminSidebar()">☰</button>
+<div class="mob-sidebar-overlay" id="mobSideOverlay" onclick="toggleAdminSidebar()"></div>
 
 <!-- 로그인 -->
 <div class="lov" id="loginOv">
@@ -239,7 +277,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 
 <div class="lay">
 <!-- 사이드바 -->
-<aside class="side">
+<aside class="side" id="side">
   <div class="slogo">
     <img id="sideIcon" alt="로고">
     <span class="slogt">Admin</span>
@@ -735,6 +773,33 @@ window.__initAdmin=async function(){
 
 function renderDashP(patches){const TM2={new:{c:'tag-new',l:'신규'},fix:{c:'tag-fix',l:'버그수정'},change:{c:'tag-change',l:'변경'},remove:{c:'tag-remove',l:'삭제'}};document.getElementById('stT').textContent=patches.length||'0';document.getElementById('stL').textContent=patches[0]?.ver||'—';const m=new Date().getMonth()+1;document.getElementById('stM').textContent=patches.filter(p=>p.date?.includes(`${m}월`)).length||'0';document.getElementById('dashB').innerHTML=patches.slice(0,5).map(p=>`<tr><td><span class="vb">${p.ver||''}</span></td><td>${p.date||''}</td><td>${(p.tags||[]).map(t=>`<span class="tag ${TM2[t]?.c||''}" style="margin-right:4px">${TM2[t]?.l||t}</span>`).join('')}</td><td style="color:var(--mu);font-size:12px">${(p.blocks||[]).filter(b=>b.type==='text').length}T/${(p.blocks||[]).filter(b=>b.type==='image').length}I</td></tr>`).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--mu);padding:20px">없음</td></tr>';}
 function renderListP(patches){const TM2={new:{c:'tag-new',l:'신규'},fix:{c:'tag-fix',l:'버그수정'},change:{c:'tag-change',l:'변경'},remove:{c:'tag-remove',l:'삭제'}};document.getElementById('listB').innerHTML=patches.map(p=>`<tr><td><span class="vb">${p.ver||''}</span></td><td>${p.date||''}</td><td>${(p.tags||[]).map(t=>`<span class="tag ${TM2[t]?.c||''}" style="margin-right:4px">${TM2[t]?.l||t}</span>`).join('')}</td><td style="color:var(--mu);font-size:12px">${(p.blocks||[]).filter(b=>b.type==='text').length}T/${(p.blocks||[]).filter(b=>b.type==='image').length}I</td><td><div class="abt"><button class="be" onclick="window.__edit('${p.docId}')">수정</button><button class="bd" onclick="window.__del('${p.docId}')">삭제</button></div></td></tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--mu);padding:20px">없음</td></tr>';}
+</script>
+
+<script>
+function toggleAdminSidebar(){
+  const s=document.getElementById('side')||document.querySelector('.side');
+  const o=document.getElementById('mobSideOverlay');
+  const b=document.getElementById('mobSideBtn');
+  if(!s)return;
+  const open=s.classList.toggle('open');
+  o?.classList.toggle('show',open);
+  if(b)b.textContent=open?'✕':'☰';
+}
+// 메뉴 항목 클릭 시 모바일 사이드바 닫기
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.snav a, .snav button').forEach(el=>{
+    el.addEventListener('click',()=>{
+      if(window.innerWidth<=900){
+        const s=document.querySelector('.side');
+        const o=document.getElementById('mobSideOverlay');
+        const b=document.getElementById('mobSideBtn');
+        s?.classList.remove('open');
+        o?.classList.remove('show');
+        if(b)b.textContent='☰';
+      }
+    });
+  });
+});
 </script>
 </body>
 </html>
