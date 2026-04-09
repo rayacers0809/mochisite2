@@ -262,10 +262,10 @@ el.innerHTML=sortedParents.map((parent,pi)=>{
   const sortedSubs=allSubs.sort((a,b)=>{const ai=subOrd.indexOf(a),bi=subOrd.indexOf(b);if(ai>=0&&bi>=0)return ai-bi;if(ai>=0)return-1;if(bi>=0)return 1;return 0;});
 
   return`<div style="margin-bottom:28px">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0 10px;border-bottom:2px solid rgba(244,132,158,.3);margin-bottom:12px">
-      <div style="font-size:13px;font-weight:800;color:var(--pink);letter-spacing:.06em">${parent?`📂 ${parent}`:'📋 (부모 카테고리 없음)'}</div>
-      ${parent?`<div style="display:flex;gap:4px"><button style="padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--mu2);cursor:pointer;font-size:12px" onclick="window.__moveParent('${parent.replace(/'/g,'\\\'')}',-1)" ${pi===0?'disabled':''}>▲ 위</button><button style="padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--mu2);cursor:pointer;font-size:12px" onclick="window.__moveParent('${parent.replace(/'/g,'\\\'')}'," 1)" ${pi===sortedParents.length-1?'disabled':''}>▼ 아래</button></div>`:''}
-    </div>
+    ${parent?`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0 10px;border-bottom:2px solid rgba(244,132,158,.3);margin-bottom:12px">
+      <div style="font-size:13px;font-weight:800;color:var(--pink);letter-spacing:.06em">📂 ${parent}</div>
+      <div style="display:flex;gap:4px"><button style="padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--mu2);cursor:pointer;font-size:12px" onclick="window.__moveParent('${parent.replace(/'/g,'\\\'')}',-1)" ${pi===0?'disabled':''}>▲ 위</button><button style="padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--mu2);cursor:pointer;font-size:12px" onclick="window.__moveParent('${parent.replace(/'/g,'\\\'')}'," 1)" ${pi===sortedParents.length-1?'disabled':''}>▼ 아래</button></div>
+    </div>`:''}
     ${sortedSubs.map((cat,ci)=>`
       <div style="margin-bottom:20px;${parent?'margin-left:12px;border-left:2px solid var(--border);padding-left:12px':''}">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)">
