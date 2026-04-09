@@ -318,10 +318,8 @@ function buildSidebar(){
     const sortedCats=sortSubs(parent,Object.keys(tree[parent].cats));
     if(parent==='root'){
       sortedCats.forEach(cat=>{
-        html+=`<div class="sb-section">
-          <div class="sb-label" onclick="toggleRootCat('rl-${cat.replace(/[^a-zA-Z0-9가-힣]/g,\'_\')}')"><span>${ICONS[cat]||'📄'} ${esc(cat)}</span><span style="font-size:10px">▾</span></div>
-          <ul class="sb-list" id="rl-${cat.replace(/[^a-zA-Z0-9가-힣]/g,'_')}">${tree[parent].cats[cat].items.map(l=>`<li><button class="sb-link" id="sl-${l.id}" onclick="showLaw('${esc(cat)}','${l.id}','')">${esc(l.title||'')}</button></li>`).join('')}</ul>
-        </div><div class="sb-divider"></div>`;
+        const cid='rl-'+cat.replace(/[^a-zA-Z0-9\uAC00-\uD7A3]/g,'_');
+        html+=`<div class="sb-section"><div class="sb-label" onclick="toggleRootCat('${cid}')"><span>${ICONS[cat]||'📄'} ${esc(cat)}</span><span style="font-size:10px;margin-left:auto">▾</span></div><ul class="sb-list" id="${cid}">${tree[parent].cats[cat].items.map(l=>`<li><button class="sb-link" id="sl-${l.id}" onclick="showLaw('${esc(cat)}','${l.id}','')">${esc(l.title||'')}</button></li>`).join('')}</ul></div><div class="sb-divider"></div>`;
       });
     } else {
       const parentId='pg-'+parent.replace(/[^a-zA-Z0-9가-힣]/g,'_');
