@@ -294,7 +294,6 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
     </div>
   </div>
 </section>
-
 <!-- 바로가기 -->
 <section>
   <div class="sec-wrap" style="padding-top:60px;padding-bottom:60px">
@@ -419,23 +418,28 @@ async function init(){
       loadNews('Firestore 에러: '+e.message);
     }
 
-    // 자산 캐시 업데이트 (패치노트와 병렬로 백그라운드에서)
+    // 자산 캐시 업데이트 (패치노트와 병렬로 백그라운드에서) - 404 났던 리소스는 재요청 안 함
     const now=Date.now();
     if(!cache.ts||now-cache.ts>=CACHE_TTL){
-      const newCache={ts:now};
-      try{const url=await getDownloadURL(ref(storage,'site/icon.png'));newCache.icon=url;setIcons(url);}catch{}
-      try{
-        const vUrl=await getDownloadURL(ref(storage,'site/bg_video.mp4'));
-        newCache.bgVideo=vUrl;
-        const v=document.getElementById('bgVideo');
-        if(!v.src){v.src=vUrl;v.style.display='block';v.addEventListener('canplay',()=>v.classList.add('loaded'),{once:true});setTimeout(()=>v.classList.add('loaded'),3000);}
-      }catch{
+      const newCache={ts:now,...cache};
+      try{const url=await getDownloadURL(ref(storage,'site/icon.png'));newCache.icon=url;setIcons(url);}catch{newCache.icon='_none_';}
+      if(cache.bgVideo!=='_none_'){
         try{
-          const iUrl=await getDownloadURL(ref(storage,'site/bg_image.jpg'));
-          newCache.bgImage=iUrl;
-          const i=document.getElementById('bgImage');
-          if(!i.src){i.src=iUrl;i.style.display='block';i.addEventListener('load',()=>i.classList.add('loaded'),{once:true});setTimeout(()=>i.classList.add('loaded'),3000);}
-        }catch{}
+          const vUrl=await getDownloadURL(ref(storage,'site/bg_video.mp4'));
+          newCache.bgVideo=vUrl;
+          const v=document.getElementById('bgVideo');
+          if(!v.src){v.src=vUrl;v.style.display='block';v.addEventListener('canplay',()=>v.classList.add('loaded'),{once:true});setTimeout(()=>v.classList.add('loaded'),3000);}
+        }catch{
+          newCache.bgVideo='_none_';
+          if(cache.bgImage!=='_none_'){
+            try{
+              const iUrl=await getDownloadURL(ref(storage,'site/bg_image.jpg'));
+              newCache.bgImage=iUrl;
+              const i=document.getElementById('bgImage');
+              if(!i.src){i.src=iUrl;i.style.display='block';i.addEventListener('load',()=>i.classList.add('loaded'),{once:true});setTimeout(()=>i.classList.add('loaded'),3000);}
+            }catch{newCache.bgImage='_none_';}
+          }
+        }
       }
       localStorage.setItem(CACHE_KEY,JSON.stringify(newCache));
     }
