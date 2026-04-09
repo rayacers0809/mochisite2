@@ -180,6 +180,10 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
   .detail-title{font-size:22px}
   footer{padding:28px 16px}
 }
+
+/* ── 페이지 전환 ── */
+#pageTransition{position:fixed;inset:0;z-index:9999;background:var(--bg);opacity:0;pointer-events:none;transition:opacity .35s ease}
+#pageTransition.out{opacity:1;pointer-events:all}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(244,132,158,.3);border-radius:3px}
 </style>
 <script>
@@ -194,6 +198,7 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
   <div id="bgOverlay"></div>
 </div>
 
+<div id="pageTransition"></div>
 <!-- 라이트박스 -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <button class="lightbox-close">✕</button>
@@ -202,7 +207,7 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
 
 <!-- 네비 -->
 <nav id="mainNav">
-  <a href="index.html" class="nav-logo">
+  <a href="index.html" class="nav-logo" onclick="goPage(event,'index.html')">
     <img id="navIcon" alt="모찌">
     <span class="nav-logo-text">모찌서버</span>
   </a>
@@ -298,7 +303,7 @@ const PATCH_KEY='mochi_patches_v4';
 const PATCH_TTL=5*60*1000;
 const TM={new:{cls:'t-new',label:'신규'},fix:{cls:'t-fix',label:'버그수정'},change:{cls:'t-change',label:'변경'},remove:{cls:'t-change',label:'삭제'}};
 const PER_PAGE=9;
-let allPatches=[],filtered=[],curFilter='all',curSearch='',curPage=1,iconUrl='';
+let allPatches=[],filtered=[],curFilter='all',curSearch='',curPage=1,iconUrl='',defaultThumbUrl='';
 
 function esc(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
@@ -311,7 +316,8 @@ function getTagInfo(tags){
 function getThumbHtml(p,cls=''){
   const img=(p.blocks||[]).find(b=>b.type==='image');
   if(img) return`<img src="${esc(img.url)}" alt="" loading="lazy" class="${cls}" onerror="this.style.display='none'">`;
-  return`<div class="${cls||'nc-thumb-ph'}" style="display:flex;align-items:center;justify-content:center;font-size:${cls?'52':'32'}px;opacity:.35;width:100%;height:100%;background:linear-gradient(135deg,rgba(244,132,158,.1),rgba(249,168,122,.07))">${iconUrl?`<img src="${iconUrl}" style="width:${cls?'70':'50'}px;height:${cls?'70':'50'}px;object-fit:cover;border-radius:12px;opacity:.5" onerror="this.style.display='none'">`:'🫧'}</div>`;
+  if(defaultThumbUrl) return`<img src="${defaultThumbUrl}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`;
+  return`<div class="${cls||'nc-thumb-ph'}" style="display:flex;align-items:center;justify-content:center;font-size:${cls?'52':'32'}px;opacity:.35;width:100%;height:100%;background:linear-gradient(135deg,rgba(244,132,158,.1),rgba(249,168,122,.07))">🫧</div>`;
 }
 
 function getDesc(p){
@@ -337,6 +343,7 @@ function renderFeatured(){
   const img=(p.blocks||[]).find(b=>b.type==='image');
   const thumb=document.getElementById('featuredThumb');
   if(img) thumb.innerHTML=`<img src="${esc(img.url)}" alt="" style="width:100%;height:100%;object-fit:cover">`;
+  else if(defaultThumbUrl) thumb.innerHTML=`<img src="${defaultThumbUrl}" alt="" style="width:100%;height:100%;object-fit:cover">`;
   else if(iconUrl) thumb.innerHTML=`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(244,132,158,.12),rgba(249,168,122,.07))"><img src="${iconUrl}" style="width:90px;height:90px;object-fit:cover;border-radius:16px;opacity:.5"></div>`;
 }
 
@@ -361,7 +368,7 @@ function renderGrid(){
             <span class="nc-tag ${ti.cls}">${ti.label}</span>
             <span class="nc-date">${getDate(p)}</span>
           </div>
-          <div class="nc-title">${esc((p.ver||'')+' 패치노트')}</div>
+          <div class="nc-title">${esc(p.ver||'패치노트')}</div>
           <div class="nc-desc">${esc(getDesc(p))}</div>
         </div>
       </div>`;
@@ -392,13 +399,14 @@ window.openDetail=(idx)=>{
   const dtag=document.getElementById('detailTag');
   dtag.textContent=ti.label; dtag.className='detail-tag nc-tag '+ti.cls;
   document.getElementById('detailDate').textContent=getDate(p);
-  document.getElementById('detailTitle').textContent=(p.ver||'')+' 패치노트';
+  document.getElementById('detailTitle').textContent=p.ver||'패치노트';
   document.getElementById('detailVer').textContent=p.date||getDate(p);
 
   // 썸네일
   const img=(p.blocks||[]).find(b=>b.type==='image');
   const thumb=document.getElementById('detailThumb');
   if(img) thumb.innerHTML=`<img src="${esc(img.url)}" alt="" style="width:100%;border-radius:16px;object-fit:cover;max-height:400px;border:1px solid rgba(255,255,255,.08)">`;
+  else if(defaultThumbUrl) thumb.innerHTML=`<img src="${defaultThumbUrl}" alt="" style="width:100%;border-radius:16px;object-fit:cover;max-height:400px;border:1px solid rgba(255,255,255,.08)">`;
   else if(iconUrl) thumb.innerHTML=`<div class="detail-thumb-ph"><img src="${iconUrl}" style="width:80px;height:80px;object-fit:cover;border-radius:14px;opacity:.4"></div>`;
   else thumb.innerHTML='';
 
@@ -422,11 +430,7 @@ window.openDetail=(idx)=>{
   } else nav.innerHTML='';
 };
 
-window.closeDetail=()=>{
-  document.getElementById('detailView').style.display='none';
-  document.getElementById('listView').style.display='';
-  window.scrollTo({top:0,behavior:'smooth'});
-};
+window.closeDetail=()=>{document.getElementById('detailView').style.display='none';document.getElementById('listView').style.display='';window.scrollTo({top:0,behavior:'smooth'});};
 
 window.setFilter=(f,el)=>{
   curFilter=f; curPage=1;
@@ -451,6 +455,7 @@ async function init(){
   try{assetCache=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');}catch{}
   const el=document.getElementById('navIcon');
   if(assetCache.icon){if(el){el.src=assetCache.icon;el.style.display='';}iconUrl=assetCache.icon;}
+  if(assetCache.defaultThumb)defaultThumbUrl=assetCache.defaultThumb;
   if(assetCache.bgVideo){document.getElementById('bgVideo').src=assetCache.bgVideo;document.getElementById('bgVideo').style.display='block';}
   else if(assetCache.bgImage){document.getElementById('bgImage').src=assetCache.bgImage;document.getElementById('bgImage').style.display='block';}
 
@@ -478,6 +483,7 @@ async function init(){
   const assetP=(async()=>{
     const na={...assetCache,ts:Date.now()};
     try{const url=await getDownloadURL(ref(storage,'site/icon.png'));na.icon=url;iconUrl=url;if(el){el.src=url;el.style.display='';}renderFeatured();}catch{}
+    try{const dt=await getDownloadURL(ref(storage,'site/default_thumb.png'));na.defaultThumb=dt;defaultThumbUrl=dt;renderFeatured();renderGrid();}catch{}
     try{const v=await getDownloadURL(ref(storage,'site/bg_video.mp4'));na.bgVideo=v;const ve=document.getElementById('bgVideo');if(!ve.src){ve.src=v;ve.style.display='block';}}
     catch{try{const i=await getDownloadURL(ref(storage,'site/bg_image.jpg'));na.bgImage=i;const ie=document.getElementById('bgImage');if(!ie.src){ie.src=i;ie.style.display='block';}}catch{}}
     localStorage.setItem(CACHE_KEY,JSON.stringify(na));
@@ -499,6 +505,11 @@ async function init(){
   }
 }
 init();
+</script>
+
+<script>
+window.goPage=(e,href)=>{e.preventDefault();const ov=document.getElementById('pageTransition');ov.classList.add('out');setTimeout(()=>{window.location.href=href;},340);};
+window.addEventListener('DOMContentLoaded',()=>{const ov=document.getElementById('pageTransition');ov.style.opacity='1';ov.style.pointerEvents='all';requestAnimationFrame(()=>{requestAnimationFrame(()=>{ov.style.opacity='0';ov.style.pointerEvents='none';});});});
 </script>
 </body>
 </html>
