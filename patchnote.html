@@ -169,16 +169,45 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
 .footer-copy{font-size:11px;color:rgba(255,255,255,.2)}
 
 /* 반응형 */
-@media(max-width:900px){.news-grid{grid-template-columns:1fr 1fr}.featured-inner{grid-template-columns:1fr;gap:28px}.featured-thumb{order:-1;aspect-ratio:16/7}}
+/* ── 모바일 드로어 ── */
+.mob-menu-btn{display:none;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.06);cursor:pointer;color:var(--text);font-size:18px;flex-shrink:0}
+.mob-nav-drawer{display:none;position:fixed;top:64px;left:0;right:0;z-index:99;background:rgba(14,12,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 16px;flex-direction:column;gap:4px;animation:slideDown .2s ease}
+.mob-nav-drawer.open{display:flex}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.mob-nav-link{display:block;padding:12px 16px;border-radius:10px;color:var(--mu2);text-decoration:none;font-size:14px;font-weight:500;transition:all .15s}
+.mob-nav-link:hover{background:rgba(244,132,158,.08);color:var(--pink)}
+.mob-nav-divider{height:1px;background:var(--border);margin:6px 0}
+.mob-nav-actions{display:flex;gap:8px;padding:8px 0 4px}
+.mob-nav-actions a{flex:1;text-align:center;padding:12px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none}
+
+@media(max-width:900px){
+  .news-grid{grid-template-columns:1fr 1fr}
+  .featured-inner{grid-template-columns:1fr;gap:24px}
+  .featured-thumb{order:-1;aspect-ratio:16/7}
+}
 @media(max-width:640px){
   nav{padding:0 16px}
-  .nav-links li:not(:last-child):not(.nav-keep){display:none}
-  .nav-discord{display:none}
-  .featured-inner,.filter-bar,.grid-wrap,.detail-body,.detail-thumb,.detail-back{padding-left:16px;padding-right:16px}
+  .nav-links,.nav-discord{display:none}
+  .nav-start{padding:7px 14px;font-size:12px}
+  .mob-menu-btn{display:flex}
+  .featured-inner{padding:0 16px}
+  .featured{padding-top:80px;padding-bottom:40px}
+  .featured-title{font-size:22px}
+  .featured-desc{font-size:13px}
+  .filter-bar{padding:20px 16px 12px;gap:10px}
+  .filter-tabs{flex-wrap:wrap;gap:6px}
+  .filter-tab{padding:6px 14px;font-size:12px}
+  .filter-search{width:100%}
+  .filter-search input{width:100%}
+  .grid-wrap{padding:0 16px 40px}
   .news-grid{grid-template-columns:1fr}
-  .filter-search input{width:160px}
+  .pagination{padding:0 16px 48px;gap:10px}
+  .detail-back{padding:20px 16px 0}
+  .detail-thumb{padding:16px 16px 0}
+  .detail-body{padding:20px 16px 60px}
   .detail-title{font-size:22px}
-  footer{padding:28px 16px}
+  .detail-content h2{font-size:17px}
+  footer{padding:24px 16px}
 }
 
 /* ── 페이지 전환 ── */
@@ -216,6 +245,7 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
     <li class="nav-keep"><a href="https://www.mochi.me.kr/law" target="_blank">법률 가이드</a></li>
     <li class="nav-keep"><a href="https://discord.gg/mochi-rp" target="_blank">디스코드</a></li>
   </ul>
+  <button class="mob-menu-btn" id="mobMenuBtn" onclick="toggleMobMenu()">☰</button>
   <div class="nav-r">
     <a href="https://discord.gg/mochi-rp" target="_blank" class="nav-discord">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
@@ -494,7 +524,7 @@ async function init(){
   if(!cacheValid){
     const patchP=(async()=>{
       try{
-        const sn=await getDocs(query(collection(db,'patches'),orderBy('createdAt','desc')));
+        const sn=await getDocs(collection(db,'patches'));
         allPatches=sn.docs.map(d=>({id:d.id,...d.data()}));
         localStorage.setItem(PATCH_KEY,JSON.stringify({ts:Date.now(),data:allPatches}));
         renderFeatured();renderGrid();
@@ -511,6 +541,23 @@ init();
 <script>
 window.goPage=(e,href)=>{e.preventDefault();const ov=document.getElementById('pageTransition');ov.classList.add('out');setTimeout(()=>{window.location.href=href;},340);};
 window.addEventListener('DOMContentLoaded',()=>{const ov=document.getElementById('pageTransition');ov.style.opacity='1';ov.style.pointerEvents='all';requestAnimationFrame(()=>{requestAnimationFrame(()=>{ov.style.opacity='0';ov.style.pointerEvents='none';});});});
+</script>
+
+<script>
+function toggleMobMenu(){
+  const d=document.getElementById('mobNavDrawer');
+  const b=document.getElementById('mobMenuBtn');
+  if(!d||!b)return;
+  const open=d.classList.toggle('open');
+  b.textContent=open?'✕':'☰';
+}
+document.addEventListener('click',e=>{
+  const d=document.getElementById('mobNavDrawer');
+  const b=document.getElementById('mobMenuBtn');
+  if(d?.classList.contains('open')&&!d.contains(e.target)&&e.target!==b&&!b?.contains(e.target)){
+    d.classList.remove('open');if(b)b.textContent='☰';
+  }
+});
 </script>
 </body>
 </html>
