@@ -282,7 +282,7 @@ function buildSidebar(){
 
   const tree={};
   allLaws.forEach(l=>{
-    const p=l.parent_category||'__root__';
+    const p=l.parent_category||'root';
     const c=l.category||'미분류';
     if(!tree[p])tree[p]={order:l.order,cats:{}};
     if(!tree[p].cats[c])tree[p].cats[c]={order:l.order,items:[]};
@@ -291,7 +291,7 @@ function buildSidebar(){
 
   // 부모 카테고리 정렬
   const sortParents=(keys)=>keys.sort((a,b)=>{
-    const realA=a==='__root__'?'':a, realB=b==='__root__'?'':b;
+    const realA=a==='root'?'':a, realB=b==='root'?'':b;
     const ai=catOrd.parents.indexOf(realA), bi=catOrd.parents.indexOf(realB);
     if(ai>=0&&bi>=0)return ai-bi;
     if(ai>=0)return-1;
@@ -301,8 +301,8 @@ function buildSidebar(){
 
   // 하위 카테고리 정렬
   const sortSubs=(parent,keys)=>{
-    const realParent=parent==='__root__'?'':parent;
-    const subOrd=(catOrd.subs||{})[realParent||'__root__']||[];
+    const realParent=parent==='root'?'':parent;
+    const subOrd=(catOrd.subs||{})[realParent||'root']||[];
     return keys.sort((a,b)=>{
       const ai=subOrd.indexOf(a),bi=subOrd.indexOf(b);
       if(ai>=0&&bi>=0)return ai-bi;
@@ -315,7 +315,7 @@ function buildSidebar(){
   let html='';
   sortParents(Object.keys(tree)).forEach(parent=>{
     const sortedCats=sortSubs(parent,Object.keys(tree[parent].cats));
-    if(parent==='__root__'){
+    if(parent==='root'){
       sortedCats.forEach(cat=>{
         html+=`<div class="sb-section">
           <div class="sb-label">${ICONS[cat]||'📄'} ${esc(cat)}</div>
