@@ -246,7 +246,7 @@ async function saveCatOrder(){
   el.querySelectorAll(':scope > .lpg').forEach(pg=>{
     const p=pg.dataset.parent;
     if(p) newParents.push(p); // 빈 문자열 키 제외 (Firestore 불허)
-    const subsKey=p||'__root__'; // 빈 부모는 __root__ 키로 저장
+    const subsKey=p||'root'; // 빈 부모는 __root__ 키로 저장
     newSubs[subsKey]=[];
     pg.querySelectorAll(':scope > .lpg-subs > .lsg').forEach(sg=>newSubs[subsKey].push(sg.dataset.cat));
   });
