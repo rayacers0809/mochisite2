@@ -295,6 +295,15 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
   </div>
 </section>
 
+<!-- CTA -->
+<section class="cta-sec">
+  <div class="cta-inner">
+    <div class="cta-title">지금 바로 시작하세요</div>
+    <p class="cta-desc">모찌서버에 접속하고 새로운 인생을 경험해보세요.<br>따뜻한 커뮤니티가 여러분을 기다립니다.</p>
+    <a href="fivem://connect/fivem-mochi.kr" class="cta-btn">서버 접속하기 →</a>
+  </div>
+</section>
+
 <!-- 바로가기 -->
 <section>
   <div class="sec-wrap" style="padding-top:60px;padding-bottom:60px">
@@ -452,10 +461,15 @@ async function init(){
 }
 
 const TM={new:{cls:'new',label:'신규'},fix:{cls:'fix',label:'버그수정'},change:{cls:'change',label:'변경'},remove:{cls:'change',label:'삭제'}};
+// 전역 패치 캐시 - onclick에서 인덱스로 접근
+window.__indexPatches=[];
+
 function renderNews(patches, bgThumb){
+  window.__indexPatches=patches;
+  window.__indexBgThumb=bgThumb||'';
   const grid=document.getElementById('newsGrid');
   if(!patches.length){grid.innerHTML='<div class="news-loading" style="color:var(--mu)">등록된 패치노트가 없습니다.</div>';return;}
-  grid.innerHTML=patches.map(p=>{
+  grid.innerHTML=patches.map((p,idx)=>{
     const firstImg=(p.blocks||[]).find(b=>b.type==='image');
     const firstText=(p.blocks||[]).find(b=>b.type==='text');
     const tags=(p.tags||[]).slice(0,1);
@@ -466,8 +480,7 @@ function renderNews(patches, bgThumb){
       :`<div class="news-thumb-placeholder">🫧</div>`;
     const desc=(firstText?.text||'').replace(/[#*_>`\[\]]/g,'').replace(/<[^>]*>/g,'').substring(0,60);
     const dateStr=p.createdAt?.seconds?new Date(p.createdAt.seconds*1000).toLocaleDateString('ko-KR'):(p.date||'');
-    const pData=encodeURIComponent(JSON.stringify({ver:p.ver,date:dateStr,tags:p.tags||[],blocks:p.blocks||[],thumbSrc}));
-    return`<div class="news-card" style="cursor:pointer" onclick="openPatchModal(${JSON.stringify(JSON.stringify({ver:p.ver,date:dateStr,tags:p.tags||[],blocks:p.blocks||[],thumbSrc}))})">
+    return`<div class="news-card" style="cursor:pointer" onclick="openPatchModal(${idx})">
       ${thumb}
       <div class="news-body">
         ${tagHtml}
