@@ -230,7 +230,7 @@ mark{background:rgba(59,130,246,.18);color:var(--c-brand-light);border-radius:3p
 <!-- 검색 모달 -->
 <div class="modal-ov" id="searchModal" onclick="closeSearchOut(event)">
   <div class="modal-box">
-    <input class="modal-inp" id="searchInp" placeholder="법률 검색..." oninput="doSearch(this.value)" onkeydown="searchKey(event)">
+    <input class="modal-inp" id="searchInp" placeholder="법률 내용, 제목, 카테고리 검색..." oninput="doSearch(this.value)" onkeydown="searchKey(event)">
     <div class="modal-res" id="searchRes"><div class="res-empty">검색어를 입력하세요</div></div>
     <div class="modal-foot">
       <span><kbd>↑</kbd><kbd>↓</kbd> 이동</span>
@@ -467,17 +467,70 @@ let si=-1;
 window.openSearch=()=>{document.getElementById('searchModal').classList.add('open');setTimeout(()=>document.getElementById('searchInp').focus(),40);};
 window.closeSearchOut=(e)=>{if(e.target.id==='searchModal')closeSearch();};
 function closeSearch(){document.getElementById('searchModal').classList.remove('open');document.getElementById('searchInp').value='';document.getElementById('searchRes').innerHTML='<div class="res-empty">검색어를 입력하세요</div>';si=-1;}
+// 법률 전체 텍스트 추출 (blocks 배열 포함)
+function getLawText(l){
+  if(l.blocks&&l.blocks.length) return l.blocks.map(b=>b.text||'').join(' ');
+  return l.content||'';
+}
+// 키워드 위치 기준 주변 컨텍스트 스니펫 추출
+function getSnippet(text,q,maxLen=120){
+  const lower=text.toLowerCase();
+  const qi=lower.indexOf(q.toLowerCase());
+  if(qi<0) return esc(text.replace(/\n/g,' ').substring(0,maxLen))+'...';
+  const start=Math.max(0,qi-40);
+  const end=Math.min(text.length,qi+q.length+80);
+  let snippet=(start>0?'...':'')+text.slice(start,end).replace(/\n/g,' ')+(end<text.length?'...':'');
+  return hl(esc(snippet),q);
+}
+// 매칭 위치 표시 (제목/내용/카테고리)
+function getMatchType(l,q){
+  const ql=q.toLowerCase();
+  const hits=[];
+  if((l.title||'').toLowerCase().includes(ql)) hits.push('제목');
+  const txt=getLawText(l);
+  if(txt.toLowerCase().includes(ql)) hits.push('내용');
+  if((l.category||'').toLowerCase().includes(ql)) hits.push('카테고리');
+  if((l.parent_category||'').toLowerCase().includes(ql)) hits.push('상위카테고리');
+  return hits;
+}
 window.doSearch=(q)=>{
   si=-1;
   if(!q.trim()){document.getElementById('searchRes').innerHTML='<div class="res-empty">검색어를 입력하세요</div>';return;}
-  const res=allLaws.filter(l=>(l.title||'').toLowerCase().includes(q.toLowerCase())||(l.content||'').toLowerCase().includes(q.toLowerCase())||(l.category||'').toLowerCase().includes(q.toLowerCase())||(l.parent_category||'').toLowerCase().includes(q.toLowerCase())).slice(0,20);
-  if(!res.length){document.getElementById('searchRes').innerHTML='<div class="res-empty">검색 결과가 없습니다</div>';return;}
-  document.getElementById('searchRes').innerHTML=res.map(l=>`
-    <div class="res-item" data-cat="${esc(l.category||'')}" data-id="${l.id}" data-parent="${esc(l.parent_category||'')}" onclick="pickResult('${esc(l.category||'')}','${l.id}','${esc(l.parent_category||'')}')">
-      <div class="res-cat">${l.parent_category?esc(l.parent_category)+' › ':''} ${esc(l.category||'미분류')}</div>
+  const ql=q.toLowerCase();
+  // 관련도 점수 계산: 제목 매칭 > 내용 초반 매칭 > 내용 후반 매칭
+  const scored=allLaws.map(l=>{
+    const title=(l.title||'').toLowerCase();
+    const txt=getLawText(l).toLowerCase();
+    const cat=(l.category||'').toLowerCase();
+    const pcat=(l.parent_category||'').toLowerCase();
+    let score=0;
+    if(title===ql) score+=100;
+    else if(title.startsWith(ql)) score+=80;
+    else if(title.includes(ql)) score+=60;
+    if(cat.includes(ql)||pcat.includes(ql)) score+=20;
+    if(txt.includes(ql)){
+      const idx=txt.indexOf(ql);
+      score+=30-Math.min(25,Math.floor(idx/txt.length*25)); // 앞쪽 매칭일수록 점수 높음
+    }
+    return{l,score};
+  }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,15);
+
+  if(!scored.length){document.getElementById('searchRes').innerHTML='<div class="res-empty">검색 결과가 없습니다</div>';return;}
+
+  document.getElementById('searchRes').innerHTML=scored.map(({l})=>{
+    const matchTypes=getMatchType(l,q);
+    const fullText=getLawText(l);
+    const snippet=fullText?getSnippet(fullText,q):'';
+    const badges=matchTypes.map(t=>`<span style="font-size:10px;padding:1px 6px;border-radius:100px;background:rgba(59,130,246,.15);color:var(--c-brand);font-weight:600">${t}</span>`).join(' ');
+    return`<div class="res-item" data-cat="${esc(l.category||'')}" data-id="${l.id}" data-parent="${esc(l.parent_category||'')}" onclick="pickResult('${esc(l.category||'')}','${l.id}','${esc(l.parent_category||'')}')">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+        <div class="res-cat" style="margin-bottom:0">${l.parent_category?esc(l.parent_category)+' › ':''} ${esc(l.category||'미분류')}</div>
+        <div style="margin-left:auto;display:flex;gap:3px">${badges}</div>
+      </div>
       <div class="res-title">${hl(esc(l.title||''),q)}</div>
-      <div class="res-prev">${hl(esc((l.content||'').replace(/\n/g,' ').substring(0,80)),q)}</div>
-    </div>`).join('');
+      ${snippet?`<div class="res-prev" style="margin-top:4px;white-space:normal;line-height:1.5;-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden">${snippet}</div>`:''}
+    </div>`;
+  }).join('');
 };
 window.pickResult=(cat,id,parent)=>{closeSearch();showLaw(cat,id,parent||'');};
 window.searchKey=(e)=>{
