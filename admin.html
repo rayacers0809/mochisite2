@@ -87,7 +87,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--whit
 .dh{display:flex;flex-direction:column;justify-content:center;gap:3px;padding:6px 5px;cursor:grab;flex-shrink:0;align-self:center}.dh:active{cursor:grabbing}
 .dh i{display:block;width:14px;height:2px;background:rgba(255,255,255,.2);border-radius:1px}
 .btbadge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;flex-shrink:0;align-self:flex-start;margin-top:4px}
-.btbadge.t{background:rgba(56,189,248,.15);color:var(--blue)}.btbadge.i{background:rgba(244,132,158,.15);color:var(--pink)}
+.btbadge.t{background:rgba(56,189,248,.15);color:var(--blue)}.btbadge.i{background:rgba(244,132,158,.15);color:var(--pink)}.btbadge.c{background:rgba(251,146,60,.15);color:var(--orange)}
 .btxt{flex:1;padding:8px 10px;border-radius:8px;border:1px solid transparent;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;background:rgba(255,255,255,.05);color:var(--white);transition:border-color .2s;resize:vertical;min-height:38px;line-height:1.6}
 .btxt:focus{border-color:var(--blue)}.btxt::placeholder{color:var(--mu)}
 .bimgwrap{flex:1;display:flex;flex-direction:column;gap:6px}
@@ -176,7 +176,16 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--whit
       <div class="fr"><label class="fl">정렬 순서</label><input class="fi" id="law_order" type="number" placeholder="예: 1 (낮을수록 위에 표시)"></div>
     </div>
     <div class="fr"><label class="fl">제목 *</label><input class="fi" id="law_title" placeholder="법률 항목 제목"></div>
-    <div class="fr"><label class="fl">내용 *</label><textarea class="fi" id="law_content" rows="10" placeholder="법률 내용을 입력하세요.&#10;줄바꿈은 Enter, 목록은 - 로 시작하세요." style="resize:vertical;line-height:1.7"></textarea></div>
+    <div class="fr">
+      <label class="fl">내용 블록 *</label>
+      <div style="font-size:11px;color:var(--mu);margin-bottom:10px;line-height:1.6">텍스트(마크다운·색상), 이미지, 콜아웃 블록을 추가하고 <strong style="color:var(--blue)">왼쪽 ≡ 핸들을 드래그</strong>해서 순서를 바꿀 수 있어요.</div>
+      <div class="editor-wrap" id="lawEditorWrap"></div>
+      <div class="add-btns">
+        <button class="abtn t" type="button" onclick="addLawBlock('text')">＋ 텍스트</button>
+        <button class="abtn i" type="button" onclick="addLawBlock('image')">🖼️ 이미지</button>
+        <button class="abtn" style="color:var(--orange);border-color:rgba(251,146,60,.3)" type="button" onclick="addLawBlock('callout')">⚠️ 콜아웃</button>
+      </div>
+    </div>
     <div class="fa">
       <button class="bp" id="lawSaveBtn" onclick="saveLaw()">💾 저장하기</button>
       <button class="bca" onclick="closeLawForm()">취소</button>
@@ -228,25 +237,68 @@ window.__delTeam=async(id)=>{if(!confirm('정말 삭제할까요?'))return;try{c
 window.saveTeamMember=async()=>{const nick=document.getElementById('tm_nick').value.trim();const rank=document.getElementById('tm_rank').value.trim();const team=document.getElementById('tm_team').value.trim();if(!nick||!rank||!team){showToast('닉네임, 직급, 팀은 필수입니다.','err');return;}const discord=document.getElementById('tm_discord').value.trim();const editId=document.getElementById('tm_editId').value;const existingPhoto=document.getElementById('tm_existingPhoto').value;const photoFile=document.getElementById('tm_photo').files[0];let photoUrl=existingPhoto;if(photoFile){try{const fname='team/'+Date.now()+'_'+nick.replace(/[^a-zA-Z0-9가-힣]/g,'_');await uploadBytes(ref(storage,fname),photoFile);photoUrl=await getDownloadURL(ref(storage,fname));if(existingPhoto){try{await deleteObject(ref(storage,existingPhoto));}catch{}}}catch(e){showToast('사진 업로드 실패: '+e.message,'err');return;}}const data={nick,rank,team,discord,photo:photoUrl||''};try{if(editId)await setDoc(doc(db,'team_members',editId),data);else await addDoc(collection(db,'team_members'),data);showToast(editId?'수정되었습니다.':'추가되었습니다.','ok');closeTeamForm();loadTeamMembers();}catch(e){showToast('저장 실패: '+e.message,'err');}};
 window.__initAdmin=async()=>{await initFB();await Promise.all([loadIcon(),loadBg(),loadPatches(),loadSet(),loadDashCounts()]);};
 // ═══ LAW ═══
-window.openLawForm=()=>{document.getElementById('lawFormCard').style.display='block';document.getElementById('lawFormTitle').textContent='법률 추가';document.getElementById('law_editId').value='';document.getElementById('law_parent').value='';document.getElementById('law_category').value='';document.getElementById('law_title').value='';document.getElementById('law_content').value='';document.getElementById('law_order').value='';};
+window.openLawForm=()=>{document.getElementById('lawFormCard').style.display='block';document.getElementById('lawFormTitle').textContent='법률 추가';document.getElementById('law_editId').value='';document.getElementById('law_parent').value='';document.getElementById('law_category').value='';document.getElementById('law_title').value='';document.getElementById('law_order').value='';document.getElementById('lawEditorWrap').innerHTML='';};
 window.closeLawForm=()=>{document.getElementById('lawFormCard').style.display='none';};
 window.loadLaws=async()=>{const el=document.getElementById('lawList');el.innerHTML='<div style="text-align:center;padding:40px;color:var(--mu)"><span class="spin"></span> 불러오는 중...</div>';try{const sn=await getDocs(query(collection(db,'laws'),orderBy('order','asc')));const laws=sn.docs.map(d=>({id:d.id,...d.data()}));if(!laws.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--mu)">등록된 법률이 없습니다.</div>';return;}
-// 3단계 그룹핑: parent_category > category > items
 const tree={};laws.forEach(l=>{const p=l.parent_category||'';const c=l.category||'미분류';if(!tree[p])tree[p]={};if(!tree[p][c])tree[p][c]=[];tree[p][c].push(l);});
-el.innerHTML=Object.entries(tree).map(([parent,cats])=>`
-<div style="margin-bottom:28px">
-  ${parent?`<div style="font-size:13px;font-weight:800;color:var(--pink);letter-spacing:.06em;padding:6px 0 10px;border-bottom:2px solid rgba(244,132,158,.3);margin-bottom:12px">📂 ${parent}</div>`:''}
-  ${Object.entries(cats).map(([cat,items])=>`
-    <div style="margin-bottom:16px;${parent?'margin-left:12px;border-left:2px solid var(--border);padding-left:12px':''}">
-      <div style="font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.08em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)">${parent?'└ ':''}${cat}</div>
-      <table class="tbl"><thead><tr><th>제목</th><th>순서</th><th>관리</th></tr></thead><tbody>
-        ${items.map(l=>`<tr><td><strong style="color:var(--blue-light)">${l.title||'-'}</strong></td><td>${l.order??'-'}</td><td><div class="abt"><button class="be" onclick="window.__editLaw('${l.id}')">수정</button><button class="bdel2" onclick="window.__delLaw('${l.id}')">삭제</button></div></td></tr>`).join('')}
-      </tbody></table>
-    </div>`).join('')}
-</div>`).join('');}catch(e){el.innerHTML=`<div style="text-align:center;padding:40px;color:var(--red)">로드 실패: ${e.message}</div>`;}};
-window.__editLaw=async(id)=>{try{const d=await getDoc(doc(db,'laws',id));if(!d.exists())return;const l=d.data();document.getElementById('lawFormCard').style.display='block';document.getElementById('lawFormTitle').textContent='법률 수정';document.getElementById('law_editId').value=id;document.getElementById('law_parent').value=l.parent_category||'';document.getElementById('law_category').value=l.category||'';document.getElementById('law_title').value=l.title||'';document.getElementById('law_content').value=l.content||'';document.getElementById('law_order').value=l.order??'';}catch(e){showToast('불러오기 실패: '+e.message,'err');}};
+el.innerHTML=Object.entries(tree).map(([parent,cats])=>`<div style="margin-bottom:28px">${parent?`<div style="font-size:13px;font-weight:800;color:var(--pink);letter-spacing:.06em;padding:6px 0 10px;border-bottom:2px solid rgba(244,132,158,.3);margin-bottom:12px">📂 ${parent}</div>`:''} ${Object.entries(cats).map(([cat,items])=>`<div style="margin-bottom:16px;${parent?'margin-left:12px;border-left:2px solid var(--border);padding-left:12px':''}"><div style="font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.08em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)">${parent?'└ ':''}${cat}</div><table class="tbl"><thead><tr><th>제목</th><th>블록</th><th>순서</th><th>관리</th></tr></thead><tbody>${items.map(l=>`<tr><td><strong style="color:var(--blue-light)">${l.title||'-'}</strong></td><td style="color:var(--mu);font-size:11px">${(l.blocks||[]).length}개</td><td>${l.order??'-'}</td><td><div class="abt"><button class="be" onclick="window.__editLaw('${l.id}')">수정</button><button class="bdel2" onclick="window.__delLaw('${l.id}')">삭제</button></div></td></tr>`).join('')}</tbody></table></div>`).join('')}</div>`).join('');}catch(e){el.innerHTML=`<div style="text-align:center;padding:40px;color:var(--red)">로드 실패: ${e.message}</div>`;}};
+window.__editLaw=async(id)=>{try{const d=await getDoc(doc(db,'laws',id));if(!d.exists())return;const l=d.data();document.getElementById('lawFormCard').style.display='block';document.getElementById('lawFormTitle').textContent='법률 수정';document.getElementById('law_editId').value=id;document.getElementById('law_parent').value=l.parent_category||'';document.getElementById('law_category').value=l.category||'';document.getElementById('law_title').value=l.title||'';document.getElementById('law_order').value=l.order??'';document.getElementById('lawEditorWrap').innerHTML='';const blocks=l.blocks||[];if(blocks.length){blocks.forEach(b=>window.addLawBlock(b.type,b));}else if(l.content){window.addLawBlock('text',{text:l.content});}}catch(e){showToast('불러오기 실패: '+e.message,'err');}};
 window.__delLaw=async(id)=>{if(!confirm('정말 삭제할까요?'))return;try{await deleteDoc(doc(db,'laws',id));showToast('삭제되었습니다.','ok');window.loadLaws();}catch(e){showToast('삭제 실패: '+e.message,'err');}};
-window.saveLaw=async()=>{const parent_category=document.getElementById('law_parent').value.trim();const category=document.getElementById('law_category').value.trim();const title=document.getElementById('law_title').value.trim();const content=document.getElementById('law_content').value.trim();if(!category||!title||!content){showToast('카테고리, 제목, 내용은 필수입니다.','err');return;}const order=parseInt(document.getElementById('law_order').value)||0;const editId=document.getElementById('law_editId').value;const data={parent_category,category,title,content,order,updatedAt:serverTimestamp()};const btn=document.getElementById('lawSaveBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span> 저장 중...';try{if(editId)await setDoc(doc(db,'laws',editId),data,{merge:true});else{data.createdAt=serverTimestamp();await addDoc(collection(db,'laws'),data);}showToast(editId?'수정되었습니다.':'추가되었습니다.','ok');closeLawForm();window.loadLaws();}catch(e){showToast('저장 실패: '+e.message,'err');}finally{btn.disabled=false;btn.innerHTML='💾 저장하기';}};
+window.saveLaw=async()=>{const parent_category=document.getElementById('law_parent').value.trim();const category=document.getElementById('law_category').value.trim();const title=document.getElementById('law_title').value.trim();if(!category||!title){showToast('카테고리와 제목은 필수입니다.','err');return;}const blocks=window.getLawBlocks();if(!blocks.length){showToast('내용 블록을 하나 이상 추가해주세요.','err');return;}const order=parseInt(document.getElementById('law_order').value)||0;const editId=document.getElementById('law_editId').value;const data={parent_category,category,title,blocks,order,updatedAt:serverTimestamp()};const btn=document.getElementById('lawSaveBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span> 저장 중...';try{if(editId)await setDoc(doc(db,'laws',editId),data,{merge:true});else{data.createdAt=serverTimestamp();await addDoc(collection(db,'laws'),data);}showToast(editId?'수정되었습니다.':'추가되었습니다.','ok');closeLawForm();window.loadLaws();}catch(e){showToast('저장 실패: '+e.message,'err');}finally{btn.disabled=false;btn.innerHTML='💾 저장하기';}};
+// ═══ LAW BLOCK EDITOR ═══
+let lawDragSrc=null;
+window.addLawBlock=(type,data)=>{
+  const wrap=document.getElementById('lawEditorWrap');
+  const row=document.createElement('div');
+  row.className='block-row';row.dataset.type=type;row.draggable=true;
+  const dh=document.createElement('div');dh.className='dh';dh.innerHTML='<i></i><i></i><i></i>';row.appendChild(dh);
+  const badge=document.createElement('span');
+  badge.className='btbadge '+(type==='text'?'t':type==='callout'?'c':'i');
+  badge.textContent=type==='text'?'TXT':type==='callout'?'📢':'IMG';
+  row.appendChild(badge);
+  const inner=document.createElement('div');inner.style.flex='1';
+  if(type==='text'){
+    // 색상 툴바
+    const cbar=document.createElement('div');cbar.style.cssText='display:flex;gap:5px;margin-bottom:7px;align-items:center;flex-wrap:wrap';
+    cbar.innerHTML='<span style="font-size:10px;color:var(--mu);margin-right:2px">색상:</span>';
+    const COLORS=[['#f87171','빨강'],['#fb923c','주황'],['#facc15','노랑'],['#4ade80','초록'],['#38bdf8','파랑'],['#a78bfa','보라'],['#f9a8d4','분홍'],['#e2e8f0','흰색']];
+    const ta=document.createElement('textarea');ta.className='btxt';ta.placeholder='내용을 입력하세요 (마크다운 지원)';ta.rows=3;
+    if(data?.text)ta.value=data.text;
+    ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';});
+    COLORS.forEach(([c,name])=>{const btn=document.createElement('button');btn.type='button';btn.style.cssText=`width:16px;height:16px;border-radius:50%;background:${c};border:1.5px solid rgba(255,255,255,.2);cursor:pointer;flex-shrink:0`;btn.title=name;btn.onclick=()=>{const s=ta.selectionStart,e=ta.selectionEnd,sel=ta.value.substring(s,e);const ins=sel?`<span style="color:${c}">${sel}</span>`:`<span style="color:${c}">텍스트</span>`;ta.value=ta.value.substring(0,s)+ins+ta.value.substring(e);ta.focus();};cbar.appendChild(btn);});
+    inner.appendChild(cbar);inner.appendChild(ta);
+  } else if(type==='callout'){
+    const sel=document.createElement('select');sel.className='fi';sel.style.cssText='width:auto;padding:5px 10px;font-size:12px;margin-bottom:8px;display:block';
+    [['warning','⚠️ 경고'],['info','ℹ️ 정보'],['tip','✅ 팁'],['danger','❌ 위험']].forEach(([v,l])=>{const opt=document.createElement('option');opt.value=v;opt.textContent=l;if(data?.callout_type===v)opt.selected=true;sel.appendChild(opt);});
+    row.dataset.calloutType=data?.callout_type||'warning';
+    sel.addEventListener('change',()=>{row.dataset.calloutType=sel.value;});
+    inner.appendChild(sel);
+    const ta=document.createElement('textarea');ta.className='btxt';ta.placeholder='콜아웃 내용 (마크다운 지원)';ta.rows=3;
+    if(data?.text)ta.value=data.text;
+    ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';});
+    inner.appendChild(ta);
+  } else {
+    const imgwrap=document.createElement('div');imgwrap.className='bimgwrap';
+    const imgEl=document.createElement('img');imgEl.className='bimgprev';imgEl.alt='이미지';
+    if(data?.url){imgEl.src=data.url;imgEl.style.display='block';row.dataset.url=data.url;}
+    const loadEl=document.createElement('div');loadEl.className='bimgloading';
+    const uploadLabel=document.createElement('label');uploadLabel.className='bimgbtn';uploadLabel.innerHTML='🖼️ 이미지 파일 선택 (최대 5MB)';
+    const fileIn=document.createElement('input');fileIn.type='file';fileIn.accept='image/*';fileIn.style.display='none';
+    fileIn.addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{imgEl.src=ev.target.result;imgEl.style.display='block';};reader.readAsDataURL(file);if(window.__uploadLawImg)await window.__uploadLawImg(file,imgEl,loadEl,row);});
+    uploadLabel.appendChild(fileIn);imgwrap.appendChild(imgEl);imgwrap.appendChild(loadEl);imgwrap.appendChild(uploadLabel);inner.appendChild(imgwrap);
+  }
+  row.appendChild(inner);
+  const del=document.createElement('button');del.className='bdel';del.textContent='×';del.onclick=()=>row.remove();row.appendChild(del);
+  row.addEventListener('dragstart',e=>{lawDragSrc=row;setTimeout(()=>row.classList.add('dragging'),0);e.dataTransfer.effectAllowed='move';});
+  row.addEventListener('dragend',()=>{row.classList.remove('dragging');wrap.querySelectorAll('.block-row').forEach(r=>r.classList.remove('drag-over'));lawDragSrc=null;});
+  row.addEventListener('dragover',e=>{e.preventDefault();if(lawDragSrc&&lawDragSrc!==row)row.classList.add('drag-over');});
+  row.addEventListener('dragleave',()=>row.classList.remove('drag-over'));
+  row.addEventListener('drop',e=>{e.preventDefault();if(!lawDragSrc||lawDragSrc===row)return;row.classList.remove('drag-over');const all=[...wrap.children];const si=all.indexOf(lawDragSrc),ti=all.indexOf(row);if(si<ti)wrap.insertBefore(lawDragSrc,row.nextSibling);else wrap.insertBefore(lawDragSrc,row);});
+  wrap.appendChild(row);
+  if(type==='text')row.querySelector('.btxt')?.focus();
+};
+window.getLawBlocks=()=>{const blocks=[];document.querySelectorAll('#lawEditorWrap .block-row').forEach(row=>{const type=row.dataset.type;if(type==='text'){const text=row.querySelector('.btxt')?.value.trim();if(text)blocks.push({type:'text',text});}else if(type==='image'){const url=row.dataset.url||'';if(url)blocks.push({type:'image',url});}else if(type==='callout'){const text=row.querySelector('.btxt')?.value.trim();const callout_type=row.dataset.calloutType||'warning';if(text)blocks.push({type:'callout',callout_type,text});}});return blocks;};
+window.__uploadLawImg=async(file,imgEl,loadingEl,row)=>{if(file.size>5*1024*1024){showToast('이미지는 5MB 이하만 가능해요.','err');return;}loadingEl.style.display='block';loadingEl.textContent='업로드 중...';try{const fname='laws/'+Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9.]/g,'_');await uploadBytes(ref(storage,fname),file);const url=await getDownloadURL(ref(storage,fname));imgEl.src=url;imgEl.style.display='block';row.dataset.url=url;loadingEl.style.display='none';showToast('이미지 업로드 완료!','ok');}catch(e){loadingEl.textContent='업로드 실패';showToast('업로드 실패: '+e.message,'err');}};
 </script>
 <script>
 let _att=0,_lock=0;
