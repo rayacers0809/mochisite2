@@ -559,11 +559,11 @@ async function init(){
   let assetCache={};
   try{assetCache=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');}catch{}
   const el=document.getElementById('navIcon');
-  if(assetCache.icon){if(el){el.src=assetCache.icon;el.style.display='';}iconUrl=assetCache.icon;}
-  if(assetCache.defaultThumb)defaultThumbUrl=assetCache.defaultThumb;
-  else if(assetCache.bgImage)defaultThumbUrl=assetCache.bgImage;
-  if(assetCache.bgVideo){document.getElementById('bgVideo').src=assetCache.bgVideo;document.getElementById('bgVideo').style.display='block';}
-  else if(assetCache.bgImage){document.getElementById('bgImage').src=assetCache.bgImage;document.getElementById('bgImage').style.display='block';if(!defaultThumbUrl)defaultThumbUrl=assetCache.bgImage;}
+  if(assetCache.icon&&assetCache.icon!=='_none_'){if(el){el.src=assetCache.icon;el.style.display='';}iconUrl=assetCache.icon;}
+  if(assetCache.defaultThumb&&assetCache.defaultThumb!=='_none_')defaultThumbUrl=assetCache.defaultThumb;
+  else if(assetCache.bgImage&&assetCache.bgImage!=='_none_')defaultThumbUrl=assetCache.bgImage;
+  if(assetCache.bgVideo&&assetCache.bgVideo!=='_none_'){document.getElementById('bgVideo').src=assetCache.bgVideo;document.getElementById('bgVideo').style.display='block';}
+  else if(assetCache.bgImage&&assetCache.bgImage!=='_none_'){document.getElementById('bgImage').src=assetCache.bgImage;document.getElementById('bgImage').style.display='block';if(!defaultThumbUrl)defaultThumbUrl=assetCache.bgImage;}
 
   // 캐시된 패치노트 즉시 표시
   let cacheValid=false;
