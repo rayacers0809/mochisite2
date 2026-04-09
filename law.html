@@ -136,6 +136,18 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--c-b
 .md hr{border:none;border-top:1px solid var(--c-border);margin:24px 0}
 .md img{max-width:100%;border-radius:8px;margin:8px 0}
 
+/* ─ 라이트박스 ─ */
+.lightbox{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;cursor:zoom-out;animation:lbfade .15s ease}
+.lightbox.open{display:flex}
+@keyframes lbfade{from{opacity:0}to{opacity:1}}
+.lightbox img{max-width:92vw;max-height:88vh;border-radius:10px;object-fit:contain;box-shadow:0 8px 60px rgba(0,0,0,.6);cursor:default;animation:lbzoom .15s ease}
+@keyframes lbzoom{from{transform:scale(.93)}to{transform:scale(1)}}
+.lightbox-close{position:fixed;top:16px;right:20px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.lightbox-close:hover{background:rgba(255,255,255,.22)}
+/* 법률 이미지 커서 */
+.law-img{cursor:zoom-in;transition:opacity .15s}
+.law-img:hover{opacity:.88}
+
 /* ─ 콜아웃 ─ */
 .callout{display:flex;align-items:flex-start;gap:10px;border-radius:8px;padding:14px 18px;margin:14px 0;border-left:4px solid}
 .callout-warning{background:rgba(251,146,60,.08);border-color:#fb923c}
@@ -184,19 +196,36 @@ mark{background:rgba(59,130,246,.18);color:var(--c-brand-light);border-radius:3p
 
 /* ─ 반응형 ─ */
 @media(max-width:960px){
-  .sb{display:none}
-  .content{margin-left:0;padding:32px 24px 60px;max-width:100%}
-  .hero-title{font-size:30px}
+  .sb{position:fixed;top:var(--nav-h);left:0;bottom:0;width:min(280px,85vw);transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:90;display:flex;flex-direction:column}
+  .sb.open{transform:translateX(0)}
+  .sb-overlay{display:none;position:fixed;inset:0;top:var(--nav-h);background:rgba(0,0,0,.5);z-index:89;backdrop-filter:blur(2px)}
+  .sb-overlay.show{display:block}
+  .content{margin-left:0;padding:24px 16px 60px;max-width:100%}
+  .hero-title{font-size:28px}
+  .hero-desc{font-size:15px}
+  .cards{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .menu-btn{display:flex}
+  .sb-link{padding:10px 12px;font-size:14px}
 }
 @media(max-width:640px){
   .nav{padding:0 14px}
   .nav-links,.discord-btn{display:none}
-  .content{padding:20px 16px 48px}
+  .content{padding:16px 14px 48px}
   .pager{grid-template-columns:1fr}
+  .doc-title{font-size:22px}
+  .hero-title{font-size:24px}
+  .cards{grid-template-columns:1fr 1fr}
 }
+/* 메뉴 버튼 (모바일만) */
+.menu-btn{display:none;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--c-border);background:var(--c-bg-soft);cursor:pointer;color:var(--c-text-2);font-size:18px;flex-shrink:0}
 </style>
 </head>
 <body>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
 
 <!-- 검색 모달 -->
 <div class="modal-ov" id="searchModal" onclick="closeSearchOut(event)">
@@ -213,6 +242,7 @@ mark{background:rgba(59,130,246,.18);color:var(--c-brand-light);border-radius:3p
 
 <!-- 네비 -->
 <nav class="nav">
+  <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()">☰</button>
   <a class="nav-logo" href="#" onclick="showHome()">
     <span style="font-size:22px">🫧</span>
     <span class="nav-logo-txt">모찌서버</span>
@@ -232,6 +262,7 @@ mark{background:rgba(59,130,246,.18);color:var(--c-brand-light);border-radius:3p
 </nav>
 
 <!-- 레이아웃 -->
+<div class="sb-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
 <div class="layout">
   <aside class="sb" id="sidebar">
     <div style="padding:12px 12px 14px;border-bottom:1px solid var(--c-border);margin-bottom:8px">
@@ -460,9 +491,50 @@ window.searchKey=(e)=>{
 };
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearch();}if(e.key==='Escape')closeSearch();});
 
+// ── 라이트박스 ──
+window.openLightbox=(src,e)=>{
+  if(e)e.stopPropagation();
+  document.getElementById('lightboxImg').src=src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow='hidden';
+};
+window.closeLightbox=()=>{
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow='';
+};
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeLightbox();
+});
+
 // ── 테마 ──
 window.toggleTheme=()=>{const d=document.documentElement.dataset.theme==='dark';document.documentElement.dataset.theme=d?'light':'dark';document.getElementById('themeBtn').textContent=d?'🌙':'☀️';localStorage.setItem('vp-t',d?'light':'dark');};
 const st=localStorage.getItem('vp-t');if(st){document.documentElement.dataset.theme=st;document.getElementById('themeBtn').textContent=st==='dark'?'🌙':'☀️';}
+
+// ── 모바일 사이드바 ──
+window.toggleSidebar=()=>{
+  const sb=document.getElementById('sidebar');
+  const ov=document.getElementById('sbOverlay');
+  const open=sb.classList.toggle('open');
+  ov.classList.toggle('show',open);
+  document.getElementById('menuBtn').textContent=open?'✕':'☰';
+};
+function closeSidebarMobile(){
+  if(window.innerWidth<=960){
+    const sb=document.getElementById('sidebar');
+    if(sb.classList.contains('open')){
+      sb.classList.remove('open');
+      document.getElementById('sbOverlay').classList.remove('show');
+      document.getElementById('menuBtn').textContent='☰';
+    }
+  }
+}
+// 법률 항목 클릭 시 모바일에서 사이드바 닫기
+const _origShowLaw=window.showLaw;
+window.showLaw=(cat,id,parent)=>{_origShowLaw(cat,id,parent);closeSidebarMobile();};
+const _origShowHome=window.showHome;
+window.showHome=()=>{_origShowHome();closeSidebarMobile();};
+const _origShowParent=window.showParent;
+window.showParent=(p)=>{_origShowParent(p);closeSidebarMobile();};
 
 // ── 유틸 ──
 function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
@@ -480,7 +552,7 @@ function renderContent(law){
   if(law.blocks&&law.blocks.length){
     return law.blocks.map(b=>{
       if(b.type==='text') return`<div class="md">${md(b.text||'')}</div>`;
-      if(b.type==='image') return`<figure style="margin:16px 0"><img src="${esc(b.url||'')}" style="max-width:100%;border-radius:8px;border:1px solid var(--c-border)"></figure>`;
+      if(b.type==='image') return`<figure style="margin:16px 0"><img class="law-img" src="${esc(b.url||'')}" onclick="openLightbox('${esc(b.url||'')}',event)" style="max-width:100%;border-radius:8px;border:1px solid var(--c-border)"></figure>`;
       if(b.type==='callout'){const ct=CALLOUT_TYPES[b.callout_type||'warning']||CALLOUT_TYPES.warning;return`<div class="callout ${ct.cls}"><span class="callout-icon">${ct.ico}</span><div class="md">${md(b.text||'')}</div></div>`;}
       return'';
     }).join('');
