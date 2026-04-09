@@ -432,22 +432,21 @@ function applyFilter(){
 window.openDetail=(idx)=>{
   const p=allPatches[idx];
   if(!p) return;
-  // 모달 방식 - listView 유지
 
   const ti=getTagInfo(p.tags);
-  const dtag=document.getElementById('detailTag');
-  dtag.textContent=ti.label; dtag.className='detail-tag nc-tag '+ti.cls;
-  document.getElementById('detailDate').textContent=getDate(p);
-  document.getElementById('detailTitle').textContent=p.ver||'패치노트';
-  document.getElementById('detailVer').textContent=p.date||getDate(p);
+  const dtag=document.getElementById('pmTag');
+  dtag.textContent=ti.label; dtag.className='pm-tag nc-tag '+ti.cls;
+  document.getElementById('pmDate').textContent=getDate(p);
+  document.getElementById('pmTitle').textContent=p.ver||'패치노트';
+  document.getElementById('pmVer').textContent=p.date||getDate(p);
 
   // 썸네일
   const img=(p.blocks||[]).find(b=>b.type==='image');
-  const thumb=document.getElementById('detailThumb');
-  if(img) thumb.innerHTML=`<img src="${esc(img.url)}" alt="" style="width:100%;border-radius:16px;object-fit:cover;max-height:400px;border:1px solid rgba(255,255,255,.08)">`;
-  else if(defaultThumbUrl) thumb.innerHTML=`<img src="${defaultThumbUrl}" alt="" style="width:100%;border-radius:16px;object-fit:cover;max-height:400px;border:1px solid rgba(255,255,255,.08)">`;
-  else if(iconUrl) thumb.innerHTML=`<div class="detail-thumb-ph"><img src="${iconUrl}" style="width:80px;height:80px;object-fit:cover;border-radius:14px;opacity:.4"></div>`;
-  else thumb.innerHTML='';
+  const thumbWrap=document.getElementById('pmThumbWrap');
+  if(img) thumbWrap.innerHTML=`<img src="${esc(img.url)}" alt="" style="width:100%;border-radius:16px;object-fit:cover;max-height:400px;border:1px solid rgba(255,255,255,.08)">`;
+  else if(defaultThumbUrl) thumbWrap.innerHTML=`<img src="${defaultThumbUrl}" alt="" style="width:100%;border-radius:16px;object-fit:cover;max-height:400px;border:1px solid rgba(255,255,255,.08)">`;
+  else if(iconUrl) thumbWrap.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;padding:40px"><img src="${iconUrl}" style="width:80px;height:80px;object-fit:cover;border-radius:14px;opacity:.4"></div>`;
+  else thumbWrap.innerHTML='';
 
   // 콘텐츠 블록 → 마크다운 렌더
   const blocks=p.blocks||[];
@@ -459,14 +458,18 @@ window.openDetail=(idx)=>{
     return'';
   }).join('');
   if(!contentHtml) contentHtml='<p style="color:var(--mu)">내용이 없습니다.</p>';
-  document.getElementById('detailContent').innerHTML=contentHtml;
+  document.getElementById('pmContent').innerHTML=contentHtml;
 
   // 이전 패치노트 버튼
-  const nav=document.getElementById('detailNav');
+  const nav=document.getElementById('pmPrevBtn');
   if(idx+1<allPatches.length){
     const prev=allPatches[idx+1];
-    nav.innerHTML=`<button class="detail-prev-btn" onclick="openDetail(${idx+1})">← ${esc(prev.ver||'')} 패치노트</button>`;
+    nav.innerHTML=`<button style="padding:10px 22px;font-size:13px;border:none;cursor:pointer;background:rgba(255,255,255,.08);border-radius:100px;color:var(--mu2);font-family:inherit;font-weight:600;transition:all .15s" onclick="openDetail(${idx+1})">← ${esc(prev.ver||'')} 패치노트</button>`;
   } else nav.innerHTML='';
+
+  // 모달 열기
+  document.getElementById('patchModalOv').classList.add('open');
+  document.body.style.overflow='hidden';
 };
 
 window.closeDetail=()=>{document.getElementById('patchModalOv').classList.remove('open');document.body.style.overflow='';};
