@@ -243,7 +243,13 @@ let catDragSrc=null,subDragSrc=null;
 async function saveCatOrder(){
   const el=document.getElementById('lawList');
   const newParents=[];const newSubs={};
-  el.querySelectorAll(':scope > .lpg').forEach(pg=>{const p=pg.dataset.parent;newParents.push(p);newSubs[p]=[];pg.querySelectorAll(':scope > .lpg-subs > .lsg').forEach(sg=>newSubs[p].push(sg.dataset.cat));});
+  el.querySelectorAll(':scope > .lpg').forEach(pg=>{
+    const p=pg.dataset.parent;
+    if(p) newParents.push(p); // 빈 문자열 키 제외 (Firestore 불허)
+    const subsKey=p||'__root__'; // 빈 부모는 __root__ 키로 저장
+    newSubs[subsKey]=[];
+    pg.querySelectorAll(':scope > .lpg-subs > .lsg').forEach(sg=>newSubs[subsKey].push(sg.dataset.cat));
+  });
   try{await setDoc(doc(db,'settings','law_cat_order'),{parents:newParents,subs:newSubs});showToast('순서 저장됨 ✅','ok');}catch(e){showToast('저장 실패: '+e.message,'err');}
 }
 window.loadLaws=async()=>{
