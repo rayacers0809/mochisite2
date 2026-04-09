@@ -295,6 +295,15 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
   </div>
 </section>
 
+<!-- CTA -->
+<section class="cta-sec">
+  <div class="cta-inner">
+    <div class="cta-title">지금 바로 시작하세요</div>
+    <p class="cta-desc">모찌서버에 접속하고 새로운 인생을 경험해보세요.<br>따뜻한 커뮤니티가 여러분을 기다립니다.</p>
+    <a href="fivem://connect/fivem-mochi.kr" class="cta-btn">서버 접속하기 →</a>
+  </div>
+</section>
+
 <!-- 바로가기 -->
 <section>
   <div class="sec-wrap" style="padding-top:60px;padding-bottom:60px">
@@ -332,6 +341,12 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
       <a href="https://www.mochi.me.kr/law" target="_blank">법률 가이드</a>
       <a href="team.html">운영팀 소개</a>
       <a href="staff.html">스태프 지원</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">정보</div>
+      <a href="#">이용약관</a>
+      <a href="#">개인정보처리방침</a>
+      <a href="#">결제약관</a>
     </div>
     <div class="footer-col">
       <div class="footer-col-title">소셜</div>
@@ -585,18 +600,25 @@ document.addEventListener('click',e=>{
 const TM_MODAL={new:'신규',fix:'버그수정',change:'변경',remove:'삭제'};
 const CALLOUT_ICONS={warning:'⚠️',info:'ℹ️',tip:'✅',danger:'❌'};
 
-window.openPatchModal=(rawJson)=>{
-  let p;try{p=JSON.parse(rawJson);}catch{return;}
+window.openPatchModal=(idx)=>{
+  const p=window.__indexPatches?.[idx];
+  if(!p) return;
   const ov=document.getElementById('patchModalOv');
-  const thumb=document.getElementById('pmThumb');
+  const thumbEl=document.getElementById('pmThumb');
   const tag=document.getElementById('pmTag');
   const date=document.getElementById('pmDate');
   const title=document.getElementById('pmTitle');
   const content=document.getElementById('pmContent');
 
   // 썸네일
-  if(p.thumbSrc){thumb.outerHTML='<img class="pm-thumb" id="pmThumb" src="'+p.thumbSrc+'" onerror="this.style.display=\'none\'">';} 
-  else{const t=document.getElementById('pmThumb');if(t){t.className='pm-thumb-ph';t.innerHTML='🫧';}}
+  const firstImg=(p.blocks||[]).find(b=>b.type==='image');
+  const thumbSrc=firstImg?.url||window.__indexBgThumb||'';
+  if(thumbSrc){
+    thumbEl.outerHTML='<img class="pm-thumb" id="pmThumb" src="'+thumbSrc+'" onerror="this.style.display=\'none\'">';
+  } else {
+    const t=document.getElementById('pmThumb');
+    if(t){t.className='pm-thumb-ph';t.innerHTML='🫧';}
+  }
 
   // 태그
   const firstTag=p.tags?.[0];
@@ -604,7 +626,9 @@ window.openPatchModal=(rawJson)=>{
   tag.style.background=firstTag==='new'?'rgba(74,222,128,.15)':firstTag==='fix'?'rgba(251,146,60,.15)':firstTag==='change'?'rgba(167,139,250,.15)':'rgba(56,189,248,.15)';
   tag.style.color=firstTag==='new'?'#4ade80':firstTag==='fix'?'#fb923c':firstTag==='change'?'#a78bfa':'#38bdf8';
 
-  date.textContent=p.date||'';
+  // 날짜
+  const dateStr=p.createdAt?.seconds?new Date(p.createdAt.seconds*1000).toLocaleDateString('ko-KR'):(p.date||'');
+  date.textContent=dateStr;
   title.textContent=p.ver||'패치노트';
 
   // 블록 내용 렌더링
