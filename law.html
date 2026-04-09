@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>법률 가이드 — 모찌서버</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b1120;--bg2:#0f1729;--card:#141d2f;--card2:#1a2540;
+  --border:rgba(56,189,248,.12);--border2:rgba(56,189,248,.25);
+  --blue:#38bdf8;--blue-light:#7dd3fc;--pink:#f4849e;--purple:#a78bfa;
+  --green:#4ade80;--orange:#fb923c;--red:#f87171;
+  --white:#e2e8f0;--mu:rgba(255,255,255,.4);--mu2:rgba(255,255,255,.6);
+  --r:12px;--grad:linear-gradient(135deg,var(--blue),var(--pink));
+}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--white);min-height:100vh;overflow-x:hidden}
+
+/* ── 헤더 ── */
+header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.logo{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-sub{font-size:12px;color:var(--mu);margin-left:10px;font-weight:400;-webkit-text-fill-color:rgba(255,255,255,.4)}
+.header-right{display:flex;align-items:center;gap:16px}
+.badge-live{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--green);background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);padding:4px 10px;border-radius:100px}
+.dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.home-btn{font-size:12px;color:var(--mu2);text-decoration:none;padding:6px 14px;border:1px solid var(--border);border-radius:8px;transition:all .15s}
+.home-btn:hover{border-color:var(--blue);color:var(--blue)}
+
+/* ── 레이아웃 ── */
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 64px)}
+
+/* ── 사이드바 ── */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:24px 16px;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto}
+.search-wrap{position:relative;margin-bottom:20px}
+.search-inp{width:100%;padding:10px 14px 10px 36px;border-radius:10px;border:1px solid var(--border2);background:rgba(255,255,255,.04);color:var(--white);font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .2s}
+.search-inp:focus{border-color:var(--blue)}
+.search-inp::placeholder{color:var(--mu)}
+.search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--mu);font-size:14px}
+.nav-label{font-size:10px;font-weight:700;color:var(--mu);letter-spacing:.12em;text-transform:uppercase;padding:0 8px;margin-bottom:6px;margin-top:16px}
+.nav-label:first-child{margin-top:0}
+.cat-nav{list-style:none;display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+.cat-nav li a{display:block;padding:8px 12px;border-radius:8px;font-size:13px;color:var(--mu2);text-decoration:none;transition:all .15s;cursor:pointer}
+.cat-nav li a:hover{background:rgba(56,189,248,.08);color:var(--blue-light)}
+.cat-nav li a.active{background:rgba(56,189,248,.12);color:var(--blue);font-weight:600;border:1px solid rgba(56,189,248,.15)}
+.cat-count{font-size:10px;background:rgba(56,189,248,.15);color:var(--blue);padding:1px 6px;border-radius:100px;margin-left:auto;float:right}
+
+/* ── 메인 콘텐츠 ── */
+.main{padding:36px 40px;max-width:900px}
+.page-title{font-family:'Nunito',sans-serif;font-size:28px;font-weight:900;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--mu);margin-bottom:32px}
+.updated{font-size:11px;color:var(--mu);display:inline-flex;align-items:center;gap:5px;margin-bottom:32px;background:var(--card);border:1px solid var(--border);padding:5px 12px;border-radius:100px}
+
+/* ── 카테고리 섹션 ── */
+.cat-section{margin-bottom:48px}
+.cat-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.cat-title{font-family:'Nunito',sans-serif;font-size:18px;font-weight:800;color:var(--blue-light)}
+.cat-num{font-size:11px;color:var(--mu);background:rgba(56,189,248,.1);padding:2px 8px;border-radius:100px}
+
+/* ── 법률 카드 ── */
+.law-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden;transition:border-color .2s}
+.law-card:hover{border-color:var(--border2)}
+.law-card-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;user-select:none}
+.law-card-title{font-size:14px;font-weight:600;color:var(--white)}
+.law-toggle{font-size:12px;color:var(--mu);transition:transform .2s;flex-shrink:0}
+.law-card.open .law-toggle{transform:rotate(180deg)}
+.law-card-body{display:none;padding:0 20px 18px;border-top:1px solid var(--border)}
+.law-card.open .law-card-body{display:block}
+.law-content{font-size:13px;line-height:1.85;color:var(--mu2);white-space:pre-wrap;margin-top:14px}
+.law-content strong{color:var(--white)}
+
+/* ── 검색 결과 없음 ── */
+.empty{text-align:center;padding:60px 20px;color:var(--mu)}
+.empty-ico{font-size:40px;margin-bottom:12px}
+
+/* ── 로딩 ── */
+.loading{text-align:center;padding:80px 20px;color:var(--mu)}
+.spin{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.15);border-top-color:var(--blue);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ── 스크롤바 ── */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(56,189,248,.2);border-radius:3px}
+
+/* ── 반응형 ── */
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .main{padding:24px 20px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center">
+    <span class="logo">모찌서버</span>
+    <span class="logo-sub">법률 가이드</span>
+  </div>
+  <div class="header-right">
+    <div class="badge-live"><div class="dot"></div>실시간 업데이트</div>
+    <a href="index.html" class="home-btn">🏠 홈으로</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- 사이드바 -->
+  <aside class="sidebar">
+    <div class="search-wrap">
+      <span class="search-ico">🔍</span>
+      <input class="search-inp" id="searchInp" type="text" placeholder="법률 검색..." oninput="onSearch(this.value)">
+    </div>
+    <div class="nav-label">카테고리</div>
+    <ul class="cat-nav" id="catNav">
+      <li><a href="#" onclick="filterCat(null,this)" class="active">전체 보기</a></li>
+    </ul>
+  </aside>
+
+  <!-- 메인 -->
+  <main class="main">
+    <div class="page-title">⚖️ 서버 법률 가이드</div>
+    <div class="page-sub">모찌 FiveM 서버의 모든 법률을 확인하세요</div>
+    <div id="lastUpdated" class="updated" style="display:none">🕐 마지막 업데이트: <span id="updatedTime">-</span></div>
+    <div id="lawContent">
+      <div class="loading"><span class="spin"></span>법률 데이터를 불러오는 중...</div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getFirestore,collection,getDocs,orderBy,query}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+let db, allLaws = [], currentCat = null, searchQuery = '';
+
+async function init() {
+  try {
+    const res = await fetch('/api/config');
+    const cfg = await res.json();
+    const app = initializeApp(cfg);
+    db = getFirestore(app);
+    await loadLaws();
+  } catch(e) {
+    document.getElementById('lawContent').innerHTML = `<div class="empty"><div class="empty-ico">⚠️</div><div>데이터를 불러올 수 없습니다.<br><small style="color:var(--mu)">${e.message}</small></div></div>`;
+  }
+}
+
+async function loadLaws() {
+  try {
+    const sn = await getDocs(query(collection(db, 'laws'), orderBy('order','asc')));
+    allLaws = sn.docs.map(d => ({id: d.id, ...d.data()}));
+    buildCatNav();
+    render();
+    // 마지막 업데이트 시각
+    const latest = allLaws.reduce((m, l) => {
+      const t = l.updatedAt?.seconds || 0;
+      return t > m ? t : m;
+    }, 0);
+    if (latest) {
+      document.getElementById('updatedTime').textContent = new Date(latest * 1000).toLocaleString('ko-KR');
+      document.getElementById('lastUpdated').style.display = 'inline-flex';
+    }
+  } catch(e) {
+    document.getElementById('lawContent').innerHTML = `<div class="empty"><div class="empty-ico">⚠️</div><div>법률 데이터 로드 실패<br><small style="color:var(--mu)">${e.message}</small></div></div>`;
+  }
+}
+
+function buildCatNav() {
+  const cats = [...new Set(allLaws.map(l => l.category || '미분류'))];
+  const nav = document.getElementById('catNav');
+  nav.innerHTML = `<li><a href="#" onclick="window.filterCat(null,this)" class="active">전체 보기 <span class="cat-count">${allLaws.length}</span></a></li>`;
+  cats.forEach(cat => {
+    const count = allLaws.filter(l => (l.category || '미분류') === cat).length;
+    const li = document.createElement('li');
+    li.innerHTML = `<a href="#" onclick="window.filterCat('${cat.replace(/'/g,"\\'")}',this)">${cat} <span class="cat-count">${count}</span></a>`;
+    nav.appendChild(li);
+  });
+}
+
+function render() {
+  const laws = allLaws.filter(l => {
+    const matchCat = !currentCat || (l.category || '미분류') === currentCat;
+    const q = searchQuery.toLowerCase();
+    const matchSearch = !q ||
+      (l.title||'').toLowerCase().includes(q) ||
+      (l.content||'').toLowerCase().includes(q) ||
+      (l.category||'').toLowerCase().includes(q);
+    return matchCat && matchSearch;
+  });
+
+  if (!laws.length) {
+    document.getElementById('lawContent').innerHTML = `<div class="empty"><div class="empty-ico">🔍</div><div>검색 결과가 없습니다.</div></div>`;
+    return;
+  }
+
+  // 카테고리별로 그룹핑
+  const grouped = {};
+  laws.forEach(l => {
+    const c = l.category || '미분류';
+    if (!grouped[c]) grouped[c] = [];
+    grouped[c].push(l);
+  });
+
+  document.getElementById('lawContent').innerHTML = Object.entries(grouped).map(([cat, items]) => `
+    <div class="cat-section" id="cat-${encodeURIComponent(cat)}">
+      <div class="cat-header">
+        <div class="cat-title">${cat}</div>
+        <div class="cat-num">${items.length}개</div>
+      </div>
+      ${items.map(l => `
+        <div class="law-card" id="law-${l.id}">
+          <div class="law-card-header" onclick="toggleCard(this.parentElement)">
+            <div class="law-card-title">${highlight(l.title||'')}</div>
+            <div class="law-toggle">▼</div>
+          </div>
+          <div class="law-card-body">
+            <div class="law-content">${highlight(escapeHtml(l.content||''))}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function escapeHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlight(text) {
+  if (!searchQuery) return text;
+  const q = searchQuery.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return text.replace(new RegExp(`(${q})`, 'gi'), '<mark style="background:rgba(56,189,248,.25);color:var(--blue-light);border-radius:3px;padding:0 2px">$1</mark>');
+}
+
+window.toggleCard = (card) => {
+  card.classList.toggle('open');
+};
+
+window.filterCat = (cat, el) => {
+  currentCat = cat;
+  document.querySelectorAll('.cat-nav a').forEach(a => a.classList.remove('active'));
+  if (el) el.classList.add('active');
+  render();
+  return false;
+};
+
+window.onSearch = (val) => {
+  searchQuery = val;
+  // 검색 중엔 전체 카테고리 표시
+  if (val) {
+    currentCat = null;
+    document.querySelectorAll('.cat-nav a').forEach(a => a.classList.remove('active'));
+    document.querySelector('.cat-nav a').classList.add('active');
+  }
+  render();
+};
+
+init();
+</script>
+</body>
+</html>
