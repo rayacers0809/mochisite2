@@ -294,6 +294,7 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
     </div>
   </div>
 </section>
+
 <!-- 바로가기 -->
 <section>
   <div class="sec-wrap" style="padding-top:60px;padding-bottom:60px">
@@ -381,10 +382,10 @@ async function getCfg(){try{const r=await fetch('/api/config');return await r.js
 async function init(){
   let cache={};try{cache=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');}catch{}
   const setIcons=(url)=>{['navIcon','heroIcon','footerIcon'].forEach(id=>{const el=document.getElementById(id);if(el){el.src=url;el.style.display='';}});};
-  // 캐시에서 즉시 자산 표시
-  if(cache.icon)setIcons(cache.icon);
-  if(cache.bgVideo){const v=document.getElementById('bgVideo');v.src=cache.bgVideo;v.style.display='block';v.addEventListener('canplay',()=>v.classList.add('loaded'),{once:true});setTimeout(()=>v.classList.add('loaded'),3000);}
-  else if(cache.bgImage){const i=document.getElementById('bgImage');i.src=cache.bgImage;i.style.display='block';i.addEventListener('load',()=>i.classList.add('loaded'),{once:true});setTimeout(()=>i.classList.add('loaded'),3000);}
+  // 캐시에서 즉시 자산 표시 (_none_은 404난 리소스라 스킵)
+  if(cache.icon&&cache.icon!=='_none_')setIcons(cache.icon);
+  if(cache.bgVideo&&cache.bgVideo!=='_none_'){const v=document.getElementById('bgVideo');v.src=cache.bgVideo;v.style.display='block';v.addEventListener('canplay',()=>v.classList.add('loaded'),{once:true});setTimeout(()=>v.classList.add('loaded'),3000);}
+  else if(cache.bgImage&&cache.bgImage!=='_none_'){const i=document.getElementById('bgImage');i.src=cache.bgImage;i.style.display='block';i.addEventListener('load',()=>i.classList.add('loaded'),{once:true});setTimeout(()=>i.classList.add('loaded'),3000);}
 
   // 패치노트는 캐시와 관계없이 항상 Firebase에서 로드
   const cfg=await getCfg();
