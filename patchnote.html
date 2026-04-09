@@ -585,13 +585,13 @@ async function init(){
   let app;try{app=initializeApp(cfg);}catch{try{app=initializeApp(cfg,'pn2');}catch{return;}}
   const db=getFirestore(app);const storage=getStorage(app);
 
-  // assets
+  // assets - 404 났던 리소스는 다시 요청 안 함
   const assetP=(async()=>{
     const na={...assetCache,ts:Date.now()};
-    try{const url=await getDownloadURL(ref(storage,'site/icon.png'));na.icon=url;iconUrl=url;if(el){el.src=url;el.style.display='';}renderFeatured();}catch{}
-    try{const dt=await getDownloadURL(ref(storage,'site/default_thumb.png'));na.defaultThumb=dt;defaultThumbUrl=dt;renderFeatured();renderGrid();}catch{}
-    try{const v=await getDownloadURL(ref(storage,'site/bg_video.mp4'));na.bgVideo=v;const ve=document.getElementById('bgVideo');if(!ve.src){ve.src=v;ve.style.display='block';}}
-    catch{try{const i=await getDownloadURL(ref(storage,'site/bg_image.jpg'));na.bgImage=i;const ie=document.getElementById('bgImage');if(!ie.src){ie.src=i;ie.style.display='block';}}catch{}}
+    try{const url=await getDownloadURL(ref(storage,'site/icon.png'));na.icon=url;iconUrl=url;if(el){el.src=url;el.style.display='';}renderFeatured();}catch{na.icon='_none_';}
+    if(assetCache.defaultThumb!=='_none_'){try{const dt=await getDownloadURL(ref(storage,'site/default_thumb.png'));na.defaultThumb=dt;defaultThumbUrl=dt;renderFeatured();renderGrid();}catch{na.defaultThumb='_none_';}}
+    if(assetCache.bgVideo!=='_none_'){try{const v=await getDownloadURL(ref(storage,'site/bg_video.mp4'));na.bgVideo=v;const ve=document.getElementById('bgVideo');if(!ve.src){ve.src=v;ve.style.display='block';}}
+    catch{na.bgVideo='_none_';if(assetCache.bgImage!=='_none_'){try{const i=await getDownloadURL(ref(storage,'site/bg_image.jpg'));na.bgImage=i;const ie=document.getElementById('bgImage');if(!ie.src){ie.src=i;ie.style.display='block';}}catch{na.bgImage='_none_';}}}}
     localStorage.setItem(CACHE_KEY,JSON.stringify(na));
   })();
 
