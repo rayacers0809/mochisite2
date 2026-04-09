@@ -264,8 +264,12 @@ async function init(){
 }
 
 async function load(){
-  const sn=await getDocs(query(collection(db,'laws'),orderBy('order','asc')));
+  const[sn,catOrdDoc]=await Promise.all([
+    getDocs(query(collection(db,'laws'),orderBy('order','asc'))),
+    getDoc(doc(db,'settings','law_cat_order'))
+  ]);
   allLaws=sn.docs.map(d=>({id:d.id,...d.data()}));
+  window.__catOrd=catOrdDoc.exists()?catOrdDoc.data():{parents:[],subs:{}};
   catMap={};
   allLaws.forEach(l=>{const c=l.category||'미분류';if(!catMap[c])catMap[c]=[];catMap[c].push(l);});
   catList=Object.keys(catMap);
@@ -274,7 +278,8 @@ async function load(){
 }
 
 function buildSidebar(){
-  // parent_category > category > items 3단계 트리 구성
+  const catOrd=window.__catOrd||{parents:[],subs:{}};
+
   const tree={};
   allLaws.forEach(l=>{
     const p=l.parent_category||'__root__';
@@ -284,19 +289,40 @@ function buildSidebar(){
     tree[p].cats[c].items.push(l);
   });
 
-  // __root__ 항목은 부모 없는 카테고리들
+  // 부모 카테고리 정렬
+  const sortParents=(keys)=>keys.sort((a,b)=>{
+    const realA=a==='__root__'?'':a, realB=b==='__root__'?'':b;
+    const ai=catOrd.parents.indexOf(realA), bi=catOrd.parents.indexOf(realB);
+    if(ai>=0&&bi>=0)return ai-bi;
+    if(ai>=0)return-1;
+    if(bi>=0)return 1;
+    return 0;
+  });
+
+  // 하위 카테고리 정렬
+  const sortSubs=(parent,keys)=>{
+    const realParent=parent==='__root__'?'':parent;
+    const subOrd=(catOrd.subs||{})[realParent]||[];
+    return keys.sort((a,b)=>{
+      const ai=subOrd.indexOf(a),bi=subOrd.indexOf(b);
+      if(ai>=0&&bi>=0)return ai-bi;
+      if(ai>=0)return-1;
+      if(bi>=0)return 1;
+      return 0;
+    });
+  };
+
   let html='';
-  Object.entries(tree).forEach(([parent,{cats}])=>{
+  sortParents(Object.keys(tree)).forEach(parent=>{
+    const sortedCats=sortSubs(parent,Object.keys(tree[parent].cats));
     if(parent==='__root__'){
-      // 부모 없는 카테고리 직접 출력
-      Object.entries(cats).forEach(([cat,{items}])=>{
+      sortedCats.forEach(cat=>{
         html+=`<div class="sb-section">
           <div class="sb-label">${ICONS[cat]||'📄'} ${esc(cat)}</div>
-          <ul class="sb-list">${items.map(l=>`<li><button class="sb-link" id="sl-${l.id}" onclick="showLaw('${esc(cat)}','${l.id}','')">${esc(l.title||'')}</button></li>`).join('')}</ul>
+          <ul class="sb-list">${tree[parent].cats[cat].items.map(l=>`<li><button class="sb-link" id="sl-${l.id}" onclick="showLaw('${esc(cat)}','${l.id}','')">${esc(l.title||'')}</button></li>`).join('')}</ul>
         </div><div class="sb-divider"></div>`;
       });
     } else {
-      // 부모 카테고리 있는 경우 collapsible 그룹
       const parentId='pg-'+parent.replace(/[^a-zA-Z0-9가-힣]/g,'_');
       html+=`<div class="sb-section">
         <div class="sb-parent-label" onclick="toggleParent('${parentId}')">
@@ -304,14 +330,14 @@ function buildSidebar(){
           <span class="sb-parent-chev" id="pc-${parentId}">▾</span>
         </div>
         <div class="sb-parent-body" id="${parentId}">
-          ${Object.entries(cats).map(([cat,{items}])=>`
+          ${sortedCats.map(cat=>`
             <div class="sb-subgroup">
               <div class="sb-sublabel" onclick="toggleSub('sub-${parentId}-${cat.replace(/[^a-zA-Z0-9가-힣]/g,'_')}')">
                 <span>${esc(cat)}</span>
                 <span class="sb-sub-chev">▾</span>
               </div>
               <ul class="sb-list sb-sublist" id="sub-${parentId}-${cat.replace(/[^a-zA-Z0-9가-힣]/g,'_')}">
-                ${items.map(l=>`<li><button class="sb-link sb-link-deep" id="sl-${l.id}" onclick="showLaw('${esc(cat)}','${l.id}','${esc(parent)}')">${esc(l.title||'')}</button></li>`).join('')}
+                ${tree[parent].cats[cat].items.map(l=>`<li><button class="sb-link sb-link-deep" id="sl-${l.id}" onclick="showLaw('${esc(cat)}','${l.id}','${esc(parent)}')">${esc(l.title||'')}</button></li>`).join('')}
               </ul>
             </div>`).join('')}
         </div>
