@@ -211,6 +211,47 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
   footer{padding:24px 16px}
 }
 
+/* ── 패치노트 모달 ── */
+.patch-modal-ov{
+  position:fixed;inset:0;z-index:9000;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .25s ease;
+}
+.patch-modal-ov.open{opacity:1;pointer-events:all}
+.patch-modal-box{
+  position:relative;
+  background:rgba(28,22,35,.97);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;
+  width:90%;max-width:600px;max-height:85vh;
+  overflow:hidden;overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.pm-close-btn{
+  position:absolute;top:16px;right:16px;z-index:10;
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(0,0,0,.4);border:none;
+  color:#fff;font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+}
+.pm-close-btn:hover{background:rgba(255,255,255,.15)}
+.pm-body{padding:24px 28px 28px}
+.pm-meta-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.pm-tag{font-size:11px;padding:4px 10px;border-radius:100px;font-weight:600}
+.pm-date-txt{font-size:12px;color:var(--mu)}
+.pm-title-txt{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px}
+.pm-ver-txt{font-size:13px;color:var(--mu);margin-bottom:20px}
+.pm-md{color:var(--mu2);font-size:14px;line-height:1.7}
+.pm-md h2,.pm-md h3{color:#fff;margin:20px 0 10px;font-size:16px}
+.pm-md p{margin:8px 0}
+.pm-md ul,.pm-md ol{padding-left:20px;margin:8px 0}
+.pm-md img{max-width:100%;border-radius:10px;margin:12px 0}
+.pm-footer-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08)}
+
 /* ── 페이지 전환 ── */
 #pageTransition{
   position:fixed;inset:0;z-index:9999;
