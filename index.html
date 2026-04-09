@@ -12,6 +12,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#f4849e">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -198,6 +199,27 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
 }
 #pageTransition.out{opacity:1;pointer-events:all}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(244,132,158,.3);border-radius:3px}
+
+/* ── 패치노트 모달 ── */
+.patch-modal-ov{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:20px;animation:pmFade .25s ease}
+.patch-modal-ov.open{display:flex}
+@keyframes pmFade{from{opacity:0}to{opacity:1}}
+.patch-modal{background:var(--card);border:1px solid var(--border2);border-radius:20px;max-width:680px;width:100%;max-height:88vh;overflow-y:auto;animation:pmSlide .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 24px 80px rgba(0,0,0,.6)}
+@keyframes pmSlide{from{transform:translateY(24px) scale(.97);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+.pm-thumb{width:100%;aspect-ratio:16/7;object-fit:cover;border-radius:20px 20px 0 0;background:var(--bg2);display:block}
+.pm-thumb-ph{width:100%;aspect-ratio:16/7;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(244,132,158,.12),rgba(249,168,122,.07));border-radius:20px 20px 0 0;font-size:52px;opacity:.35}
+.pm-body{padding:28px 32px 32px}
+.pm-meta{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.pm-tag{font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;background:rgba(56,189,248,.15);color:#38bdf8}
+.pm-date{font-size:12px;color:var(--mu)}
+.pm-title{font-family:'Nunito',sans-serif;font-size:24px;font-weight:900;color:#fff;margin-bottom:20px;letter-spacing:-.02em;line-height:1.25}
+.pm-content{font-size:13.5px;color:var(--mu2);line-height:1.9;white-space:pre-wrap;word-break:break-word}
+.pm-content h2,.pm-content h3{color:#fff;font-weight:700;margin:16px 0 8px}
+.pm-content strong{color:#fff}
+.pm-footer{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:20px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px}
+.pm-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;z-index:1}
+.pm-close:hover{background:rgba(248,113,113,.3)}
+.pm-wrap{position:relative}
 </style>
 <script>
 (function(){try{const c=JSON.parse(localStorage.getItem('mochi_assets')||'{}');if(c.icon){const l=document.createElement('link');l.rel='preload';l.as='image';l.href=c.icon;document.head.appendChild(l);}if(c.bgVideo){const l=document.createElement('link');l.rel='preload';l.as='video';l.href=c.bgVideo;document.head.appendChild(l);}else if(c.bgImage){const l=document.createElement('link');l.rel='preload';l.as='image';l.href=c.bgImage;document.head.appendChild(l);}}catch{}})();
@@ -273,15 +295,6 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-sec">
-  <div class="cta-inner">
-    <div class="cta-title">지금 바로 시작하세요</div>
-    <p class="cta-desc">모찌서버에 접속하고 새로운 인생을 경험해보세요.<br>따뜻한 커뮤니티가 여러분을 기다립니다.</p>
-    <a href="fivem://connect/fivem-mochi.kr" class="cta-btn">서버 접속하기 →</a>
-  </div>
-</section>
-
 <!-- 바로가기 -->
 <section>
   <div class="sec-wrap" style="padding-top:60px;padding-bottom:60px">
@@ -321,6 +334,12 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
       <a href="staff.html">스태프 지원</a>
     </div>
     <div class="footer-col">
+      <div class="footer-col-title">정보</div>
+      <a href="#">이용약관</a>
+      <a href="#">개인정보처리방침</a>
+      <a href="#">결제약관</a>
+    </div>
+    <div class="footer-col">
       <div class="footer-col-title">소셜</div>
       <div class="footer-social">
         <a href="https://discord.gg/mochi-rp" target="_blank" class="social-link">
@@ -337,6 +356,29 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
     <div class="footer-copy">© 2026 모찌서버. All rights reserved.</div>
   </div>
 </footer>
+
+<!-- 패치노트 모달 -->
+<div class="patch-modal-ov" id="patchModalOv" onclick="closePatchModal(event)">
+  <div class="pm-wrap">
+    <div class="patch-modal" id="patchModal">
+      <div class="pm-thumb-ph" id="pmThumb"></div>
+      <div class="pm-body">
+        <div class="pm-meta">
+          <span class="pm-tag" id="pmTag">패치노트</span>
+          <span class="pm-date" id="pmDate"></span>
+        </div>
+        <div class="pm-title" id="pmTitle"></div>
+        <div class="pm-content" id="pmContent"></div>
+        <div class="pm-footer">
+          <button class="btn-s" style="padding:10px 22px;font-size:13px" onclick="closePatchModal()">← 닫기</button>
+          <a href="patchnote.html" class="btn-p" style="padding:10px 22px;font-size:13px" onclick="goPage(event,'patchnote.html')">모든 소식 보기 →</a>
+        </div>
+      </div>
+    </div>
+    <button class="pm-close" onclick="closePatchModal()">✕</button>
+  </div>
+</div>
+
 
 <!-- Firebase 자산 로드 -->
 <script type="module">
@@ -424,7 +466,8 @@ function renderNews(patches, bgThumb){
       :`<div class="news-thumb-placeholder">🫧</div>`;
     const desc=(firstText?.text||'').replace(/[#*_>`\[\]]/g,'').replace(/<[^>]*>/g,'').substring(0,60);
     const dateStr=p.createdAt?.seconds?new Date(p.createdAt.seconds*1000).toLocaleDateString('ko-KR'):(p.date||'');
-    return`<a href="patchnote.html" class="news-card" onclick="goPage(event,'patchnote.html')">
+    const pData=encodeURIComponent(JSON.stringify({ver:p.ver,date:dateStr,tags:p.tags||[],blocks:p.blocks||[],thumbSrc}));
+    return`<div class="news-card" style="cursor:pointer" onclick="openPatchModal(${JSON.stringify(JSON.stringify({ver:p.ver,date:dateStr,tags:p.tags||[],blocks:p.blocks||[],thumbSrc}))})">
       ${thumb}
       <div class="news-body">
         ${tagHtml}
@@ -432,7 +475,7 @@ function renderNews(patches, bgThumb){
         <div class="news-title">${p.ver||'패치노트'}</div>
         <div class="news-desc">${desc}</div>
       </div>
-    </a>`;
+    </div>`;
   }).join('');
 }
 function loadNews(reason){
@@ -538,6 +581,62 @@ document.addEventListener('click',e=>{
   }
   window.addEventListener('DOMContentLoaded',attachTransitions);
 })();
+</script>
+
+<script>
+const TM_MODAL={new:'신규',fix:'버그수정',change:'변경',remove:'삭제'};
+const CALLOUT_ICONS={warning:'⚠️',info:'ℹ️',tip:'✅',danger:'❌'};
+
+window.openPatchModal=(rawJson)=>{
+  let p;try{p=JSON.parse(rawJson);}catch{return;}
+  const ov=document.getElementById('patchModalOv');
+  const thumb=document.getElementById('pmThumb');
+  const tag=document.getElementById('pmTag');
+  const date=document.getElementById('pmDate');
+  const title=document.getElementById('pmTitle');
+  const content=document.getElementById('pmContent');
+
+  // 썸네일
+  if(p.thumbSrc){thumb.outerHTML='<img class="pm-thumb" id="pmThumb" src="'+p.thumbSrc+'" onerror="this.style.display='none'">';} 
+  else{const t=document.getElementById('pmThumb');if(t){t.className='pm-thumb-ph';t.innerHTML='🫧';}}
+
+  // 태그
+  const firstTag=p.tags?.[0];
+  tag.textContent=TM_MODAL[firstTag]||'패치노트';
+  tag.style.background=firstTag==='new'?'rgba(74,222,128,.15)':firstTag==='fix'?'rgba(251,146,60,.15)':firstTag==='change'?'rgba(167,139,250,.15)':'rgba(56,189,248,.15)';
+  tag.style.color=firstTag==='new'?'#4ade80':firstTag==='fix'?'#fb923c':firstTag==='change'?'#a78bfa':'#38bdf8';
+
+  date.textContent=p.date||'';
+  title.textContent=p.ver||'패치노트';
+
+  // 블록 내용 렌더링
+  const blocks=p.blocks||[];
+  let html='';
+  if(typeof marked!=='undefined'){
+    marked.setOptions({breaks:true,gfm:true});
+    blocks.forEach(b=>{
+      if(b.type==='text') html+=`<div style="margin-bottom:12px">${marked.parse(b.text||'')}</div>`;
+      else if(b.type==='image') html+=`<figure style="margin:12px 0"><img src="${b.url}" style="max-width:100%;border-radius:10px;border:1px solid rgba(255,255,255,.08)"></figure>`;
+      else if(b.type==='callout'){const ico=CALLOUT_ICONS[b.callout_type||'info']||'ℹ️';html+=`<div style="display:flex;gap:10px;padding:12px 16px;margin:12px 0;border-radius:8px;border-left:3px solid;background:rgba(56,189,248,.08);border-color:#38bdf8"><span>${ico}</span><div>${marked.parse(b.text||'')}</div></div>`;}
+    });
+  } else {
+    blocks.forEach(b=>{if(b.type==='text')html+=b.text+'\n\n';});
+  }
+  content.innerHTML=html||'<span style="color:var(--mu)">내용이 없습니다.</span>';
+  content.style.whiteSpace='normal';
+
+  ov.classList.add('open');
+  document.body.style.overflow='hidden';
+};
+
+window.closePatchModal=(e)=>{
+  if(e&&e.target!==document.getElementById('patchModalOv')&&e.type==='click'&&e.currentTarget===document.getElementById('patchModalOv')) return;
+  document.getElementById('patchModalOv').classList.remove('open');
+  document.body.style.overflow='';
+};
+
+// Esc 키로 닫기
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePatchModal();});
 </script>
 </body>
 </html>
