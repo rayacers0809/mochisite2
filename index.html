@@ -190,7 +190,12 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
 }
 
 /* ── 페이지 전환 ── */
-#pageTransition{position:fixed;inset:0;z-index:9999;background:var(--bg);opacity:0;pointer-events:none;transition:opacity .35s ease}
+#pageTransition{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--bg);
+  opacity:0;pointer-events:none;
+  transition:opacity .45s cubic-bezier(.4,0,.2,1);
+}
 #pageTransition.out{opacity:1;pointer-events:all}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(244,132,158,.3);border-radius:3px}
 </style>
@@ -372,7 +377,12 @@ async function init(){
       const sn=await getDocs(collection(db,'patches'));
       if(sn.empty){loadNews('데이터 없음');return;}
       const all=sn.docs.map(d=>({id:d.id,...d.data()}));
-      const sorted=all.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0,3);
+      const sorted=all.sort((a,b)=>{
+      const sa=a.createdAt?.seconds||0,sb=b.createdAt?.seconds||0;
+      if(sa!==sb) return sb-sa;
+      const pd=v=>{if(!v)return 0;const s=String(v);const m=s.match(/(\d{4})[.\-\/](\d{1,2})[.\-\/](\d{1,2})/);if(m)return new Date(+m[1],+m[2]-1,+m[3]).getTime();const m2=s.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);if(m2)return new Date(+m2[1],+m2[2]-1,+m2[3]).getTime();return 0;};
+      return pd(b.ver||b.date)-pd(a.ver||a.date);
+    }).slice(0,3);
       const bgThumb=cache.bgImage||'';
       renderNews(sorted, bgThumb);
     }catch(e){
@@ -491,6 +501,49 @@ document.addEventListener('click',e=>{
     d.classList.remove('open');b.textContent='☰';
   }
 });
+</script>
+
+<script>
+(function(){
+  // 페이지 진입 페이드인
+  window.addEventListener('DOMContentLoaded',()=>{
+    const ov=document.getElementById('pageTransition');
+    if(!ov)return;
+    ov.style.opacity='1';
+    ov.style.pointerEvents='all';
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        ov.style.opacity='0';
+        setTimeout(()=>{ov.style.pointerEvents='none';},460);
+      });
+    });
+  });
+
+  // goPage 전역 함수 (수동 호출용)
+  window.goPage=(e,href)=>{
+    if(e)e.preventDefault();
+    const ov=document.getElementById('pageTransition');
+    if(!ov){window.location.href=href;return;}
+    ov.style.pointerEvents='all';
+    ov.style.opacity='1';
+    setTimeout(()=>window.location.href=href,460);
+  };
+
+  // 모든 내부 링크 자동 전환
+  function attachTransitions(){
+    document.querySelectorAll('a[href]').forEach(a=>{
+      const href=a.getAttribute('href');
+      if(!href||href.startsWith('#')||href.startsWith('http')||href.startsWith('fivem:')||href.startsWith('discord:')||a.target==="_blank"||a.hasAttribute('data-notrans')) return;
+      if(a._transAttached) return;
+      a._transAttached=true;
+      a.addEventListener('click',e=>{
+        e.preventDefault();
+        window.goPage(null,href);
+      });
+    });
+  }
+  window.addEventListener('DOMContentLoaded',attachTransitions);
+})();
 </script>
 </body>
 </html>
