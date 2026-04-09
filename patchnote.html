@@ -211,7 +211,12 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
 }
 
 /* ── 페이지 전환 ── */
-#pageTransition{position:fixed;inset:0;z-index:9999;background:var(--bg);opacity:0;pointer-events:none;transition:opacity .35s ease}
+#pageTransition{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--bg);
+  opacity:0;pointer-events:none;
+  transition:opacity .45s cubic-bezier(.4,0,.2,1);
+}
 #pageTransition.out{opacity:1;pointer-events:all}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(244,132,158,.3);border-radius:3px}
 </style>
@@ -480,6 +485,28 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
 // Firebase 로드
 async function getCfg(){try{const r=await fetch('/api/config');return await r.json();}catch{return null;}}
 
+// 패치노트 날짜 정렬 함수 - createdAt.seconds → date 문자열 순으로 fallback
+function patchSort(a,b){
+  // Firestore Timestamp 또는 직렬화된 {seconds, nanoseconds}
+  const sa=a.createdAt?.seconds||0;
+  const sb=b.createdAt?.seconds||0;
+  if(sa!==sb) return sb-sa;
+  // seconds가 같거나 없으면 date 문자열로 정렬
+  // "2026-04-09 패치내역" 또는 "2026년 4월 9일" 형식 지원
+  const parseDate=v=>{
+    if(!v) return 0;
+    const s=String(v);
+    // 2026-04-09 형식
+    const m1=s.match(/(\d{4})[.\-\/](\d{1,2})[.\-\/](\d{1,2})/);
+    if(m1) return new Date(+m1[1],+m1[2]-1,+m1[3]).getTime();
+    // 2026년 4월 9일 형식
+    const m2=s.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
+    if(m2) return new Date(+m2[1],+m2[2]-1,+m2[3]).getTime();
+    return 0;
+  };
+  return parseDate(b.ver||b.date)-parseDate(a.ver||a.date);
+}
+
 async function init(){
   let assetCache={};
   try{assetCache=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');}catch{}
@@ -495,7 +522,7 @@ async function init(){
   try{
     const pc=JSON.parse(localStorage.getItem(PATCH_KEY)||'null');
     if(pc&&pc.data&&pc.data.length){
-      allPatches=pc.data.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+      allPatches=pc.data.sort(patchSort);
       renderFeatured();renderGrid();
       if(Date.now()-pc.ts<PATCH_TTL) cacheValid=true;
     }
@@ -525,7 +552,7 @@ async function init(){
     const patchP=(async()=>{
       try{
         const sn=await getDocs(collection(db,'patches'));
-        allPatches=sn.docs.map(d=>({id:d.id,...d.data()}));
+        allPatches=sn.docs.map(d=>({id:d.id,...d.data()})).sort(patchSort);
         localStorage.setItem(PATCH_KEY,JSON.stringify({ts:Date.now(),data:allPatches}));
         renderFeatured();renderGrid();
       }catch(e){if(!allPatches.length)document.getElementById('newsGrid').innerHTML='<div style="grid-column:1/-1" class="loading-state">패치노트를 불러오지 못했습니다.</div>';}
@@ -538,9 +565,48 @@ async function init(){
 init();
 </script>
 
+
 <script>
-window.goPage=(e,href)=>{e.preventDefault();const ov=document.getElementById('pageTransition');ov.classList.add('out');setTimeout(()=>{window.location.href=href;},340);};
-window.addEventListener('DOMContentLoaded',()=>{const ov=document.getElementById('pageTransition');ov.style.opacity='1';ov.style.pointerEvents='all';requestAnimationFrame(()=>{requestAnimationFrame(()=>{ov.style.opacity='0';ov.style.pointerEvents='none';});});});
+(function(){
+  // 페이지 진입 페이드인
+  window.addEventListener('DOMContentLoaded',()=>{
+    const ov=document.getElementById('pageTransition');
+    if(!ov)return;
+    ov.style.opacity='1';
+    ov.style.pointerEvents='all';
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        ov.style.opacity='0';
+        setTimeout(()=>{ov.style.pointerEvents='none';},460);
+      });
+    });
+  });
+
+  // goPage 전역 함수 (수동 호출용)
+  window.goPage=(e,href)=>{
+    if(e)e.preventDefault();
+    const ov=document.getElementById('pageTransition');
+    if(!ov){window.location.href=href;return;}
+    ov.style.pointerEvents='all';
+    ov.style.opacity='1';
+    setTimeout(()=>window.location.href=href,460);
+  };
+
+  // 모든 내부 링크 자동 전환
+  function attachTransitions(){
+    document.querySelectorAll('a[href]').forEach(a=>{
+      const href=a.getAttribute('href');
+      if(!href||href.startsWith('#')||href.startsWith('http')||href.startsWith('fivem:')||href.startsWith('discord:')||a.target==="_blank"||a.hasAttribute('data-notrans')) return;
+      if(a._transAttached) return;
+      a._transAttached=true;
+      a.addEventListener('click',e=>{
+        e.preventDefault();
+        window.goPage(null,href);
+      });
+    });
+  }
+  window.addEventListener('DOMContentLoaded',attachTransitions);
+})();
 </script>
 
 <script>
