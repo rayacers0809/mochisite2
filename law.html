@@ -302,7 +302,7 @@ function buildSidebar(){
   // 하위 카테고리 정렬
   const sortSubs=(parent,keys)=>{
     const realParent=parent==='__root__'?'':parent;
-    const subOrd=(catOrd.subs||{})[realParent]||[];
+    const subOrd=(catOrd.subs||{})[realParent||'__root__']||[];
     return keys.sort((a,b)=>{
       const ai=subOrd.indexOf(a),bi=subOrd.indexOf(b);
       if(ai>=0&&bi>=0)return ai-bi;
