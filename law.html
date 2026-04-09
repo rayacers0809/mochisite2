@@ -1,134 +1,197 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>법률 가이드 — 모찌서버</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0b1120;--bg2:#0f1729;--card:#141d2f;--card2:#1a2540;
-  --border:rgba(56,189,248,.12);--border2:rgba(56,189,248,.25);
-  --blue:#38bdf8;--blue-light:#7dd3fc;--pink:#f4849e;--purple:#a78bfa;
-  --green:#4ade80;--orange:#fb923c;--red:#f87171;
-  --white:#e2e8f0;--mu:rgba(255,255,255,.4);--mu2:rgba(255,255,255,.6);
-  --r:12px;--grad:linear-gradient(135deg,var(--blue),var(--pink));
+  --c-brand:#3b82f6;--c-brand-light:#60a5fa;--c-brand-dark:#2563eb;
+  --c-bg:#ffffff;--c-bg-soft:#f6f6f7;--c-bg-mute:#f0f0f1;
+  --c-border:#e2e2e3;--c-text-1:rgba(60,60,67,1);--c-text-2:rgba(60,60,67,.78);--c-text-3:rgba(60,60,67,.5);
+  --nav-h:64px;--sb-w:272px;
 }
-html{scroll-behavior:smooth}
-body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--white);min-height:100vh;overflow-x:hidden}
+[data-theme="dark"]{
+  --c-bg:#1b1b1f;--c-bg-soft:#252529;--c-bg-mute:#313136;
+  --c-border:rgba(82,82,89,.6);--c-text-1:rgba(255,255,245,.86);--c-text-2:rgba(235,235,245,.6);--c-text-3:rgba(235,235,245,.35);
+}
+html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--c-bg);color:var(--c-text-1);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
 
-/* ── 헤더 ── */
-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
-.logo{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.logo-sub{font-size:12px;color:var(--mu);margin-left:10px;font-weight:400;-webkit-text-fill-color:rgba(255,255,255,.4)}
-.header-right{display:flex;align-items:center;gap:16px}
-.badge-live{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--green);background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);padding:4px 10px;border-radius:100px}
-.dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.home-btn{font-size:12px;color:var(--mu2);text-decoration:none;padding:6px 14px;border:1px solid var(--border);border-radius:8px;transition:all .15s}
-.home-btn:hover{border-color:var(--blue);color:var(--blue)}
+/* ─ 네비 ─ */
+.nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(var(--c-bg-rgb,255,255,255),.9);border-bottom:1px solid var(--c-border);z-index:100;display:flex;align-items:center;padding:0 24px;gap:0;backdrop-filter:blur(8px)}
+[data-theme="dark"] .nav{background:rgba(27,27,31,.9)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:24px;flex-shrink:0}
+.nav-logo-txt{font-size:15px;font-weight:700;color:var(--c-text-1)}
+.nav-logo-sep{color:var(--c-text-3);margin:0 4px}
+.nav-logo-sub{font-size:13px;color:var(--c-text-3)}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-link{font-size:14px;color:var(--c-text-2);text-decoration:none;padding:5px 10px;border-radius:6px;transition:color .15s,background .15s;font-weight:500;cursor:pointer;border:none;background:none;font-family:inherit}
+.nav-link:hover{color:var(--c-brand);background:rgba(59,130,246,.07)}
+.nav-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.search-btn{display:flex;align-items:center;gap:8px;padding:5px 12px;border-radius:8px;border:1px solid var(--c-border);background:var(--c-bg-soft);color:var(--c-text-3);font-size:13px;cursor:pointer;font-family:inherit;transition:border-color .2s;white-space:nowrap}
+.search-btn:hover{border-color:var(--c-brand);color:var(--c-text-2)}
+.search-btn kbd{font-size:10px;background:var(--c-bg-mute);padding:1px 5px;border-radius:4px;border:1px solid var(--c-border)}
+.theme-btn{width:34px;height:34px;border-radius:7px;border:1px solid var(--c-border);background:var(--c-bg-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s}
+.theme-btn:hover{border-color:var(--c-brand)}
+.discord-btn{font-size:13px;font-weight:600;color:var(--c-brand);text-decoration:none;padding:5px 12px;border-radius:8px;border:1px solid rgba(59,130,246,.3);background:rgba(59,130,246,.07);transition:all .2s;white-space:nowrap}
+.discord-btn:hover{background:rgba(59,130,246,.14)}
 
-/* ── 레이아웃 ── */
-.layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 64px)}
+/* ─ 레이아웃 ─ */
+.layout{display:flex;padding-top:var(--nav-h);min-height:100vh}
 
-/* ── 사이드바 ── */
-.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:24px 16px;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto}
-.search-wrap{position:relative;margin-bottom:20px}
-.search-inp{width:100%;padding:10px 14px 10px 36px;border-radius:10px;border:1px solid var(--border2);background:rgba(255,255,255,.04);color:var(--white);font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .2s}
-.search-inp:focus{border-color:var(--blue)}
-.search-inp::placeholder{color:var(--mu)}
-.search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--mu);font-size:14px}
-.nav-label{font-size:10px;font-weight:700;color:var(--mu);letter-spacing:.12em;text-transform:uppercase;padding:0 8px;margin-bottom:6px;margin-top:16px}
-.nav-label:first-child{margin-top:0}
-.cat-nav{list-style:none;display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
-.cat-nav li a{display:block;padding:8px 12px;border-radius:8px;font-size:13px;color:var(--mu2);text-decoration:none;transition:all .15s;cursor:pointer}
-.cat-nav li a:hover{background:rgba(56,189,248,.08);color:var(--blue-light)}
-.cat-nav li a.active{background:rgba(56,189,248,.12);color:var(--blue);font-weight:600;border:1px solid rgba(56,189,248,.15)}
-.cat-count{font-size:10px;background:rgba(56,189,248,.15);color:var(--blue);padding:1px 6px;border-radius:100px;margin-left:auto;float:right}
+/* ─ 사이드바 ─ */
+.sb{position:fixed;top:var(--nav-h);bottom:0;left:0;width:var(--sb-w);overflow-y:auto;border-right:1px solid var(--c-border);background:var(--c-bg-soft);z-index:50;padding:16px 0 32px}
+.sb::-webkit-scrollbar{width:4px}
+.sb::-webkit-scrollbar-thumb{background:var(--c-border);border-radius:2px}
+.sb-section{padding:0 12px;margin-bottom:8px}
+.sb-label{font-size:12px;font-weight:700;color:var(--c-text-3);letter-spacing:.05em;padding:8px 10px 5px;display:flex;align-items:center;gap:6px}
+.sb-list{list-style:none}
+.sb-link{display:flex;align-items:center;gap:6px;width:100%;padding:6px 10px;border-radius:7px;font-size:13.5px;color:var(--c-text-2);text-decoration:none;cursor:pointer;transition:all .15s;border:1px solid transparent;font-weight:400;background:none;font-family:inherit;text-align:left}
+.sb-link:hover{color:var(--c-brand);background:rgba(59,130,246,.07)}
+.sb-link.active{color:var(--c-brand);background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.2);font-weight:600}
+.sb-dot{width:4px;height:4px;border-radius:50%;background:currentColor;flex-shrink:0}
+.sb-divider{height:1px;background:var(--c-border);margin:8px 16px}
 
-/* ── 메인 콘텐츠 ── */
-.main{padding:36px 40px;max-width:900px}
-.page-title{font-family:'Nunito',sans-serif;font-size:28px;font-weight:900;margin-bottom:4px}
-.page-sub{font-size:13px;color:var(--mu);margin-bottom:32px}
-.updated{font-size:11px;color:var(--mu);display:inline-flex;align-items:center;gap:5px;margin-bottom:32px;background:var(--card);border:1px solid var(--border);padding:5px 12px;border-radius:100px}
+/* ─ 콘텐츠 ─ */
+.content{flex:1;margin-left:var(--sb-w);padding:48px 64px 80px;max-width:800px;min-width:0}
 
-/* ── 카테고리 섹션 ── */
-.cat-section{margin-bottom:48px}
-.cat-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
-.cat-title{font-family:'Nunito',sans-serif;font-size:18px;font-weight:800;color:var(--blue-light)}
-.cat-num{font-size:11px;color:var(--mu);background:rgba(56,189,248,.1);padding:2px 8px;border-radius:100px}
+/* ─ 홈 ─ */
+.hero{text-align:center;padding:72px 0 56px;border-bottom:1px solid var(--c-border);margin-bottom:48px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--c-brand);background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);padding:4px 14px;border-radius:100px;margin-bottom:20px;font-weight:600}
+.hero-title{font-size:42px;font-weight:800;line-height:1.15;letter-spacing:-.04em;margin-bottom:16px;color:var(--c-text-1)}
+.hero-title em{font-style:normal;background:linear-gradient(135deg,#3b82f6,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-desc{font-size:17px;color:var(--c-text-2);max-width:420px;margin:0 auto 32px;line-height:1.7}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-p{display:inline-flex;align-items:center;gap:7px;padding:11px 26px;border-radius:9px;background:var(--c-brand);color:#fff;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;border:none;font-family:inherit;transition:background .2s,transform .15s;box-shadow:0 4px 14px rgba(59,130,246,.3)}
+.btn-p:hover{background:var(--c-brand-dark);transform:translateY(-1px)}
+.btn-o{display:inline-flex;align-items:center;gap:7px;padding:11px 26px;border-radius:9px;border:1.5px solid var(--c-border);color:var(--c-text-2);font-size:14px;font-weight:600;text-decoration:none;cursor:pointer;background:none;font-family:inherit;transition:all .2s}
+.btn-o:hover{border-color:var(--c-brand);color:var(--c-brand);background:rgba(59,130,246,.05)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.card{background:var(--c-bg-soft);border:1px solid var(--c-border);border-radius:11px;padding:22px;cursor:pointer;transition:all .2s;text-decoration:none;display:block}
+.card:hover{border-color:rgba(59,130,246,.45);box-shadow:0 4px 18px rgba(59,130,246,.1);transform:translateY(-2px)}
+.card-ico{font-size:26px;margin-bottom:10px}
+.card-title{font-size:14px;font-weight:700;color:var(--c-text-1);margin-bottom:5px}
+.card-count{font-size:12px;color:var(--c-brand);font-weight:600}
 
-/* ── 법률 카드 ── */
-.law-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden;transition:border-color .2s}
-.law-card:hover{border-color:var(--border2)}
-.law-card-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;user-select:none}
-.law-card-title{font-size:14px;font-weight:600;color:var(--white)}
-.law-toggle{font-size:12px;color:var(--mu);transition:transform .2s;flex-shrink:0}
-.law-card.open .law-toggle{transform:rotate(180deg)}
-.law-card-body{display:none;padding:0 20px 18px;border-top:1px solid var(--border)}
-.law-card.open .law-card-body{display:block}
-.law-content{font-size:13px;line-height:1.85;color:var(--mu2);white-space:pre-wrap;margin-top:14px}
-.law-content strong{color:var(--white)}
+/* ─ 문서 ─ */
+.doc-crumb{font-size:12px;color:var(--c-text-3);margin-bottom:14px;display:flex;align-items:center;gap:5px}
+.doc-crumb span{cursor:pointer;transition:color .15s}
+.doc-crumb span:hover{color:var(--c-brand)}
+.doc-crumb span:last-child{color:var(--c-text-2);cursor:default}
+.doc-title{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px;line-height:1.25}
+.doc-meta{font-size:12px;color:var(--c-text-3);margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--c-border)}
 
-/* ── 검색 결과 없음 ── */
-.empty{text-align:center;padding:60px 20px;color:var(--mu)}
-.empty-ico{font-size:40px;margin-bottom:12px}
+/* ─ 법률 아이템 ─ */
+.law-item{border:1px solid var(--c-border);border-radius:10px;margin-bottom:8px;overflow:hidden;transition:border-color .2s}
+.law-item:hover{border-color:rgba(59,130,246,.4)}
+.law-item.open{border-color:rgba(59,130,246,.4)}
+.law-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;background:var(--c-bg);transition:background .15s;user-select:none;gap:12px}
+.law-item:hover .law-head,.law-item.open .law-head{background:rgba(59,130,246,.03)}
+.law-head-title{font-size:14px;font-weight:600;color:var(--c-text-1);display:flex;align-items:center;gap:7px}
+.law-head-title::before{content:'§';font-size:11px;color:var(--c-brand);font-weight:700;flex-shrink:0}
+.law-chev{color:var(--c-text-3);font-size:11px;transition:transform .22s;flex-shrink:0}
+.law-item.open .law-chev{transform:rotate(180deg)}
+.law-body{display:none;border-top:1px solid var(--c-border);background:var(--c-bg-soft)}
+.law-item.open .law-body{display:block}
+.law-body-inner{padding:18px 22px;font-size:13.5px;line-height:1.95;color:var(--c-text-2);white-space:pre-wrap;word-break:break-word}
 
-/* ── 로딩 ── */
-.loading{text-align:center;padding:80px 20px;color:var(--mu)}
-.spin{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.15);border-top-color:var(--blue);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:8px}
+/* ─ 단일 문서 내용 ─ */
+.law-doc-content{font-size:14px;line-height:1.95;color:var(--c-text-2);white-space:pre-wrap;word-break:break-word}
+
+/* ─ 페이저 ─ */
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:48px;padding-top:24px;border-top:1px solid var(--c-border)}
+.pager-btn{padding:14px 18px;border:1px solid var(--c-border);border-radius:10px;cursor:pointer;text-decoration:none;transition:all .2s;background:var(--c-bg);display:block;color:inherit}
+.pager-btn:hover{border-color:var(--c-brand);background:rgba(59,130,246,.04)}
+.pager-btn.prev{text-align:left}.pager-btn.next{text-align:right}
+.pager-lbl{font-size:11px;color:var(--c-text-3);font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
+.pager-name{font-size:14px;font-weight:600;color:var(--c-brand)}
+
+/* ─ 검색 모달 ─ */
+.modal-ov{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;padding-top:72px}
+.modal-ov.open{display:flex}
+.modal-box{background:var(--c-bg);border:1px solid var(--c-border);border-radius:14px;width:100%;max-width:520px;box-shadow:0 16px 60px rgba(0,0,0,.25);overflow:hidden;animation:mfade .15s ease}
+@keyframes mfade{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.modal-inp{width:100%;padding:16px 18px;font-size:15px;border:none;border-bottom:1px solid var(--c-border);background:transparent;color:var(--c-text-1);font-family:inherit;outline:none}
+.modal-inp::placeholder{color:var(--c-text-3)}
+.modal-res{max-height:380px;overflow-y:auto;padding:6px}
+.res-item{padding:10px 12px;border-radius:7px;cursor:pointer;transition:background .12s}
+.res-item:hover,.res-item.on{background:rgba(59,130,246,.08)}
+.res-cat{font-size:11px;color:var(--c-brand);font-weight:600;margin-bottom:2px}
+.res-title{font-size:14px;font-weight:600;color:var(--c-text-1)}
+.res-prev{font-size:12px;color:var(--c-text-3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.res-empty{text-align:center;padding:28px;color:var(--c-text-3);font-size:13px}
+.modal-foot{padding:8px 12px;border-top:1px solid var(--c-border);display:flex;gap:12px;font-size:11px;color:var(--c-text-3)}
+.modal-foot kbd{background:var(--c-bg-mute);padding:1px 5px;border-radius:4px;border:1px solid var(--c-border)}
+
+/* ─ 로딩/빈 ─ */
+.loading{text-align:center;padding:80px;color:var(--c-text-3);font-size:14px}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(59,130,246,.2);border-top-color:var(--c-brand);border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes sp{to{transform:rotate(360deg)}}
+mark{background:rgba(59,130,246,.18);color:var(--c-brand-light);border-radius:3px;padding:0 2px}
 
-/* ── 스크롤바 ── */
-::-webkit-scrollbar{width:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(56,189,248,.2);border-radius:3px}
-
-/* ── 반응형 ── */
-@media(max-width:860px){
-  .layout{grid-template-columns:1fr}
-  .sidebar{display:none}
-  .main{padding:24px 20px}
+/* ─ 반응형 ─ */
+@media(max-width:960px){
+  .sb{display:none}
+  .content{margin-left:0;padding:32px 24px 60px;max-width:100%}
+  .hero-title{font-size:30px}
+}
+@media(max-width:640px){
+  .nav{padding:0 14px}
+  .nav-links,.discord-btn{display:none}
+  .content{padding:20px 16px 48px}
+  .pager{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
-<header>
-  <div style="display:flex;align-items:center">
-    <span class="logo">모찌서버</span>
-    <span class="logo-sub">법률 가이드</span>
+<!-- 검색 모달 -->
+<div class="modal-ov" id="searchModal" onclick="closeSearchOut(event)">
+  <div class="modal-box">
+    <input class="modal-inp" id="searchInp" placeholder="법률 검색..." oninput="doSearch(this.value)" onkeydown="searchKey(event)">
+    <div class="modal-res" id="searchRes"><div class="res-empty">검색어를 입력하세요</div></div>
+    <div class="modal-foot">
+      <span><kbd>↑</kbd><kbd>↓</kbd> 이동</span>
+      <span><kbd>Enter</kbd> 선택</span>
+      <span><kbd>Esc</kbd> 닫기</span>
+    </div>
   </div>
-  <div class="header-right">
-    <div class="badge-live"><div class="dot"></div>실시간 업데이트</div>
-    <a href="index.html" class="home-btn">🏠 홈으로</a>
-  </div>
-</header>
+</div>
 
+<!-- 네비 -->
+<nav class="nav">
+  <a class="nav-logo" href="#" onclick="showHome()">
+    <span style="font-size:22px">🫧</span>
+    <span class="nav-logo-txt">모찌서버</span>
+    <span class="nav-logo-sep">/</span>
+    <span class="nav-logo-sub">법률 가이드</span>
+  </a>
+  <div class="nav-links">
+    <button class="nav-link" onclick="showHome()">홈</button>
+    <button class="nav-link" onclick="showFirstLaw()">법률 가이드</button>
+    <a class="nav-link" href="https://discord.gg/mochi-rp" target="_blank">공식 디스코드</a>
+  </div>
+  <div class="nav-r">
+    <button class="search-btn" onclick="openSearch()">🔍 검색 <kbd>K</kbd></button>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+    <a class="discord-btn" href="https://discord.gg/mochi-rp" target="_blank">Discord →</a>
+  </div>
+</nav>
+
+<!-- 레이아웃 -->
 <div class="layout">
-  <!-- 사이드바 -->
-  <aside class="sidebar">
-    <div class="search-wrap">
-      <span class="search-ico">🔍</span>
-      <input class="search-inp" id="searchInp" type="text" placeholder="법률 검색..." oninput="onSearch(this.value)">
+  <aside class="sb" id="sidebar">
+    <div style="padding:12px 12px 14px;border-bottom:1px solid var(--c-border);margin-bottom:8px">
+      <button class="search-btn" style="width:100%;justify-content:flex-start" onclick="openSearch()">🔍 &nbsp;검색... <kbd style="margin-left:auto">K</kbd></button>
     </div>
-    <div class="nav-label">카테고리</div>
-    <ul class="cat-nav" id="catNav">
-      <li><a href="#" onclick="filterCat(null,this)" class="active">전체 보기</a></li>
-    </ul>
+    <div id="sbContent"><div style="padding:20px;text-align:center;color:var(--c-text-3);font-size:13px"><span class="spin"></span>불러오는 중...</div></div>
   </aside>
-
-  <!-- 메인 -->
-  <main class="main">
-    <div class="page-title">⚖️ 서버 법률 가이드</div>
-    <div class="page-sub">모찌 FiveM 서버의 모든 법률을 확인하세요</div>
-    <div id="lastUpdated" class="updated" style="display:none">🕐 마지막 업데이트: <span id="updatedTime">-</span></div>
-    <div id="lawContent">
-      <div class="loading"><span class="spin"></span>법률 데이터를 불러오는 중...</div>
-    </div>
+  <main class="content" id="main">
+    <div class="loading"><span class="spin"></span>법률 데이터를 불러오는 중...</div>
   </main>
 </div>
 
@@ -136,129 +199,165 @@ header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 32p
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import{getFirestore,collection,getDocs,orderBy,query}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-let db, allLaws = [], currentCat = null, searchQuery = '';
+let db,allLaws=[],catMap={},catList=[];
 
-async function init() {
-  try {
-    const res = await fetch('/api/config');
-    const cfg = await res.json();
-    const app = initializeApp(cfg);
-    db = getFirestore(app);
-    await loadLaws();
-  } catch(e) {
-    document.getElementById('lawContent').innerHTML = `<div class="empty"><div class="empty-ico">⚠️</div><div>데이터를 불러올 수 없습니다.<br><small style="color:var(--mu)">${e.message}</small></div></div>`;
+const ICONS={'기초 법률':'📋','팩션 법률':'🏢','서버 제재 법률':'🚫','헌·형법':'⚖️','범죄 처벌':'🔒','RP 법률 공통':'📜','통합 RP 법률':'🎯','도주 RP':'🚗','즉흥 RP':'⚡','수배 RP':'🔍','영장 RP':'📄','납치·청부의뢰 RP':'🤝','빈집 털이 RP':'🏠','ATM 털이 RP':'💳','편의점 털이 RP':'🏪','남부은행 RP':'🏦','북부은행 RP':'🏦','보석상 털이 RP':'💎','닭공장 털이 RP':'🐔','건샵 털이 RP':'🔫','조직 RP 법률':'⚔️','지상 B':'🔫','지상 C':'🔫','사유지 게릴라':'🌲','카지노 게릴라':'🎰','남부공항 게릴라':'✈️','기업 RP':'💼','발전소점령전':'⚡'};
+
+async function init(){
+  try{
+    const r=await fetch('/api/config');
+    const cfg=await r.json();
+    const app=initializeApp(cfg);
+    db=getFirestore(app);
+    await load();
+  }catch(e){
+    document.getElementById('main').innerHTML=`<div style="text-align:center;padding:80px;color:var(--c-text-3)">⚠️ 데이터 로드 실패<br><small>${e.message}</small></div>`;
   }
 }
 
-async function loadLaws() {
-  try {
-    const sn = await getDocs(query(collection(db, 'laws'), orderBy('order','asc')));
-    allLaws = sn.docs.map(d => ({id: d.id, ...d.data()}));
-    buildCatNav();
-    render();
-    // 마지막 업데이트 시각
-    const latest = allLaws.reduce((m, l) => {
-      const t = l.updatedAt?.seconds || 0;
-      return t > m ? t : m;
-    }, 0);
-    if (latest) {
-      document.getElementById('updatedTime').textContent = new Date(latest * 1000).toLocaleString('ko-KR');
-      document.getElementById('lastUpdated').style.display = 'inline-flex';
-    }
-  } catch(e) {
-    document.getElementById('lawContent').innerHTML = `<div class="empty"><div class="empty-ico">⚠️</div><div>법률 데이터 로드 실패<br><small style="color:var(--mu)">${e.message}</small></div></div>`;
-  }
+async function load(){
+  const sn=await getDocs(query(collection(db,'laws'),orderBy('order','asc')));
+  allLaws=sn.docs.map(d=>({id:d.id,...d.data()}));
+  catMap={};
+  allLaws.forEach(l=>{const c=l.category||'미분류';if(!catMap[c])catMap[c]=[];catMap[c].push(l);});
+  catList=Object.keys(catMap);
+  buildSidebar();
+  showHome();
 }
 
-function buildCatNav() {
-  const cats = [...new Set(allLaws.map(l => l.category || '미분류'))];
-  const nav = document.getElementById('catNav');
-  nav.innerHTML = `<li><a href="#" onclick="window.filterCat(null,this)" class="active">전체 보기 <span class="cat-count">${allLaws.length}</span></a></li>`;
-  cats.forEach(cat => {
-    const count = allLaws.filter(l => (l.category || '미분류') === cat).length;
-    const li = document.createElement('li');
-    li.innerHTML = `<a href="#" onclick="window.filterCat('${cat.replace(/'/g,"\\'")}',this)">${cat} <span class="cat-count">${count}</span></a>`;
-    nav.appendChild(li);
-  });
-}
-
-function render() {
-  const laws = allLaws.filter(l => {
-    const matchCat = !currentCat || (l.category || '미분류') === currentCat;
-    const q = searchQuery.toLowerCase();
-    const matchSearch = !q ||
-      (l.title||'').toLowerCase().includes(q) ||
-      (l.content||'').toLowerCase().includes(q) ||
-      (l.category||'').toLowerCase().includes(q);
-    return matchCat && matchSearch;
-  });
-
-  if (!laws.length) {
-    document.getElementById('lawContent').innerHTML = `<div class="empty"><div class="empty-ico">🔍</div><div>검색 결과가 없습니다.</div></div>`;
-    return;
-  }
-
-  // 카테고리별로 그룹핑
-  const grouped = {};
-  laws.forEach(l => {
-    const c = l.category || '미분류';
-    if (!grouped[c]) grouped[c] = [];
-    grouped[c].push(l);
-  });
-
-  document.getElementById('lawContent').innerHTML = Object.entries(grouped).map(([cat, items]) => `
-    <div class="cat-section" id="cat-${encodeURIComponent(cat)}">
-      <div class="cat-header">
-        <div class="cat-title">${cat}</div>
-        <div class="cat-num">${items.length}개</div>
-      </div>
-      ${items.map(l => `
-        <div class="law-card" id="law-${l.id}">
-          <div class="law-card-header" onclick="toggleCard(this.parentElement)">
-            <div class="law-card-title">${highlight(l.title||'')}</div>
-            <div class="law-toggle">▼</div>
-          </div>
-          <div class="law-card-body">
-            <div class="law-content">${highlight(escapeHtml(l.content||''))}</div>
-          </div>
-        </div>
-      `).join('')}
+function buildSidebar(){
+  document.getElementById('sbContent').innerHTML=catList.map(cat=>`
+    <div class="sb-section">
+      <div class="sb-label">${ICONS[cat]||'📄'} ${esc(cat)}</div>
+      <ul class="sb-list">
+        ${catMap[cat].map(l=>`<li><button class="sb-link" id="sl-${l.id}" onclick="showLaw('${esc(cat)}','${l.id}')">${esc(l.title||'')}</button></li>`).join('')}
+      </ul>
     </div>
+    <div class="sb-divider"></div>
   `).join('');
 }
 
-function escapeHtml(t) {
-  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function highlight(text) {
-  if (!searchQuery) return text;
-  const q = searchQuery.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-  return text.replace(new RegExp(`(${q})`, 'gi'), '<mark style="background:rgba(56,189,248,.25);color:var(--blue-light);border-radius:3px;padding:0 2px">$1</mark>');
-}
-
-window.toggleCard = (card) => {
-  card.classList.toggle('open');
+window.showHome=()=>{
+  setActive(null);
+  const total=allLaws.length;
+  const upd=allLaws.reduce((m,l)=>{const t=l.updatedAt?.seconds||0;return t>m?t:m;},0);
+  document.getElementById('main').innerHTML=`
+    <div class="hero">
+      <div class="hero-badge">⚖️ Official Law Guide</div>
+      <h1 class="hero-title">모찌서버<br><em>법률 가이드</em></h1>
+      <p class="hero-desc">서버의 모든 법률과 규정을 한눈에 확인하세요.<br>총 ${total}개 법률 수록.</p>
+      ${upd?`<p style="font-size:12px;color:var(--c-text-3);margin-bottom:24px">마지막 업데이트: ${new Date(upd*1000).toLocaleDateString('ko-KR')}</p>`:''}
+      <div class="hero-btns">
+        <button class="btn-p" onclick="showFirstLaw()">📖 법률 가이드 보기</button>
+        <a class="btn-o" href="https://discord.gg/mochi-rp" target="_blank">💬 디스코드 참여</a>
+      </div>
+    </div>
+    <div class="cards">${catList.map(cat=>`
+      <a class="card" onclick="showCat('${esc(cat)}')">
+        <div class="card-ico">${ICONS[cat]||'📄'}</div>
+        <div class="card-title">${esc(cat)}</div>
+        <div class="card-count">${catMap[cat].length}개 법률</div>
+      </a>`).join('')}
+    </div>
+  `;
 };
 
-window.filterCat = (cat, el) => {
-  currentCat = cat;
-  document.querySelectorAll('.cat-nav a').forEach(a => a.classList.remove('active'));
-  if (el) el.classList.add('active');
-  render();
-  return false;
+window.showCat=(cat)=>{
+  if(!catMap[cat])return;
+  setActive(null);
+  const items=catMap[cat];
+  const idx=catList.indexOf(cat);
+  const prev=idx>0?catList[idx-1]:null;
+  const next=idx<catList.length-1?catList[idx+1]:null;
+  document.getElementById('main').innerHTML=`
+    <div class="doc-crumb">
+      <span onclick="showHome()">홈</span><span>›</span>
+      <span onclick="showHome()">법률 가이드</span><span>›</span>
+      <span>${esc(cat)}</span>
+    </div>
+    <h1 class="doc-title">${ICONS[cat]||'📄'} ${esc(cat)}</h1>
+    <div class="doc-meta">${items.length}개 항목</div>
+    ${items.map(l=>`
+      <div class="law-item" id="li-${l.id}">
+        <div class="law-head" onclick="toggleItem('${l.id}')">
+          <div class="law-head-title">${esc(l.title||'')}</div>
+          <div class="law-chev">▼</div>
+        </div>
+        <div class="law-body"><div class="law-body-inner">${esc(l.content||'')}</div></div>
+      </div>`).join('')}
+    <div class="pager">
+      <div>${prev?`<a class="pager-btn prev" onclick="showCat('${esc(prev)}')"><div class="pager-lbl">← 이전</div><div class="pager-name">${esc(prev)}</div></a>`:''}</div>
+      <div>${next?`<a class="pager-btn next" onclick="showCat('${esc(next)}')"><div class="pager-lbl">다음 →</div><div class="pager-name">${esc(next)}</div></a>`:''}</div>
+    </div>
+  `;
+  window.scrollTo({top:0,behavior:'smooth'});
 };
 
-window.onSearch = (val) => {
-  searchQuery = val;
-  // 검색 중엔 전체 카테고리 표시
-  if (val) {
-    currentCat = null;
-    document.querySelectorAll('.cat-nav a').forEach(a => a.classList.remove('active'));
-    document.querySelector('.cat-nav a').classList.add('active');
-  }
-  render();
+window.showLaw=(cat,id)=>{
+  const l=allLaws.find(x=>x.id===id);
+  if(!l)return;
+  setActive(id);
+  const items=catMap[cat]||[];
+  const idx=items.findIndex(x=>x.id===id);
+  const prev=idx>0?items[idx-1]:null;
+  const next=idx<items.length-1?items[idx+1]:null;
+  document.getElementById('main').innerHTML=`
+    <div class="doc-crumb">
+      <span onclick="showHome()">홈</span><span>›</span>
+      <span onclick="showCat('${esc(cat)}')">${esc(cat)}</span><span>›</span>
+      <span>${esc(l.title||'')}</span>
+    </div>
+    <h1 class="doc-title">${esc(l.title||'')}</h1>
+    <div class="doc-meta">${l.updatedAt?.seconds?`🕐 업데이트: ${new Date(l.updatedAt.seconds*1000).toLocaleDateString('ko-KR')}&nbsp;&nbsp;`:''}</div>
+    <div class="law-doc-content">${esc(l.content||'')}</div>
+    <div class="pager">
+      <div>${prev?`<a class="pager-btn prev" onclick="showLaw('${esc(cat)}','${prev.id}')"><div class="pager-lbl">← 이전</div><div class="pager-name">${esc(prev.title||'')}</div></a>`:''}</div>
+      <div>${next?`<a class="pager-btn next" onclick="showLaw('${esc(cat)}','${next.id}')"><div class="pager-lbl">다음 →</div><div class="pager-name">${esc(next.title||'')}</div></a>`:''}</div>
+    </div>
+  `;
+  window.scrollTo({top:0,behavior:'smooth'});
 };
+
+window.showFirstLaw=()=>{if(catList.length)showCat(catList[0]);};
+window.toggleItem=(id)=>{const el=document.getElementById('li-'+id);if(el)el.classList.toggle('open');};
+function setActive(id){document.querySelectorAll('.sb-link').forEach(a=>a.classList.remove('active'));if(id){const el=document.getElementById('sl-'+id);if(el){el.classList.add('active');el.scrollIntoView({block:'nearest'});}}}
+
+// ── 검색 ──
+let si=-1;
+window.openSearch=()=>{document.getElementById('searchModal').classList.add('open');setTimeout(()=>document.getElementById('searchInp').focus(),40);};
+window.closeSearchOut=(e)=>{if(e.target.id==='searchModal')closeSearch();};
+function closeSearch(){document.getElementById('searchModal').classList.remove('open');document.getElementById('searchInp').value='';document.getElementById('searchRes').innerHTML='<div class="res-empty">검색어를 입력하세요</div>';si=-1;}
+window.doSearch=(q)=>{
+  si=-1;
+  if(!q.trim()){document.getElementById('searchRes').innerHTML='<div class="res-empty">검색어를 입력하세요</div>';return;}
+  const res=allLaws.filter(l=>(l.title||'').toLowerCase().includes(q.toLowerCase())||(l.content||'').toLowerCase().includes(q.toLowerCase())||(l.category||'').toLowerCase().includes(q.toLowerCase())).slice(0,20);
+  if(!res.length){document.getElementById('searchRes').innerHTML='<div class="res-empty">검색 결과가 없습니다</div>';return;}
+  document.getElementById('searchRes').innerHTML=res.map(l=>`
+    <div class="res-item" data-cat="${esc(l.category||'')}" data-id="${l.id}" onclick="pickResult('${esc(l.category||'')}','${l.id}')">
+      <div class="res-cat">${esc(l.category||'미분류')}</div>
+      <div class="res-title">${hl(esc(l.title||''),q)}</div>
+      <div class="res-prev">${hl(esc((l.content||'').replace(/\n/g,' ').substring(0,80)),q)}</div>
+    </div>`).join('');
+};
+window.pickResult=(cat,id)=>{closeSearch();showLaw(cat,id);};
+window.searchKey=(e)=>{
+  const items=document.querySelectorAll('.res-item');
+  if(e.key==='Escape'){closeSearch();return;}
+  if(e.key==='ArrowDown')si=Math.min(si+1,items.length-1);
+  else if(e.key==='ArrowUp')si=Math.max(si-1,0);
+  else if(e.key==='Enter'){if(si>=0&&items[si]){const el=items[si];pickResult(el.dataset.cat,el.dataset.id);}return;}
+  items.forEach((el,i)=>el.classList.toggle('on',i===si));
+  if(items[si])items[si].scrollIntoView({block:'nearest'});
+};
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearch();}if(e.key==='Escape')closeSearch();});
+
+// ── 테마 ──
+window.toggleTheme=()=>{const d=document.documentElement.dataset.theme==='dark';document.documentElement.dataset.theme=d?'light':'dark';document.getElementById('themeBtn').textContent=d?'🌙':'☀️';localStorage.setItem('vp-t',d?'light':'dark');};
+const st=localStorage.getItem('vp-t');if(st){document.documentElement.dataset.theme=st;document.getElementById('themeBtn').textContent=st==='dark'?'🌙':'☀️';}
+
+// ── 유틸 ──
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function hl(t,q){if(!q)return t;const r=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return t.replace(new RegExp(`(${r})`,'gi'),'<mark>$1</mark>');}
 
 init();
 </script>
