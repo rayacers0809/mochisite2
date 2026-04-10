@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOCHI // Staff 구금처리</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0c;
+            --surface: rgba(255,255,255,0.03);
+            --surface-hover: rgba(255,255,255,0.06);
+            --border: rgba(255,255,255,0.08);
+            --text: #fff;
+            --text-dim: rgba(255,255,255,0.5);
+            --text-muted: rgba(255,255,255,0.3);
+            
+            --pink: #ff2d75;
+            --pink-glow: rgba(255,45,117,0.5);
+            --orange: #ff6b35;
+            --yellow: #ffc107;
+            --green: #00d97e;
+            --red: #ff4757;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 배경 그라데이션 메쉬 */
+        .bg-mesh {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .mesh-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.4;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .blob-1 {
+            width: 800px;
+            height: 800px;
+            background: linear-gradient(135deg, var(--pink) 0%, #8b5cf6 100%);
+            top: -400px;
+            right: -200px;
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            width: 600px;
+            height: 600px;
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            bottom: -300px;
+            left: -200px;
+            animation-delay: -10s;
+        }
+
+        .blob-3 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, var(--pink) 0%, var(--orange) 100%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -5s;
+            opacity: 0.2;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.05); }
+            50% { transform: translate(-20px, 20px) scale(0.95); }
+            75% { transform: translate(20px, 10px) scale(1.02); }
+        }
+
+        /* 노이즈 오버레이 */
+        .noise {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.015;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* 메인 컨테이너 */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        /* 헤더 */
+        .header {
+            margin-bottom: 60px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--pink) 0%, #ff6b9d 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 8px 32px var(--pink-glow);
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            font-size: 13px;
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 10px 18px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+            backdrop-filter: blur(20px);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* 타이틀 섹션 */
+        .title-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .title-section h2 {
+            font-size: 56px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title-section h2 em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--pink) 0%, var(--orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title-section p {
+            font-size: 16px;
+            color: var(--text-dim);
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* 경고 배너 */
+        .warning-banner {
+            background: linear-gradient(135deg, rgba(255,45,117,0.1) 0%, rgba(255,107,53,0.1) 100%);
+            border: 1px solid rgba(255,45,117,0.2);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 50px;
+            backdrop-filter: blur(20px);
+        }
+
+        .warning-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .warning-icon {
+            font-size: 20px;
+        }
+
+        .warning-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--pink);
+        }
+
+        .warning-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .warning-item {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-dim);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s;
+        }
+
+        .warning-item:hover {
+            background: rgba(0,0,0,0.5);
+            border-color: rgba(255,45,117,0.3);
+            transform: translateY(-2px);
+        }
+
+        .warning-item strong {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* 탭 네비게이션 */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(20px);
+        }
+
+        .tab:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--pink) 0%, #e84393 100%);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 8px 32px var(--pink-glow);
+        }
+
+        .tab-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .tab[data-level="critical"] .tab-dot { background: var(--red); box-shadow: 0 0 10px var(--red); }
+        .tab[data-level="high"] .tab-dot { background: var(--orange); box-shadow: 0 0 10px var(--orange); }
+        .tab[data-level="mid"] .tab-dot { background: var(--yellow); box-shadow: 0 0 10px var(--yellow); }
+        .tab[data-level="low"] .tab-dot { background: var(--green); box-shadow: 0 0 10px var(--green); }
+
+        .tab-count {
+            background: rgba(255,255,255,0.15);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .tab.active .tab-count {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* 카드 그리드 */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            backdrop-filter: blur(40px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+        }
+
+        .card[data-level="critical"] { --level-color: var(--red); }
+        .card[data-level="high"] { --level-color: var(--orange); }
+        .card[data-level="mid"] { --level-color: var(--yellow); }
+        .card[data-level="low"] { --level-color: var(--green); }
+
+        .card:hover {
+            border-color: var(--level-color);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.4), 0 0 40px rgba(var(--level-color), 0.15);
+        }
+
+        .card-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .level-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--level-color);
+            box-shadow: 0 0 20px var(--level-color);
+        }
+
+        .card-title h3 {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .card-badge {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.05);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        .card-body {
+            padding: 20px 28px 28px;
+        }
+
+        .violation-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 14px;
+            margin-bottom: 12px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .violation-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .violation-row:hover {
+            background: rgba(0,0,0,0.4);
+            border-color: var(--level-color);
+            transform: translateX(4px);
+        }
+
+        .violation-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .violation-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            letter-spacing: -0.2px;
+        }
+
+        .violation-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .violation-penalty {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--level-color);
+            background: rgba(255,255,255,0.03);
+            padding: 10px 18px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 110px;
+            flex-shrink: 0;
+            margin-left: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* 푸터 */
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--pink);
+            text-decoration: none;
+        }
+
+        /* 반응형 */
+        @media (max-width: 1200px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            .warning-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            .header-top {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .title-section h2 {
+                font-size: 36px;
+            }
+            .warning-grid {
+                grid-template-columns: 1fr;
+            }
+            .tabs {
+                gap: 6px;
+            }
+            .tab {
+                padding: 12px 16px;
+                font-size: 13px;
+            }
+            .tab span:not(.tab-dot):not(.tab-count) {
+                display: none;
+            }
+        }
+
+        /* 애니메이션 */
+        .fade-up {
+            animation: fadeUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="bg-mesh">
+        <div class="mesh-blob blob-1"></div>
+        <div class="mesh-blob blob-2"></div>
+        <div class="mesh-blob blob-3"></div>
+    </div>
+    <div class="noise"></div>
+
+    <div class="container">
+        <header class="header fade-up">
+            <div class="header-top">
+                <div class="logo-area">
+                    <div class="logo-icon">🌸</div>
+                    <div class="logo-text">
+                        <h1>MOCHI</h1>
+                        <span>Staff Management Portal</span>
+                    </div>
+                </div>
+                <div class="status-badge">
+                    <div class="status-dot"></div>
+                    <span>STAFF ONLY</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="title-section fade-up delay-1">
+            <h2>구금처리 <em>가이드라인</em></h2>
+            <p>모찌 서버 관리자를 위한 공식 제재 기준입니다. 모든 제재는 증거에 기반하여 공정하게 집행하세요.</p>
+        </section>
+
+        <div class="warning-banner fade-up delay-2">
+            <div class="warning-header">
+                <span class="warning-icon">⚡</span>
+                <span class="warning-title">핵심 집행 수칙</span>
+            </div>
+            <div class="warning-grid">
+                <div class="warning-item">
+                    <strong>증거 기반</strong><br>
+                    모든 제재는 명확한 증거(영상/로그)에 근거
+                </div>
+                <div class="warning-item">
+                    <strong>영구밴 가능</strong><br>
+                    관리자 기만 시 예외 없이 영구 밴 집행
+                </div>
+                <div class="warning-item">
+                    <strong>악용 금지</strong><br>
+                    미명시 사항 악용 시 최대 영구 밴
+                </div>
+                <div class="warning-item">
+                    <strong>이의제기</strong><br>
+                    모든 이의는 공식 고객센터로 유도
+                </div>
+            </div>
+        </div>
+
+        <nav class="tabs fade-up delay-2">
+            <button class="tab active" data-level="critical" data-target="critical">
+                <span class="tab-dot"></span>
+                <span>치명적 위반</span>
+                <span class="tab-count">4</span>
+            </button>
+            <button class="tab" data-level="high" data-target="high">
+                <span class="tab-dot"></span>
+                <span>중징계</span>
+                <span class="tab-count">4</span>
+            </button>
+            <button class="tab" data-level="mid" data-target="mid">
+                <span class="tab-dot"></span>
+                <span>일반 징계</span>
+                <span class="tab-count">4</span>
+            </button>
+            <button class="tab" data-level="low" data-target="low">
+                <span class="tab-dot"></span>
+                <span>행정 위반</span>
+                <span class="tab-count">5</span>
+            </button>
+        </nav>
+
+        <div class="cards-container">
+            <article class="card fade-up delay-3" data-level="critical" id="critical">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="level-indicator"></div>
+                        <h3>치명적 위반</h3>
+                    </div>
+                    <span class="card-badge">CRITICAL</span>
+                </div>
+                <div class="card-body">
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">비인가 프로그램(핵)</div>
+                            <div class="violation-desc">핵 무기 소지, 습득 후 미반납 행위</div>
+                        </div>
+                        <div class="violation-penalty">영구 BAN</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">관리자 기만 & 서버 비하</div>
+                            <div class="violation-desc">허위사실, 증거조작, 악의적 비하</div>
+                        </div>
+                        <div class="violation-penalty">14일 ~ 영구</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">범죄 후 고의 디컨/잠수</div>
+                            <div class="violation-desc">범죄 상황 회피 목적 접속 종료</div>
+                        </div>
+                        <div class="violation-penalty">최대 영구</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">지속적 RP 방해 / 괴롭힘</div>
+                            <div class="violation-desc">이없살, 악의적 괴롭힘, 갈등 유도</div>
+                        </div>
+                        <div class="violation-penalty">180분 ~ 영구</div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card fade-up delay-3" data-level="high" id="high">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="level-indicator"></div>
+                        <h3>중징계</h3>
+                    </div>
+                    <span class="card-badge">HIGH</span>
+                </div>
+                <div class="card-body">
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">시스템 한계 / 리붓 악용</div>
+                            <div class="violation-desc">부당 이득 취득 시</div>
+                        </div>
+                        <div class="violation-penalty">500분 ~ 영구</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">보호구역 내 RP 진행</div>
+                            <div class="violation-desc">보호구역 규칙 정면 위반 및 강행</div>
+                        </div>
+                        <div class="violation-penalty">300분</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">금지 그래픽 패치 (1차)</div>
+                            <div class="violation-desc">2차 적발 시 영구 BAN</div>
+                        </div>
+                        <div class="violation-penalty">300분</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">버그 차량 사용</div>
+                            <div class="violation-desc">복사 차량 소지 및 운행 (회수 병행)</div>
+                        </div>
+                        <div class="violation-penalty">300분</div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card fade-up delay-4" data-level="mid" id="mid">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="level-indicator"></div>
+                        <h3>일반 징계</h3>
+                    </div>
+                    <span class="card-badge">MEDIUM</span>
+                </div>
+                <div class="card-body">
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">고의적 볼링(3인 이상)</div>
+                            <div class="violation-desc">차량 이용 고의 로드킬 (고의성 필수)</div>
+                        </div>
+                        <div class="violation-penalty">200분 ~ 영구</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">강도 RP 위반</div>
+                            <div class="violation-desc">벌금 미보유 상태 진행</div>
+                        </div>
+                        <div class="violation-penalty">200분</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">분쟁 유도 / 분쟁성 발언</div>
+                            <div class="violation-desc">채팅·음성 포함, 경미 시 경고 후 집행</div>
+                        </div>
+                        <div class="violation-penalty">120분 ~ 영구</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">사후 보이스 위반</div>
+                            <div class="violation-desc">사망 후 RP 영향 발언, 마이크 미음소거</div>
+                        </div>
+                        <div class="violation-penalty">120 ~ 300분</div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card fade-up delay-4" data-level="low" id="low">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="level-indicator"></div>
+                        <h3>행정 위반</h3>
+                    </div>
+                    <span class="card-badge">LOW</span>
+                </div>
+                <div class="card-body">
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">공무원 근무 중 잠수</div>
+                            <div class="violation-desc">출근 상태 방치</div>
+                        </div>
+                        <div class="violation-penalty">120분</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">기억 RP 수행</div>
+                            <div class="violation-desc">사망 시점 사실 고지 위반</div>
+                        </div>
+                        <div class="violation-penalty">60 ~ 120분</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">음성 변조기 사용</div>
+                            <div class="violation-desc">비인가 음성 프로그램 사용</div>
+                        </div>
+                        <div class="violation-penalty">120분</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">광고 남용 / 규칙 미준수</div>
+                            <div class="violation-desc">목적 외 사용</div>
+                        </div>
+                        <div class="violation-penalty">경고 ~ 60분</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">RP 법률 미숙지</div>
+                            <div class="violation-desc">서버 내 RP 법률 규정 미숙지</div>
+                        </div>
+                        <div class="violation-penalty">60 ~ 200분</div>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <footer class="footer fade-up delay-4">
+            <p>© 2025 MOCHI Server · Staff Guidelines v2.0 · <a href="#">고객센터</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // 탭 클릭 시 해당 카드로 스크롤
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 활성화 상태 변경
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // 해당 카드로 스크롤
+                const target = tab.dataset.target;
+                const card = document.getElementById(target);
+                if (card) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        });
+
+        // 스크롤 시 탭 활성화
+        const cards = document.querySelectorAll('.card');
+        const tabs = document.querySelectorAll('.tab');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const level = entry.target.dataset.level;
+                    tabs.forEach(tab => {
+                        tab.classList.toggle('active', tab.dataset.level === level);
+                    });
+                }
+            });
+        }, { rootMargin: '-30% 0px -50% 0px' });
+
+        cards.forEach(card => observer.observe(card));
+    </script>
+</body>
+</html>
