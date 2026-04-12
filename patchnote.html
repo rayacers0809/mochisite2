@@ -25,13 +25,16 @@
   --grad:linear-gradient(135deg,var(--pd),var(--peach));
 }
 html{scroll-behavior:smooth}
-body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);font-weight:400;overflow-x:hidden;min-height:100vh}
+body{font-family:'Noto Sans KR',sans-serif;background:transparent;color:var(--text);font-weight:400;overflow-x:hidden;min-height:100vh}
 
 /* 배경 */
 #bgWrap{position:fixed;inset:0;z-index:0}
-#bgVideo,#bgImage{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;opacity:0;transition:opacity 1.2s ease}
-#bgVideo.loaded,#bgImage.loaded{opacity:.6}
-#bgOverlay{position:absolute;inset:0;background:rgba(14,12,15,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+#bgVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;opacity:0;transition:opacity 1.2s ease;z-index:2}
+#bgVideo.loaded{opacity:.6}
+#bgSlides{position:absolute;inset:0;z-index:0}
+.bg-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.5s ease}
+.bg-slide.active{opacity:.6}
+#bgOverlay{position:absolute;inset:0;z-index:3;background:rgba(14,12,15,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 
 /* 네비 */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 40px;background:rgba(14,12,15,.75);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
@@ -263,14 +266,14 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(244,132,158,.3);border-radius:3px}
 </style>
 <script>
-(function(){try{const c=JSON.parse(localStorage.getItem('mochi_assets')||'{}');if(c.bgVideo){const l=document.createElement('link');l.rel='preload';l.as='video';l.href=c.bgVideo;document.head.appendChild(l);}else if(c.bgImage){const l=document.createElement('link');l.rel='preload';l.as='image';l.href=c.bgImage;document.head.appendChild(l);}}catch{}})();
+(function(){try{const c=JSON.parse(localStorage.getItem('mochi_assets')||'{}');if(c.bgVideo&&c.bgVideo!=='_none_'){const l=document.createElement('link');l.rel='preload';l.as='video';l.href=c.bgVideo;document.head.appendChild(l);}else if(c.bgSlides&&c.bgSlides.length){const l=document.createElement('link');l.rel='preload';l.as='image';l.href=c.bgSlides[0];document.head.appendChild(l);}}catch{}})();
 </script>
 </head>
 <body>
 
 <div id="bgWrap">
   <video id="bgVideo" autoplay muted loop playsinline></video>
-  <img id="bgImage" alt="배경">
+  <div id="bgSlides"></div>
   <div id="bgOverlay"></div>
 </div>
 
@@ -555,15 +558,45 @@ function patchSort(a,b){
   return parseDate(b.ver||b.date)-parseDate(a.ver||a.date);
 }
 
+// ── 슬라이드쇼 엔진
+let slideTimer=null;
+function startSlideshow(urls,interval){
+  const container=document.getElementById('bgSlides');
+  if(!urls.length)return;
+  container.innerHTML='';
+  urls.forEach((url,i)=>{
+    const img=document.createElement('img');
+    img.className='bg-slide'+(i===0?' active':'');
+    img.src=url;img.alt='배경';
+    container.appendChild(img);
+  });
+  if(urls.length<2)return;
+  let cur=0;
+  if(slideTimer)clearInterval(slideTimer);
+  slideTimer=setInterval(()=>{
+    const slides=container.querySelectorAll('.bg-slide');
+    slides[cur].classList.remove('active');
+    cur=(cur+1)%slides.length;
+    slides[cur].classList.add('active');
+  },(interval||6)*1000);
+}
+
 async function init(){
   let assetCache={};
   try{assetCache=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');}catch{}
   const el=document.getElementById('navIcon');
   if(assetCache.icon&&assetCache.icon!=='_none_'){if(el){el.src=assetCache.icon;el.style.display='';}iconUrl=assetCache.icon;}
   if(assetCache.defaultThumb&&assetCache.defaultThumb!=='_none_')defaultThumbUrl=assetCache.defaultThumb;
-  else if(assetCache.bgImage&&assetCache.bgImage!=='_none_')defaultThumbUrl=assetCache.bgImage;
-  if(assetCache.bgVideo&&assetCache.bgVideo!=='_none_'){document.getElementById('bgVideo').src=assetCache.bgVideo;document.getElementById('bgVideo').style.display='block';}
-  else if(assetCache.bgImage&&assetCache.bgImage!=='_none_'){document.getElementById('bgImage').src=assetCache.bgImage;document.getElementById('bgImage').style.display='block';if(!defaultThumbUrl)defaultThumbUrl=assetCache.bgImage;}
+  else if(assetCache.bgSlides&&assetCache.bgSlides.length)defaultThumbUrl=assetCache.bgSlides[0];
+
+  // 캐시된 배경: 영상 우선, 없으면 슬라이드
+  if(assetCache.bgVideo&&assetCache.bgVideo!=='_none_'){
+    const v=document.getElementById('bgVideo');v.src=assetCache.bgVideo;v.style.display='block';
+    v.addEventListener('canplay',()=>v.classList.add('loaded'),{once:true});
+    setTimeout(()=>v.classList.add('loaded'),3000);
+  } else if(assetCache.bgSlides&&assetCache.bgSlides.length){
+    startSlideshow(assetCache.bgSlides,assetCache.bgInterval||6);
+  }
 
   // 캐시된 패치노트 즉시 표시
   let cacheValid=false;
@@ -580,18 +613,34 @@ async function init(){
   if(!cfg?.apiKey) return;
 
   const{initializeApp}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-  const{getFirestore,collection,getDocs,query,orderBy}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+  const{getFirestore,collection,getDocs,query,orderBy,doc,getDoc}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
   const{getStorage,ref,getDownloadURL}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
   let app;try{app=initializeApp(cfg);}catch{try{app=initializeApp(cfg,'pn2');}catch{return;}}
   const db=getFirestore(app);const storage=getStorage(app);
 
-  // assets - 404 났던 리소스는 다시 요청 안 함
+  // assets
   const assetP=(async()=>{
     const na={...assetCache,ts:Date.now()};
     try{const url=await getDownloadURL(ref(storage,'site/icon.png'));na.icon=url;iconUrl=url;if(el){el.src=url;el.style.display='';}renderFeatured();}catch{na.icon='_none_';}
     if(assetCache.defaultThumb!=='_none_'){try{const dt=await getDownloadURL(ref(storage,'site/default_thumb.png'));na.defaultThumb=dt;defaultThumbUrl=dt;renderFeatured();renderGrid();}catch{na.defaultThumb='_none_';}}
-    if(assetCache.bgVideo!=='_none_'){try{const v=await getDownloadURL(ref(storage,'site/bg_video.mp4'));na.bgVideo=v;const ve=document.getElementById('bgVideo');if(!ve.src){ve.src=v;ve.style.display='block';}}
-    catch{na.bgVideo='_none_';if(assetCache.bgImage!=='_none_'){try{const i=await getDownloadURL(ref(storage,'site/bg_image.jpg'));na.bgImage=i;const ie=document.getElementById('bgImage');if(!ie.src){ie.src=i;ie.style.display='block';}}catch{na.bgImage='_none_';}}}}
+    // 영상
+    let hasVideo=false;
+    try{
+      const vUrl=await getDownloadURL(ref(storage,'site/bg_video.mp4'));
+      na.bgVideo=vUrl;hasVideo=true;
+      const ve=document.getElementById('bgVideo');
+      if(!ve.getAttribute('src')){ve.src=vUrl;ve.style.display='block';ve.addEventListener('canplay',()=>ve.classList.add('loaded'),{once:true});setTimeout(()=>ve.classList.add('loaded'),3000);}
+    }catch{na.bgVideo='_none_';}
+    // 슬라이드 이미지
+    try{
+      const sn=await getDocs(collection(db,'bg_slides'));
+      const slides=sn.docs.map(d=>d.data()).sort((a,b)=>(a.order||0)-(b.order||0));
+      const urls=slides.map(s=>s.url).filter(Boolean);
+      na.bgSlides=urls;
+      try{const s=await getDoc(doc(db,'settings','bg'));if(s.exists())na.bgInterval=s.data().interval||6;}catch{na.bgInterval=6;}
+      if(!hasVideo&&urls.length&&!document.querySelector('.bg-slide')) startSlideshow(urls,na.bgInterval);
+      if(urls.length&&!defaultThumbUrl){defaultThumbUrl=urls[0];renderFeatured();renderGrid();}
+    }catch{na.bgSlides=[];}
     localStorage.setItem(CACHE_KEY,JSON.stringify(na));
   })();
 
