@@ -478,6 +478,15 @@ async function init(){
         newCache.bgSlides=urls;
         try{const s=await getDoc(doc(db,'settings','bg'));if(s.exists())newCache.bgInterval=s.data().interval||6;}catch{newCache.bgInterval=6;}
         if(!videoPlaying&&urls.length) startSlideshow(urls,newCache.bgInterval);
+        // 패치노트 썸네일 업데이트 (bgSlides 로드 후)
+        if(urls.length&&window.__indexBgThumb===''){
+          document.querySelectorAll('.news-thumb-placeholder').forEach(el=>{
+            const img=document.createElement('div');
+            img.className='news-thumb';img.style.overflow='hidden';
+            img.innerHTML=`<img src="${urls[0]}" alt="" style="width:100%;height:100%;object-fit:cover">`;
+            el.replaceWith(img);
+          });
+        }
       }catch(err){console.error('[모찌] bg_slides 로드 실패:',err);newCache.bgSlides=[];}
       localStorage.setItem(CACHE_KEY,JSON.stringify(newCache));
     }
