@@ -6,6 +6,7 @@
 <title>모찌서버 | 후원 약관 동의서</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root {
@@ -848,109 +849,122 @@
   let lastSubmit = 0;
   const RATE_LIMIT_MS = 10000;
 
-  // ===== PDF Generation =====
+  // ===== PDF Generation (html2canvas → image → PDF) =====
   async function generatePDF(data) {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
 
-    // Load Korean font (Noto Sans KR) from Google's CDN
-    // Use built-in font workaround: render Korean text via canvas-to-image
-    // Simpler approach: use dompdf-like raster rendering via html2canvas-free method
-    // Best: embed a lightweight Korean font. Use 'NotoSansKR' via base64 is too heavy.
-    // Practical: use jsPDF's html() method which handles Korean through canvas rendering.
-
-    const pageW = 210;
-    const pageH = 297;
-    const margin = 18;
-    let y = margin;
-
-    // We'll render via HTML → canvas approach using a hidden div
+    // Create rendering container (offscreen but visible to html2canvas)
     const hidden = document.createElement('div');
     hidden.style.cssText = `
-      position: fixed; left: -9999px; top: 0;
-      width: 174mm; padding: 0; background: #fff; color: #111;
-      font-family: 'Noto Sans KR', sans-serif; font-size: 11pt; line-height: 1.65;
+      position: fixed; left: 0; top: 0;
+      width: 794px; padding: 0; background: #fff; color: #111;
+      font-family: 'Noto Sans KR', sans-serif;
+      z-index: -1; opacity: 0;
+      pointer-events: none;
     `;
     hidden.innerHTML = `
-      <div style="padding: 20mm 18mm; background:#fff;">
-        <div style="text-align:center; border-bottom: 2px solid #1a1a2e; padding-bottom: 10mm; margin-bottom: 10mm;">
-          <div style="font-size: 9pt; letter-spacing: 3px; color:#888; margin-bottom: 3mm;">FIVEM MOCHI · 후콩컴퍼니</div>
-          <div style="font-size: 20pt; font-weight: 700; color:#1a1a2e;">후원 약관 동의서</div>
+      <div style="padding: 56px 52px; background:#fff; width:794px; box-sizing:border-box;">
+        <div style="text-align:center; border-bottom: 2px solid #1a1a2e; padding-bottom: 28px; margin-bottom: 28px;">
+          <div style="font-size: 11px; letter-spacing: 4px; color:#888; margin-bottom: 8px; font-weight:600;">FIVEM MOCHI · 후콩컴퍼니</div>
+          <div style="font-size: 28px; font-weight: 700; color:#1a1a2e;">후원 약관 동의서</div>
         </div>
 
-        <div style="margin-bottom: 8mm;">
-          <div style="font-size: 10pt; font-weight:700; color:#6b5b95; margin-bottom: 3mm; letter-spacing:1px;">■ 후원자 정보</div>
-          <table style="width:100%; border-collapse:collapse; font-size:10.5pt;">
-            <tr><td style="padding:2mm 3mm; background:#f5f3fa; width:35mm; font-weight:600;">후원자</td><td style="padding:2mm 3mm; border-bottom:1px solid #eee;">${escapeHtml(data.donorName)}</td></tr>
-            <tr><td style="padding:2mm 3mm; background:#f5f3fa; font-weight:600;">디스코드</td><td style="padding:2mm 3mm; border-bottom:1px solid #eee;">${escapeHtml(data.discordTag || '미입력')}</td></tr>
-            <tr><td style="padding:2mm 3mm; background:#f5f3fa; font-weight:600;">후원 금액</td><td style="padding:2mm 3mm; border-bottom:1px solid #eee;"><strong style="color:#b8860b;">${data.amount.toLocaleString()}원</strong> (${numberToKorean(data.amount)})</td></tr>
-            <tr><td style="padding:2mm 3mm; background:#f5f3fa; font-weight:600;">동의일자</td><td style="padding:2mm 3mm; border-bottom:1px solid #eee;">${data.dateStr}</td></tr>
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 13px; font-weight:700; color:#6b5b95; margin-bottom: 10px; letter-spacing:1px;">■ 후원자 정보</div>
+          <table style="width:100%; border-collapse:collapse; font-size:13px;">
+            <tr><td style="padding:8px 12px; background:#f5f3fa; width:120px; font-weight:600; border:1px solid #eee;">후원자</td><td style="padding:8px 12px; border:1px solid #eee;">${escapeHtml(data.donorName)}</td></tr>
+            <tr><td style="padding:8px 12px; background:#f5f3fa; font-weight:600; border:1px solid #eee;">디스코드</td><td style="padding:8px 12px; border:1px solid #eee;">${escapeHtml(data.discordTag || '미입력')}</td></tr>
+            <tr><td style="padding:8px 12px; background:#f5f3fa; font-weight:600; border:1px solid #eee;">후원 금액</td><td style="padding:8px 12px; border:1px solid #eee;"><strong style="color:#b8860b;">${data.amount.toLocaleString()}원</strong> (${numberToKorean(data.amount)})</td></tr>
+            <tr><td style="padding:8px 12px; background:#f5f3fa; font-weight:600; border:1px solid #eee;">동의일자</td><td style="padding:8px 12px; border:1px solid #eee;">${data.dateStr}</td></tr>
           </table>
         </div>
 
-        <div style="margin-bottom: 8mm;">
-          <div style="font-size: 10pt; font-weight:700; color:#6b5b95; margin-bottom: 3mm; letter-spacing:1px;">■ 후원 약관 전문</div>
-          <div style="font-size: 9pt; line-height:1.7; color:#333;">
-            <p style="font-weight:700; margin-bottom:2mm;">제1조 (목적)</p>
-            <p style="margin-bottom:3mm;">이 약관은 후콩컴퍼니(이하 "회사")가 운영하는 서비스 및 프로젝트(이하 "서비스")에 자발적으로 금전 또는 기타 자산을 후원하는 이용자(이하 "후원자")의 후원에 관한 제반 사항을 규정함을 목적으로 합니다.</p>
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 13px; font-weight:700; color:#6b5b95; margin-bottom: 10px; letter-spacing:1px;">■ 후원 약관 전문</div>
+          <div style="font-size: 11px; line-height:1.75; color:#333;">
+            <p style="font-weight:700; margin:0 0 4px 0;">제1조 (목적)</p>
+            <p style="margin:0 0 10px 0;">이 약관은 후콩컴퍼니(이하 "회사")가 운영하는 서비스 및 프로젝트(이하 "서비스")에 자발적으로 금전 또는 기타 자산을 후원하는 이용자(이하 "후원자")의 후원에 관한 제반 사항을 규정함을 목적으로 합니다.</p>
 
-            <p style="font-weight:700; margin-bottom:2mm;">제2조 (후원의 정의)</p>
-            <p style="margin-bottom:3mm;">"후원"이라 함은 회사가 제공하는 서비스의 유지, 개발, 또는 콘텐츠 제작 등을 지원하기 위하여 후원자가 자발적으로 금전 또는 기타 자산을 제공하는 행위를 말합니다. 후원은 구매나 투자 행위가 아닌, 순수 자발적 기부 성격을 가지며, 이에 대한 소유권이나 이익 배분 등의 권리는 발생하지 않습니다.</p>
+            <p style="font-weight:700; margin:0 0 4px 0;">제2조 (후원의 정의)</p>
+            <p style="margin:0 0 10px 0;">"후원"이라 함은 회사가 제공하는 서비스의 유지, 개발, 또는 콘텐츠 제작 등을 지원하기 위하여 후원자가 자발적으로 금전 또는 기타 자산을 제공하는 행위를 말합니다. 후원은 구매나 투자 행위가 아닌, 순수 자발적 기부 성격을 가지며, 이에 대한 소유권이나 이익 배분 등의 권리는 발생하지 않습니다.</p>
 
-            <p style="font-weight:700; margin-bottom:2mm;">제3조 (후원의 방법)</p>
-            <p style="margin-bottom:3mm;">후원은 회사가 지정한 결제 수단(예: 계좌이체, 카드결제, 플랫폼 결제 등)을 통해 이루어집니다. 후원자는 후원 금액, 결제 수단, 그리고 후원 목적(선택사항)을 확인 후 자발적으로 후원 절차를 완료해야 합니다.</p>
+            <p style="font-weight:700; margin:0 0 4px 0;">제3조 (후원의 방법)</p>
+            <p style="margin:0 0 10px 0;">후원은 회사가 지정한 결제 수단(예: 계좌이체, 카드결제, 플랫폼 결제 등)을 통해 이루어집니다. 후원자는 후원 금액, 결제 수단, 그리고 후원 목적(선택사항)을 확인 후 자발적으로 후원 절차를 완료해야 합니다.</p>
 
-            <p style="font-weight:700; margin-bottom:2mm;">제4조 (환불 및 취소)</p>
-            <p style="margin-bottom:3mm;">후원은 자발적 기부의 성격을 가지므로, 후원 완료 후에는 환불 또는 취소가 불가능합니다. 단, 명백한 결제 오류(이중 결제 등)가 발생한 경우, 후원자는 7일 이내에 회사에 증빙 자료를 제출해야 하며, 회사는 확인 후 환불을 진행할 수 있습니다.</p>
+            <p style="font-weight:700; margin:0 0 4px 0;">제4조 (환불 및 취소)</p>
+            <p style="margin:0 0 10px 0;">후원은 자발적 기부의 성격을 가지므로, 후원 완료 후에는 환불 또는 취소가 불가능합니다. 단, 명백한 결제 오류(이중 결제 등)가 발생한 경우, 후원자는 7일 이내에 회사에 증빙 자료를 제출해야 하며, 회사는 확인 후 환불을 진행할 수 있습니다.</p>
 
-            <p style="font-weight:700; margin-bottom:2mm;">제5조 (후원의 사용)</p>
-            <p style="margin-bottom:3mm;">회사는 후원금 전액을 서비스의 운영, 유지보수, 콘텐츠 제작, 이벤트 기획, 서버비용, 개발비 등 목적에 맞게 사용합니다.</p>
+            <p style="font-weight:700; margin:0 0 4px 0;">제5조 (후원의 사용)</p>
+            <p style="margin:0 0 10px 0;">회사는 후원금 전액을 서비스의 운영, 유지보수, 콘텐츠 제작, 이벤트 기획, 서버비용, 개발비 등 목적에 맞게 사용합니다.</p>
 
-            <p style="font-weight:700; margin-bottom:2mm;">제6조 (후원자의 권리 및 제한)</p>
-            <p style="margin-bottom:3mm;">후원자는 회사의 서비스 운영 방향에 간섭하거나 이익을 청구할 수 없습니다. 후원자는 회사의 명예를 훼손하거나, 후원을 빌미로 부당한 요구를 해서는 안 됩니다. 회사는 후원자에게 특별한 혜택을 제공할 수 있으나, 이는 회사의 재량이며 법적 의무가 아닙니다.</p>
+            <p style="font-weight:700; margin:0 0 4px 0;">제6조 (후원자의 권리 및 제한)</p>
+            <p style="margin:0 0 10px 0;">후원자는 회사의 서비스 운영 방향에 간섭하거나 이익을 청구할 수 없습니다. 후원자는 회사의 명예를 훼손하거나, 후원을 빌미로 부당한 요구를 해서는 안 됩니다. 회사는 후원자에게 특별한 혜택을 제공할 수 있으나, 이는 회사의 재량이며 법적 의무가 아닙니다.</p>
 
-            <p style="font-weight:700; margin-bottom:2mm;">제7조 (개인정보 보호)</p>
-            <p style="margin-bottom:3mm;">회사는 후원자의 개인정보를 「개인정보 보호법」 등 관련 법령에 따라 안전하게 관리합니다.</p>
+            <p style="font-weight:700; margin:0 0 4px 0;">제7조 (개인정보 보호)</p>
+            <p style="margin:0 0 10px 0;">회사는 후원자의 개인정보를 「개인정보 보호법」 등 관련 법령에 따라 안전하게 관리합니다.</p>
 
-            <p style="font-weight:700; margin-bottom:2mm;">제8조 (면책 조항)</p>
-            <p style="margin-bottom:3mm;">회사는 천재지변, 시스템 장애, 외부 플랫폼 문제 등 불가항력적인 사유로 인한 손해에 대해 책임을 지지 않습니다.</p>
+            <p style="font-weight:700; margin:0 0 4px 0;">제8조 (면책 조항)</p>
+            <p style="margin:0 0 10px 0;">회사는 천재지변, 시스템 장애, 외부 플랫폼 문제 등 불가항력적인 사유로 인한 손해에 대해 책임을 지지 않습니다.</p>
 
-            <p style="font-weight:700; margin-bottom:2mm;">제9조 (약관의 효력 및 변경)</p>
-            <p style="margin-bottom:3mm;">본 약관은 게시 또는 공지한 날로부터 효력이 발생합니다.</p>
+            <p style="font-weight:700; margin:0 0 4px 0;">제9조 (약관의 효력 및 변경)</p>
+            <p style="margin:0 0 10px 0;">본 약관은 게시 또는 공지한 날로부터 효력이 발생합니다.</p>
           </div>
         </div>
 
-        <div style="margin-top: 10mm; padding: 5mm; background:#f9f7fc; border-left: 3px solid #6b5b95;">
-          <p style="font-size: 10pt; margin-bottom: 2mm;"><strong>본인 ${escapeHtml(data.donorName)}은(는)</strong> 위 후원 약관을 모두 읽고 충분히 이해하였으며, 이에 자발적으로 동의함을 아래 서명으로 확인합니다.</p>
+        <div style="margin-top: 24px; padding: 16px; background:#f9f7fc; border-left: 4px solid #6b5b95; font-size: 12px;">
+          <p style="margin:0;"><strong>본인 ${escapeHtml(data.donorName)}은(는)</strong> 위 후원 약관을 모두 읽고 충분히 이해하였으며, 이에 자발적으로 동의함을 아래 서명으로 확인합니다.</p>
         </div>
 
-        <div style="margin-top: 8mm; display: flex; justify-content: space-between; align-items: flex-end;">
+        <div style="margin-top: 28px; display: flex; justify-content: space-between; align-items: flex-end;">
           <div>
-            <div style="font-size: 9pt; color:#888; margin-bottom:1mm;">동의일자</div>
-            <div style="font-size: 11pt; font-weight:600;">${data.dateStr}</div>
+            <div style="font-size: 10px; color:#888; margin-bottom:4px;">동의일자</div>
+            <div style="font-size: 13px; font-weight:600;">${data.dateStr}</div>
           </div>
           <div style="text-align: right;">
-            <div style="font-size: 9pt; color:#888; margin-bottom:1mm;">동의자 서명</div>
-            <img src="${data.signatureDataUrl}" style="width:55mm; height:22mm; object-fit:contain; border-bottom: 1.5px solid #333;" />
-            <div style="font-size: 11pt; font-weight:600; margin-top:1mm;">${escapeHtml(data.donorName)}</div>
+            <div style="font-size: 10px; color:#888; margin-bottom:4px;">동의자 서명</div>
+            <img src="${data.signatureDataUrl}" style="width:200px; height:80px; object-fit:contain; border-bottom: 1.5px solid #333; display:block;" />
+            <div style="font-size: 13px; font-weight:600; margin-top:4px;">${escapeHtml(data.donorName)}</div>
           </div>
         </div>
       </div>
     `;
     document.body.appendChild(hidden);
 
-    // Use jsPDF's html() with async rendering
-    await doc.html(hidden, {
-      callback: () => {},
-      x: 0,
-      y: 0,
-      width: 210,
-      windowWidth: 660,
-      autoPaging: 'text'
+    // Wait for images/fonts to load
+    await new Promise(r => setTimeout(r, 300));
+
+    // Render to canvas
+    const canvas = await html2canvas(hidden.firstElementChild, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false
     });
 
     document.body.removeChild(hidden);
-    return doc.output('blob');
+
+    // Create PDF with canvas image
+    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pdfWidth;
+    const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pdfHeight;
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+    }
+
+    return pdf.output('blob');
   }
 
   function escapeHtml(str) {
