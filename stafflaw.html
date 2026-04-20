@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOCHI // Staff 구금처리</title>
+    <title>MOCHI // 서버 제재 기준</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
     <style>
         * {
@@ -273,7 +273,7 @@
 
         .warning-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 16px;
         }
 
@@ -342,6 +342,7 @@
             border-radius: 50%;
         }
 
+        .tab[data-level="overview"] .tab-dot { background: var(--pink); box-shadow: 0 0 10px var(--pink); }
         .tab[data-level="critical"] .tab-dot { background: var(--red); box-shadow: 0 0 10px var(--red); }
         .tab[data-level="high"] .tab-dot { background: var(--orange); box-shadow: 0 0 10px var(--orange); }
         .tab[data-level="mid"] .tab-dot { background: var(--yellow); box-shadow: 0 0 10px var(--yellow); }
@@ -380,6 +381,7 @@
             box-shadow: 0 24px 64px rgba(0,0,0,0.4);
         }
 
+        .card[data-level="overview"] { --level-color: var(--pink); }
         .card[data-level="critical"] { --level-color: var(--red); }
         .card[data-level="high"] { --level-color: var(--orange); }
         .card[data-level="mid"] { --level-color: var(--yellow); }
@@ -589,222 +591,266 @@
         </header>
 
         <section class="title-section fade-up delay-1">
-            <h2>구금처리 <em>가이드라인</em></h2>
-            <p>모찌 서버 관리자를 위한 공식 제재 기준입니다. 모든 제재는 증거에 기반하여 공정하게 집행하세요.</p>
+            <h2>서버 제재 <em>기준</em></h2>
+            <p>모찌서버 관리자를 위한 공식 제재 기준입니다. 모든 제재는 증거에 기반하여 공정하게 집행하세요.</p>
         </section>
 
         <div class="warning-banner fade-up delay-2">
             <div class="warning-header">
                 <span class="warning-icon">⚡</span>
-                <span class="warning-title">핵심 집행 수칙</span>
+                <span class="warning-title">기본 원칙</span>
             </div>
             <div class="warning-grid">
                 <div class="warning-item">
                     <strong>증거 기반</strong><br>
-                    모든 제재는 명확한 증거(영상/로그)에 근거
+                    모든 제재는 증거 기반으로 진행됩니다.
                 </div>
                 <div class="warning-item">
-                    <strong>영구밴 가능</strong><br>
-                    관리자 기만 시 예외 없이 영구 밴 집행
+                    <strong>반복 가중</strong><br>
+                    반복 위반 시 가중 처벌됩니다.
                 </div>
                 <div class="warning-item">
-                    <strong>악용 금지</strong><br>
-                    미명시 사항 악용 시 최대 영구 밴
+                    <strong>자진 신고 감경</strong><br>
+                    자진 신고 시 감경 또는 면제 가능
                 </div>
                 <div class="warning-item">
-                    <strong>이의제기</strong><br>
-                    모든 이의는 공식 고객센터로 유도
+                    <strong>이의신청</strong><br>
+                    처벌 이후 고객센터로 문의 가능
+                </div>
+                <div class="warning-item">
+                    <strong>자진신고 기한</strong><br>
+                    물품거래 관련 자진콜 또는 고객센터로 48시간 내 신고
+                </div>
+                <div class="warning-item">
+                    <strong>포괄 조항</strong><br>
+                    법에 없는 사항도 질서 훼손 시 제재 가능
                 </div>
             </div>
         </div>
 
         <nav class="tabs fade-up delay-2">
-            <button class="tab active" data-level="critical" data-target="critical">
+            <button class="tab active" data-level="overview" data-target="overview">
                 <span class="tab-dot"></span>
-                <span>치명적 위반</span>
+                <span>제재 등급표</span>
                 <span class="tab-count">4</span>
+            </button>
+            <button class="tab" data-level="critical" data-target="critical">
+                <span class="tab-dot"></span>
+                <span>🔴 최중대</span>
+                <span class="tab-count">2</span>
             </button>
             <button class="tab" data-level="high" data-target="high">
                 <span class="tab-dot"></span>
-                <span>중징계</span>
+                <span>🟠 중대</span>
                 <span class="tab-count">4</span>
             </button>
             <button class="tab" data-level="mid" data-target="mid">
                 <span class="tab-dot"></span>
-                <span>일반 징계</span>
-                <span class="tab-count">4</span>
+                <span>🟡 일반</span>
+                <span class="tab-count">6</span>
             </button>
             <button class="tab" data-level="low" data-target="low">
                 <span class="tab-dot"></span>
-                <span>행정 위반</span>
-                <span class="tab-count">5</span>
+                <span>🟢 경미</span>
+                <span class="tab-count">4</span>
             </button>
         </nav>
 
         <div class="cards-container">
+            <!-- 제재 등급표 -->
+            <article class="card fade-up delay-3" data-level="overview" id="overview" style="grid-column:1/-1;--level-color:var(--pink)">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="level-indicator"></div>
+                        <h3>서버 제재 등급표</h3>
+                    </div>
+                    <span class="card-badge">OVERVIEW</span>
+                </div>
+                <div class="card-body">
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">🟢 경미 위반</div>
+                            <div class="violation-desc">구두 경고 / 관리자 구금</div>
+                        </div>
+                        <div class="violation-penalty" style="color:var(--green)">60~120분</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">🟡 일반 위반</div>
+                            <div class="violation-desc">관리자 구금</div>
+                        </div>
+                        <div class="violation-penalty" style="color:var(--yellow)">120~240분</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">🟠 중대 위반</div>
+                            <div class="violation-desc">관리자 구금 또는 이용 정지</div>
+                        </div>
+                        <div class="violation-penalty" style="color:var(--orange)">240~400분</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">🔴 최중대 위반</div>
+                            <div class="violation-desc">즉시 이용 정지 또는 영구 정지</div>
+                        </div>
+                        <div class="violation-penalty" style="color:var(--red)">영구 정지</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 최중대 위반 -->
             <article class="card fade-up delay-3" data-level="critical" id="critical">
                 <div class="card-header">
                     <div class="card-title">
                         <div class="level-indicator"></div>
-                        <h3>치명적 위반</h3>
+                        <h3>최중대 위반</h3>
                     </div>
                     <span class="card-badge">CRITICAL</span>
                 </div>
                 <div class="card-body">
                     <div class="violation-row">
                         <div class="violation-info">
-                            <div class="violation-name">비인가 프로그램(핵)</div>
-                            <div class="violation-desc">핵 무기 소지, 습득 후 미반납 행위</div>
+                            <div class="violation-name">핵 / 외부 프로그램</div>
+                            <div class="violation-desc">비인가 프로그램 사용</div>
                         </div>
-                        <div class="violation-penalty">영구 BAN</div>
+                        <div class="violation-penalty">즉시 영구 정지</div>
                     </div>
                     <div class="violation-row">
                         <div class="violation-info">
-                            <div class="violation-name">관리자 기만 & 서버 비하</div>
-                            <div class="violation-desc">허위사실, 증거조작, 악의적 비하</div>
+                            <div class="violation-name">현금 거래</div>
+                            <div class="violation-desc">현실 화폐로 게임 재화/아이템 거래</div>
                         </div>
-                        <div class="violation-penalty">14일 ~ 영구</div>
-                    </div>
-                    <div class="violation-row">
-                        <div class="violation-info">
-                            <div class="violation-name">범죄 후 고의 디컨/잠수</div>
-                            <div class="violation-desc">범죄 상황 회피 목적 접속 종료</div>
-                        </div>
-                        <div class="violation-penalty">최대 영구</div>
-                    </div>
-                    <div class="violation-row">
-                        <div class="violation-info">
-                            <div class="violation-name">지속적 RP 방해 / 괴롭힘</div>
-                            <div class="violation-desc">이없살, 악의적 괴롭힘, 갈등 유도</div>
-                        </div>
-                        <div class="violation-penalty">180분 ~ 영구</div>
+                        <div class="violation-penalty">즉시 영구 정지<br>+ 재화 회수</div>
                     </div>
                 </div>
             </article>
 
+            <!-- 중대 위반 -->
             <article class="card fade-up delay-3" data-level="high" id="high">
                 <div class="card-header">
                     <div class="card-title">
                         <div class="level-indicator"></div>
-                        <h3>중징계</h3>
+                        <h3>중대 위반</h3>
                     </div>
                     <span class="card-badge">HIGH</span>
                 </div>
                 <div class="card-body">
                     <div class="violation-row">
                         <div class="violation-info">
-                            <div class="violation-name">시스템 한계 / 리붓 악용</div>
+                            <div class="violation-name">버그 / 시스템 악용</div>
                             <div class="violation-desc">부당 이득 취득 시</div>
                         </div>
                         <div class="violation-penalty">500분 ~ 영구</div>
                     </div>
                     <div class="violation-row">
                         <div class="violation-info">
-                            <div class="violation-name">보호구역 내 RP 진행</div>
-                            <div class="violation-desc">보호구역 규칙 정면 위반 및 강행</div>
+                            <div class="violation-name">관리자 기만</div>
+                            <div class="violation-desc">허위사실, 증거조작</div>
                         </div>
-                        <div class="violation-penalty">300분</div>
+                        <div class="violation-penalty">14일 정지<br>또는 영구</div>
                     </div>
                     <div class="violation-row">
                         <div class="violation-info">
-                            <div class="violation-name">금지 그래픽 패치 (1차)</div>
-                            <div class="violation-desc">2차 적발 시 영구 BAN</div>
+                            <div class="violation-name">사기 / 부당 거래</div>
+                            <div class="violation-desc">게임 내 사기 행위</div>
                         </div>
-                        <div class="violation-penalty">300분</div>
+                        <div class="violation-penalty">240~400분<br>또는 영구</div>
                     </div>
                     <div class="violation-row">
                         <div class="violation-info">
-                            <div class="violation-name">버그 차량 사용</div>
-                            <div class="violation-desc">복사 차량 소지 및 운행 (회수 병행)</div>
+                            <div class="violation-name">지시 불이행</div>
+                            <div class="violation-desc">관리자 지시 무시</div>
                         </div>
-                        <div class="violation-penalty">300분</div>
+                        <div class="violation-penalty">300~500분<br>또는 영구</div>
                     </div>
                 </div>
             </article>
 
+            <!-- 일반 위반 -->
             <article class="card fade-up delay-4" data-level="mid" id="mid">
                 <div class="card-header">
                     <div class="card-title">
                         <div class="level-indicator"></div>
-                        <h3>일반 징계</h3>
+                        <h3>일반 위반</h3>
                     </div>
                     <span class="card-badge">MEDIUM</span>
                 </div>
                 <div class="card-body">
                     <div class="violation-row">
                         <div class="violation-info">
-                            <div class="violation-name">고의적 볼링(3인 이상)</div>
-                            <div class="violation-desc">차량 이용 고의 로드킬 (고의성 필수)</div>
+                            <div class="violation-name">이유 없는 공격 / 살인</div>
+                            <div class="violation-desc">※ 뉴비 대상 시 가중</div>
                         </div>
-                        <div class="violation-penalty">200분 ~ 영구</div>
+                        <div class="violation-penalty">180~300분</div>
                     </div>
                     <div class="violation-row">
                         <div class="violation-info">
-                            <div class="violation-name">강도 RP 위반</div>
-                            <div class="violation-desc">벌금 미보유 상태 진행</div>
+                            <div class="violation-name">RP 방해</div>
+                            <div class="violation-desc">타인의 RP를 고의적으로 방해</div>
                         </div>
-                        <div class="violation-penalty">200분</div>
+                        <div class="violation-penalty">180분 ~ 영구</div>
                     </div>
                     <div class="violation-row">
                         <div class="violation-info">
-                            <div class="violation-name">분쟁 유도 / 분쟁성 발언</div>
-                            <div class="violation-desc">채팅·음성 포함, 경미 시 경고 후 집행</div>
+                            <div class="violation-name">분쟁 유도</div>
+                            <div class="violation-desc">채팅 · 음성 포함</div>
                         </div>
-                        <div class="violation-penalty">120분 ~ 영구</div>
+                        <div class="violation-penalty">180~300분</div>
                     </div>
                     <div class="violation-row">
                         <div class="violation-info">
-                            <div class="violation-name">사후 보이스 위반</div>
-                            <div class="violation-desc">사망 후 RP 영향 발언, 마이크 미음소거</div>
+                            <div class="violation-name">욕설 / 비하</div>
+                            <div class="violation-desc">인격 모독, 차별 발언</div>
                         </div>
-                        <div class="violation-penalty">120 ~ 300분</div>
+                        <div class="violation-penalty">120~300분<br>또는 영구</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">사건 처리 중 이탈</div>
+                            <div class="violation-desc">관리자 사건 처리 도중 접속 종료</div>
+                        </div>
+                        <div class="violation-penalty">180~300분</div>
+                    </div>
+                    <div class="violation-row">
+                        <div class="violation-info">
+                            <div class="violation-name">하한가 미준수 거래</div>
+                            <div class="violation-desc">48시간 내 자진 신고 시 무처벌 / 미신고 시 물품 회수</div>
+                        </div>
+                        <div class="violation-penalty">180~300분<br>+ 물품 회수</div>
                     </div>
                 </div>
             </article>
 
+            <!-- 경미 위반 -->
             <article class="card fade-up delay-4" data-level="low" id="low">
                 <div class="card-header">
                     <div class="card-title">
                         <div class="level-indicator"></div>
-                        <h3>행정 위반</h3>
+                        <h3>경미 위반</h3>
                     </div>
                     <span class="card-badge">LOW</span>
                 </div>
                 <div class="card-body">
                     <div class="violation-row">
                         <div class="violation-info">
-                            <div class="violation-name">공무원 근무 중 잠수</div>
-                            <div class="violation-desc">출근 상태 방치</div>
+                            <div class="violation-name">RP 거부 / 비협조</div>
+                            <div class="violation-desc">1차: 구두 경고 또는 120분 / 2차: 240분</div>
                         </div>
-                        <div class="violation-penalty">120분</div>
+                        <div class="violation-penalty">경고 ~ 240분</div>
                     </div>
                     <div class="violation-row">
                         <div class="violation-info">
-                            <div class="violation-name">기억 RP 수행</div>
-                            <div class="violation-desc">사망 시점 사실 고지 위반</div>
+                            <div class="violation-name">Non-RP 행위</div>
+                            <div class="violation-desc">세계관에 맞지 않는 행동</div>
                         </div>
-                        <div class="violation-penalty">60 ~ 120분</div>
+                        <div class="violation-penalty">120~240분</div>
                     </div>
                     <div class="violation-row">
                         <div class="violation-info">
-                            <div class="violation-name">음성 변조기 사용</div>
-                            <div class="violation-desc">비인가 음성 프로그램 사용</div>
-                        </div>
-                        <div class="violation-penalty">120분</div>
-                    </div>
-                    <div class="violation-row">
-                        <div class="violation-info">
-                            <div class="violation-name">광고 남용 / 규칙 미준수</div>
-                            <div class="violation-desc">목적 외 사용</div>
-                        </div>
-                        <div class="violation-penalty">경고 ~ 60분</div>
-                    </div>
-                    <div class="violation-row">
-                        <div class="violation-info">
-                            <div class="violation-name">RP 법률 미숙지</div>
+                            <div class="violation-name">법률 미숙지</div>
                             <div class="violation-desc">서버 내 RP 법률 규정 미숙지</div>
                         </div>
-                        <div class="violation-penalty">120 ~ 300분</div>
+                        <div class="violation-penalty">120~300분</div>
                     </div>
                 </div>
             </article>
