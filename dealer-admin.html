@@ -484,6 +484,192 @@ tr:hover td {
   color: var(--danger);
 }
 
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: white;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+  width: fit-content;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text-sub);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.tab-btn:hover {
+  color: var(--text);
+}
+
+.tab-btn.active {
+  background: var(--text);
+  color: white;
+}
+
+.tab-btn .tab-count {
+  background: var(--orange);
+  color: white;
+  padding: 1px 7px;
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 800;
+  margin-left: 4px;
+}
+
+.tab-btn.active .tab-count {
+  background: var(--orange);
+}
+
+.tab-btn:not(.active) .tab-count {
+  background: var(--orange-light);
+  color: var(--orange-dark);
+}
+
+/* Inquiry rows */
+.inquiry-row td {
+  vertical-align: top;
+}
+
+.inquiry-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.inquiry-cell-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+}
+
+.inquiry-cell-meta {
+  font-size: 12px;
+  color: var(--text-sub);
+  display: flex;
+  gap: 8px;
+}
+
+.cat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cat-pill.차량등록 { background: var(--orange-light); color: var(--orange-dark); }
+.cat-pill.일반문의 { background: #DBEAFE; color: #1E40AF; }
+.cat-pill.신고 { background: #FEE2E2; color: #B91C1C; }
+
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status-tag.pending {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.status-tag.answered {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.code-mono {
+  font-family: 'SF Mono', Monaco, monospace;
+  font-size: 11px;
+  color: var(--text-light);
+  font-weight: 700;
+}
+
+/* Reply Modal */
+.reply-modal {
+  max-width: 640px !important;
+}
+
+.reply-meta-box {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.reply-detail-grid {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 8px 14px;
+  font-size: 13px;
+}
+
+.reply-detail-grid dt {
+  color: var(--text-sub);
+  font-weight: 600;
+}
+
+.reply-detail-grid dd {
+  color: var(--text);
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.original-content {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  color: var(--text);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.original-content-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-light);
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
 /* Modal */
 .modal-overlay {
   position: fixed;
@@ -711,54 +897,131 @@ tr:hover td {
 
 <!-- Dashboard -->
 <div class="dashboard" id="dashboard" style="display: none;">
-  <div class="page-header">
-    <div class="page-title">
-      <h1>차량 관리</h1>
-      <p>차량을 등록하고 판매 상태를 관리하세요</p>
-    </div>
-    <button class="btn btn-primary" onclick="openModal()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-      차량 등록
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="cars" onclick="switchTab('cars')">
+      🚗 차량 관리
+    </button>
+    <button class="tab-btn" data-tab="inquiries" onclick="switchTab('inquiries')">
+      📬 민원 관리 <span class="tab-count" id="pendingCount">0</span>
     </button>
   </div>
 
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-card-label">전체 매물</div>
-      <div class="stat-card-num" id="statTotal">0<span class="unit">대</span></div>
+  <!-- Cars Tab -->
+  <div id="tab-cars">
+    <div class="page-header">
+      <div class="page-title">
+        <h1>차량 관리</h1>
+        <p>차량을 등록하고 판매 상태를 관리하세요</p>
+      </div>
+      <button class="btn btn-primary" onclick="openModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        차량 등록
+      </button>
     </div>
-    <div class="stat-card accent">
-      <div class="stat-card-label">판매중</div>
-      <div class="stat-card-num" id="statAvailable">0<span class="unit">대</span></div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-card-label">전체 매물</div>
+        <div class="stat-card-num" id="statTotal">0<span class="unit">대</span></div>
+      </div>
+      <div class="stat-card accent">
+        <div class="stat-card-label">판매중</div>
+        <div class="stat-card-num" id="statAvailable">0<span class="unit">대</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">판매완료</div>
+        <div class="stat-card-num" id="statSold">0<span class="unit">대</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">총 가치</div>
+        <div class="stat-card-num" id="statValue">0<span class="unit">만원</span></div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-card-label">판매완료</div>
-      <div class="stat-card-num" id="statSold">0<span class="unit">대</span></div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-card-label">총 가치</div>
-      <div class="stat-card-num" id="statValue">0<span class="unit">만원</span></div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <h3>전체 차량 목록</h3>
+        <input type="text" class="search-input" id="adminSearch" placeholder="차량명 검색..." oninput="renderTable()">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 45%;">차량</th>
+              <th>탑승</th>
+              <th>가격</th>
+              <th>상태</th>
+              <th style="width: 100px;">관리</th>
+            </tr>
+          </thead>
+          <tbody id="carsTable"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <div class="table-card">
-    <div class="table-header">
-      <h3>전체 차량 목록</h3>
-      <input type="text" class="search-input" id="adminSearch" placeholder="차량명 검색..." oninput="renderTable()">
+  <!-- Inquiries Tab -->
+  <div id="tab-inquiries" style="display: none;">
+    <div class="page-header">
+      <div class="page-title">
+        <h1>민원 관리</h1>
+        <p>고객이 등록한 민원을 확인하고 답변하세요</p>
+      </div>
     </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 45%;">차량</th>
-            <th>탑승</th>
-            <th>가격</th>
-            <th>상태</th>
-            <th style="width: 100px;">관리</th>
-          </tr>
-        </thead>
-        <tbody id="carsTable"></tbody>
-      </table>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-card-label">전체 민원</div>
+        <div class="stat-card-num" id="iqTotal">0<span class="unit">건</span></div>
+      </div>
+      <div class="stat-card accent">
+        <div class="stat-card-label">답변 대기</div>
+        <div class="stat-card-num" id="iqPending">0<span class="unit">건</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">답변 완료</div>
+        <div class="stat-card-num" id="iqAnswered">0<span class="unit">건</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">신고 건수</div>
+        <div class="stat-card-num" id="iqReports">0<span class="unit">건</span></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <h3>전체 민원 목록</h3>
+        <div style="display: flex; gap: 8px;">
+          <select class="search-input" id="iqFilter" onchange="renderInquiries()" style="width: 130px;">
+            <option value="all">전체 상태</option>
+            <option value="pending">답변 대기</option>
+            <option value="answered">답변 완료</option>
+          </select>
+          <select class="search-input" id="iqCatFilter" onchange="renderInquiries()" style="width: 130px;">
+            <option value="all">전체 분류</option>
+            <option value="차량등록">차량 등록</option>
+            <option value="일반문의">일반 문의</option>
+            <option value="신고">신고</option>
+          </select>
+          <input type="text" class="search-input" id="iqSearch" placeholder="제목/이름 검색..." oninput="renderInquiries()">
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 100px;">분류</th>
+              <th>제목 / 작성자</th>
+              <th style="width: 110px;">코드</th>
+              <th style="width: 100px;">상태</th>
+              <th style="width: 130px;">접수일</th>
+              <th style="width: 100px;">관리</th>
+            </tr>
+          </thead>
+          <tbody id="inquiriesTable"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -815,13 +1078,30 @@ https://..." style="min-height: 80px;"></textarea>
   </div>
 </div>
 
+<!-- Reply Modal -->
+<div class="modal-overlay" id="replyModalOverlay">
+  <div class="modal reply-modal">
+    <div class="modal-header">
+      <h2>민원 답변</h2>
+      <button class="modal-close" onclick="closeReplyModal()">×</button>
+    </div>
+    <div class="modal-body" id="replyModalBody">
+      <!-- 동적 -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeReplyModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveReply()" id="saveReplyBtn">답변 저장</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import {
   getFirestore, collection, getDocs, doc, addDoc, updateDoc, deleteDoc,
-  serverTimestamp, query, orderBy
+  serverTimestamp, query, orderBy, where
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 // ⚠️ Firebase config
@@ -839,11 +1119,17 @@ const firebaseConfig = {
 // ⚠️ 관리자 비밀번호 (실제로는 Firebase Auth 추천)
 const ADMIN_PASSWORD = "mochi1234";
 
+// ⚠️ 디스코드 웹훅 (답변 작성 알림용 - 선택)
+const DISCORD_WEBHOOK = "YOUR_DISCORD_WEBHOOK_URL";
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 let allCars = [];
+let allInquiries = [];
 let editingId = null;
+let replyingId = null;
+let currentTab = 'cars';
 
 // === Auth ===
 window.login = function() {
@@ -866,11 +1152,21 @@ function showDashboard() {
   document.getElementById('dashboard').style.display = 'block';
   document.getElementById('headerActions').style.display = 'flex';
   loadCars();
+  loadInquiries();
 }
 
 if (sessionStorage.getItem('hd_admin') === 'true') {
   showDashboard();
 }
+
+window.switchTab = function(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+
+  document.getElementById('tab-cars').style.display = tab === 'cars' ? 'block' : 'none';
+  document.getElementById('tab-inquiries').style.display = tab === 'inquiries' ? 'block' : 'none';
+};
 
 // === CRUD ===
 async function loadCars() {
@@ -1084,6 +1380,236 @@ function formatPrice(price) {
   }
   return (price || 0).toLocaleString();
 }
+
+// ====================================
+// === 민원 관리 ===
+// ====================================
+async function loadInquiries() {
+  try {
+    const q = query(collection(db, 'inquiries'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    allInquiries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (e) {
+    console.error('민원 로드 실패:', e);
+    allInquiries = [];
+  }
+  renderInquiries();
+  updateInquiryStats();
+}
+
+window.renderInquiries = function() {
+  const tbody = document.getElementById('inquiriesTable');
+  const search = document.getElementById('iqSearch').value.toLowerCase().trim();
+  const statusFilter = document.getElementById('iqFilter').value;
+  const catFilter = document.getElementById('iqCatFilter').value;
+
+  let filtered = allInquiries;
+  if (statusFilter !== 'all') filtered = filtered.filter(i => i.status === statusFilter);
+  if (catFilter !== 'all') filtered = filtered.filter(i => i.category === catFilter);
+  if (search) {
+    filtered = filtered.filter(i =>
+      (i.title || '').toLowerCase().includes(search) ||
+      (i.name || '').toLowerCase().includes(search) ||
+      (i.code || '').toLowerCase().includes(search)
+    );
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr><td colspan="6">
+        <div class="empty-row">
+          <div class="icon">📭</div>
+          <div>${search || statusFilter !== 'all' || catFilter !== 'all' ? '검색 결과가 없어요' : '아직 등록된 민원이 없어요'}</div>
+        </div>
+      </td></tr>
+    `;
+    return;
+  }
+
+  const catLabels = { '차량등록': '🚗 차량 등록', '일반문의': '💬 일반 문의', '신고': '⚠️ 신고' };
+
+  tbody.innerHTML = filtered.map(inq => `
+    <tr class="inquiry-row">
+      <td>
+        <span class="cat-pill ${inq.category}">${catLabels[inq.category] || inq.category}</span>
+      </td>
+      <td>
+        <div class="inquiry-cell">
+          <div class="inquiry-cell-title">${escapeHtml(inq.title)}</div>
+          <div class="inquiry-cell-meta">
+            <span>👤 ${escapeHtml(inq.name)}</span>
+            <span>💬 ${escapeHtml(inq.discord)}</span>
+          </div>
+        </div>
+      </td>
+      <td><span class="code-mono">${inq.code}</span></td>
+      <td>
+        <span class="status-tag ${inq.status}">
+          ${inq.status === 'answered' ? '✓ 답변 완료' : '⏳ 대기 중'}
+        </span>
+      </td>
+      <td style="font-size: 12px; color: var(--text-sub);">${formatInquiryDate(inq.createdAt)}</td>
+      <td>
+        <div class="action-buttons">
+          <button class="icon-btn" onclick="openReplyModal('${inq.id}')" title="답변">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </button>
+          <button class="icon-btn danger" onclick="deleteInquiry('${inq.id}')" title="삭제">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+};
+
+function updateInquiryStats() {
+  const total = allInquiries.length;
+  const pending = allInquiries.filter(i => i.status === 'pending').length;
+  const answered = allInquiries.filter(i => i.status === 'answered').length;
+  const reports = allInquiries.filter(i => i.category === '신고').length;
+
+  document.getElementById('iqTotal').innerHTML = `${total}<span class="unit">건</span>`;
+  document.getElementById('iqPending').innerHTML = `${pending}<span class="unit">건</span>`;
+  document.getElementById('iqAnswered').innerHTML = `${answered}<span class="unit">건</span>`;
+  document.getElementById('iqReports').innerHTML = `${reports}<span class="unit">건</span>`;
+  document.getElementById('pendingCount').textContent = pending;
+}
+
+window.openReplyModal = function(id) {
+  const inq = allInquiries.find(i => i.id === id);
+  if (!inq) return;
+
+  replyingId = id;
+  const catLabels = { '차량등록': '🚗 차량 등록 문의', '일반문의': '💬 일반 문의', '신고': '⚠️ 신고' };
+
+  document.getElementById('replyModalBody').innerHTML = `
+    <div class="reply-meta-box">
+      <span class="cat-pill ${inq.category}">${catLabels[inq.category] || inq.category}</span>
+      <span class="status-tag ${inq.status}">
+        ${inq.status === 'answered' ? '✓ 답변 완료' : '⏳ 대기 중'}
+      </span>
+      <span class="code-mono" style="margin-left: auto;">${inq.code}</span>
+    </div>
+
+    <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 14px; letter-spacing: -0.3px;">
+      ${escapeHtml(inq.title)}
+    </h2>
+
+    <dl class="reply-detail-grid">
+      <dt>작성자</dt><dd>${escapeHtml(inq.name)}</dd>
+      <dt>디스코드</dt><dd>${escapeHtml(inq.discord)}</dd>
+      ${inq.carInfo ? `<dt>차량 정보</dt><dd>${escapeHtml(inq.carInfo)}</dd>` : ''}
+      <dt>접수일</dt><dd>${formatInquiryDate(inq.createdAt)}</dd>
+    </dl>
+
+    <div class="original-content-title">📝 문의 내용</div>
+    <div class="original-content">${escapeHtml(inq.content)}</div>
+
+    <div class="form-group full">
+      <label>답변 내용 <span class="required">*</span></label>
+      <textarea id="f_reply" placeholder="답변을 작성해주세요" style="min-height: 140px;">${escapeHtml(inq.reply || '')}</textarea>
+    </div>
+  `;
+
+  document.getElementById('replyModalOverlay').classList.add('active');
+  setTimeout(() => document.getElementById('f_reply').focus(), 100);
+};
+
+window.closeReplyModal = function() {
+  document.getElementById('replyModalOverlay').classList.remove('active');
+  replyingId = null;
+};
+
+window.saveReply = async function() {
+  if (!replyingId) return;
+  const reply = document.getElementById('f_reply').value.trim();
+
+  if (!reply) return showToast('답변 내용을 입력해주세요', 'error');
+  if (reply.length < 5) return showToast('답변을 좀 더 자세히 작성해주세요', 'error');
+
+  const btn = document.getElementById('saveReplyBtn');
+  btn.disabled = true;
+  btn.textContent = '저장 중...';
+
+  try {
+    await updateDoc(doc(db, 'inquiries', replyingId), {
+      reply,
+      status: 'answered',
+      replyAt: serverTimestamp()
+    });
+
+    // 디스코드 웹훅 (답변 완료 알림)
+    const inq = allInquiries.find(i => i.id === replyingId);
+    if (inq && DISCORD_WEBHOOK && DISCORD_WEBHOOK !== 'YOUR_DISCORD_WEBHOOK_URL') {
+      try {
+        await fetch(DISCORD_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: 'HIGH DEALER 민원실',
+            embeds: [{
+              title: `✅ 민원 답변이 등록되었어요`,
+              description: `**${inq.title}**`,
+              color: 0x10B981,
+              fields: [
+                { name: '🔖 코드', value: `\`${inq.code}\``, inline: true },
+                { name: '👤 작성자', value: inq.name, inline: true },
+                { name: '💬 디스코드', value: inq.discord, inline: true }
+              ],
+              footer: { text: '고객이 답변을 확인할 수 있습니다' },
+              timestamp: new Date().toISOString()
+            }]
+          })
+        });
+      } catch (e) {
+        console.error('웹훅 전송 실패:', e);
+      }
+    }
+
+    showToast('답변이 저장되었어요', 'success');
+    closeReplyModal();
+    loadInquiries();
+  } catch (e) {
+    console.error(e);
+    showToast('저장 실패: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '답변 저장';
+  }
+};
+
+window.deleteInquiry = async function(id) {
+  const inq = allInquiries.find(i => i.id === id);
+  if (!inq) return;
+  if (!confirm(`"${inq.title}" 민원을 삭제할까요?\n삭제하면 복구할 수 없어요.`)) return;
+
+  try {
+    await deleteDoc(doc(db, 'inquiries', id));
+    showToast('민원이 삭제되었어요', 'success');
+    loadInquiries();
+  } catch (e) {
+    showToast('삭제 실패: ' + e.message, 'error');
+  }
+};
+
+function formatInquiryDate(ts) {
+  if (!ts) return '-';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  const now = new Date();
+  const diff = (now - d) / 1000;
+
+  if (diff < 60) return '방금 전';
+  if (diff < 3600) return `${Math.floor(diff/60)}분 전`;
+  if (diff < 86400) return `${Math.floor(diff/3600)}시간 전`;
+  if (diff < 604800) return `${Math.floor(diff/86400)}일 전`;
+  return d.toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' });
+}
+
+// 답변 모달 외부 클릭 시 닫기
+document.getElementById('replyModalOverlay').addEventListener('click', e => {
+  if (e.target.id === 'replyModalOverlay') closeReplyModal();
+});
 
 function escapeHtml(str) {
   if (!str) return '';
