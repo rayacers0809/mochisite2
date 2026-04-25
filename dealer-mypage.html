@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 민원 확인 - HIGH DEALER</title>
+
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+<style>
+:root {
+  --orange: #FF6B1A;
+  --orange-dark: #E55A0F;
+  --orange-light: #FFF4ED;
+  --bg: #FAFAFA;
+  --white: #FFFFFF;
+  --text: #1A1A1A;
+  --text-sub: #6B6B6B;
+  --text-light: #9B9B9B;
+  --border: #EAEAEA;
+  --border-light: #F0F0F0;
+  --success: #10B981;
+  --danger: #EF4444;
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.logo-mark {
+  width: 36px;
+  height: 36px;
+  background: var(--orange);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.logo-text {
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+}
+
+.logo-text .accent { color: var(--orange); }
+
+.header-link {
+  color: var(--text-sub);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.header-link:hover {
+  background: var(--border-light);
+  color: var(--text);
+}
+
+/* Container */
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 60px 32px 80px;
+  min-height: calc(100vh - 70px);
+}
+
+/* Login Card */
+.login-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px 36px;
+  box-shadow: var(--shadow-md);
+}
+
+.login-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--orange-light);
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+  margin: 0 auto 20px;
+}
+
+.login-card h1 {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+
+.login-card .desc {
+  text-align: center;
+  color: var(--text-sub);
+  font-size: 14px;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.form-group input {
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255,107,26,0.1);
+}
+
+.form-group input.code-input {
+  font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.btn-primary {
+  background: var(--orange);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--orange-dark);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.divider {
+  margin: 24px 0;
+  text-align: center;
+  position: relative;
+  color: var(--text-light);
+  font-size: 12px;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--border);
+  z-index: 0;
+}
+
+.divider span {
+  position: relative;
+  background: white;
+  padding: 0 12px;
+  z-index: 1;
+}
+
+.new-inquiry-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  color: var(--orange-dark);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px;
+  border: 1.5px solid var(--orange-light);
+  background: var(--orange-light);
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.new-inquiry-btn:hover {
+  background: var(--orange);
+  color: white;
+  border-color: var(--orange);
+}
+
+/* Inquiry View */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-sub);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: var(--border-light);
+  color: var(--text);
+}
+
+.inquiry-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.inquiry-header {
+  padding: 28px 32px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.inquiry-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.category-badge.차량등록 {
+  background: var(--orange-light);
+  color: var(--orange-dark);
+}
+
+.category-badge.일반문의 {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.category-badge.신고 {
+  background: #FEE2E2;
+  color: #B91C1C;
+}
+
+.status-badge {
+  padding: 5px 11px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-badge.pending {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.status-badge.answered {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.code-tag {
+  font-family: 'SF Mono', Monaco, monospace;
+  background: var(--border-light);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--text-sub);
+  font-weight: 700;
+}
+
+.inquiry-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.3;
+  margin-bottom: 10px;
+}
+
+.inquiry-info {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--text-sub);
+  flex-wrap: wrap;
+}
+
+.inquiry-info span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.inquiry-body {
+  padding: 28px 32px;
+}
+
+.body-section + .body-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px dashed var(--border);
+}
+
+.body-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.body-content {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.car-info-pill {
+  display: inline-block;
+  background: var(--orange-light);
+  color: var(--orange-dark);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Reply */
+.reply-section {
+  background: linear-gradient(135deg, #FFF8F1 0%, #FFFFFF 100%);
+  padding: 28px 32px;
+  border-top: 2px solid var(--orange-light);
+}
+
+.reply-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.reply-avatar {
+  width: 36px;
+  height: 36px;
+  background: var(--orange);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-weight: 900;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.reply-meta strong {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  display: block;
+}
+
+.reply-meta span {
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+.reply-content {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: pre-wrap;
+  background: white;
+  border: 1px solid var(--orange-light);
+  border-radius: 12px;
+  padding: 18px 20px;
+  word-break: break-word;
+}
+
+.no-reply {
+  background: #FAFAFA;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 28px 20px;
+  text-align: center;
+  color: var(--text-sub);
+  font-size: 14px;
+}
+
+.no-reply-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}
+
+.no-reply-title {
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--orange);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 14px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--text);
+  color: white;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+  z-index: 300;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+
+/* Responsive */
+@media (max-width: 700px) {
+  .header-inner { padding: 14px 18px; }
+  .container { padding: 30px 18px 60px; }
+  .login-card { padding: 28px 22px; }
+  .login-card h1 { font-size: 22px; }
+  .inquiry-header, .inquiry-body, .reply-section { padding-left: 22px; padding-right: 22px; }
+  .inquiry-title { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="dealer.html" class="logo">
+      <div class="logo-mark">H</div>
+      <div class="logo-text">HIGH<span class="accent">DEALER</span></div>
+    </a>
+    <a href="dealer-inquiry.html" class="header-link">+ 새 민원</a>
+  </div>
+</header>
+
+<div class="container" id="container">
+  <!-- Login -->
+  <div id="loginView">
+    <div class="login-card">
+      <div class="login-icon">📬</div>
+      <h1>내 민원 확인</h1>
+      <p class="desc">민원 접수 시 발급받은<br>조회 코드와 비밀번호를 입력해주세요.</p>
+
+      <div class="form-group">
+        <label>조회 코드</label>
+        <input type="text" id="codeInput" class="code-input" placeholder="MOCHI-XXXXXX" maxlength="12">
+      </div>
+      <div class="form-group">
+        <label>비밀번호</label>
+        <input type="password" id="pwInput" placeholder="민원 작성 시 설정한 비밀번호" maxlength="30">
+      </div>
+      <button class="btn btn-primary" id="loginBtn" onclick="checkInquiry()">민원 확인하기</button>
+
+      <div class="divider"><span>아직 민원이 없으신가요?</span></div>
+      <a href="dealer-inquiry.html" class="new-inquiry-btn">+ 새 민원 작성</a>
+    </div>
+  </div>
+
+  <!-- Inquiry View -->
+  <div id="inquiryView" style="display: none;"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBTuu8rGMbhg0iiYjg8RF9iExCOdugoSnU",
+  authDomain: "mochi-f81d3.firebaseapp.com",
+  databaseURL: "https://mochi-f81d3-default-rtdb.firebaseio.com",
+  projectId: "mochi-f81d3",
+  storageBucket: "mochi-f81d3.firebasestorage.app",
+  messagingSenderId: "506055701777",
+  appId: "1:506055701777:web:dbe0e5fd3d485607aa08b0",
+  measurementId: "G-JWBDHCFYW1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function hashPassword(pw) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(pw + 'highdealer_salt_2026');
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+function formatDate(ts) {
+  if (!ts) return '-';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+window.checkInquiry = async function() {
+  const code = document.getElementById('codeInput').value.trim().toUpperCase();
+  const pw = document.getElementById('pwInput').value;
+
+  if (!code) return showToast('조회 코드를 입력해주세요', 'error');
+  if (!pw) return showToast('비밀번호를 입력해주세요', 'error');
+  if (!code.startsWith('MOCHI-')) return showToast('조회 코드 형식이 올바르지 않아요', 'error');
+
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  btn.textContent = '확인 중...';
+
+  try {
+    const pwHash = await hashPassword(pw);
+
+    // 조회 코드로 민원 검색
+    const q = query(collection(db, 'inquiries'), where('code', '==', code));
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      showToast('민원을 찾을 수 없어요. 코드를 확인해주세요', 'error');
+      return;
+    }
+
+    const doc = snap.docs[0];
+    const inquiry = { id: doc.id, ...doc.data() };
+
+    // 비밀번호 확인
+    if (inquiry.passwordHash !== pwHash) {
+      showToast('비밀번호가 틀렸어요', 'error');
+      return;
+    }
+
+    renderInquiry(inquiry);
+  } catch (e) {
+    console.error(e);
+    showToast('조회 실패: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '민원 확인하기';
+  }
+};
+
+function renderInquiry(inquiry) {
+  document.getElementById('loginView').style.display = 'none';
+  const view = document.getElementById('inquiryView');
+  view.style.display = 'block';
+
+  const isAnswered = inquiry.status === 'answered' && inquiry.reply;
+
+  view.innerHTML = `
+    <a href="javascript:location.reload()" class="back-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      다른 민원 조회
+    </a>
+
+    <div class="inquiry-card">
+      <div class="inquiry-header">
+        <div class="inquiry-meta">
+          <span class="category-badge ${inquiry.category}">
+            ${getCategoryEmoji(inquiry.category)} ${inquiry.category === '차량등록' ? '차량 등록 문의' : inquiry.category === '일반문의' ? '일반 문의' : '신고'}
+          </span>
+          <span class="status-badge ${inquiry.status}">
+            ${isAnswered ? '✓ 답변 완료' : '⏳ 답변 대기 중'}
+          </span>
+          <span class="code-tag">${inquiry.code}</span>
+        </div>
+
+        <h1 class="inquiry-title">${escapeHtml(inquiry.title)}</h1>
+
+        <div class="inquiry-info">
+          <span>👤 ${escapeHtml(inquiry.name)}</span>
+          <span>💬 ${escapeHtml(inquiry.discord)}</span>
+          <span>📅 ${formatDate(inquiry.createdAt)}</span>
+        </div>
+      </div>
+
+      <div class="inquiry-body">
+        ${inquiry.carInfo ? `
+          <div class="body-section">
+            <div class="body-label">🚗 차량 정보</div>
+            <div class="car-info-pill">${escapeHtml(inquiry.carInfo)}</div>
+          </div>
+        ` : ''}
+
+        <div class="body-section">
+          <div class="body-label">📝 문의 내용</div>
+          <div class="body-content">${escapeHtml(inquiry.content)}</div>
+        </div>
+      </div>
+
+      ${isAnswered ? `
+        <div class="reply-section">
+          <div class="reply-header">
+            <div class="reply-avatar">H</div>
+            <div class="reply-meta">
+              <strong>HIGH DEALER 관리자</strong>
+              <span>${formatDate(inquiry.replyAt)}</span>
+            </div>
+          </div>
+          <div class="reply-content">${escapeHtml(inquiry.reply)}</div>
+        </div>
+      ` : `
+        <div class="reply-section">
+          <div class="no-reply">
+            <div class="no-reply-icon">⏰</div>
+            <div class="no-reply-title">아직 답변이 등록되지 않았어요</div>
+            <div>관리자가 확인 후 답변드릴 예정입니다.<br>잠시만 기다려주세요!</div>
+          </div>
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function getCategoryEmoji(cat) {
+  return { '차량등록': '🚗', '일반문의': '💬', '신고': '⚠️' }[cat] || '📮';
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// 엔터로 조회
+document.getElementById('codeInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') document.getElementById('pwInput').focus();
+});
+document.getElementById('pwInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') checkInquiry();
+});
+
+// 코드 자동 대문자
+document.getElementById('codeInput').addEventListener('input', e => {
+  e.target.value = e.target.value.toUpperCase();
+});
+</script>
+
+</body>
+</html>

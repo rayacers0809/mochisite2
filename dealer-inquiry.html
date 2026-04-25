@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>민원 접수 - HIGH DEALER</title>
+
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+<style>
+:root {
+  --orange: #FF6B1A;
+  --orange-dark: #E55A0F;
+  --orange-light: #FFF4ED;
+  --bg: #FAFAFA;
+  --white: #FFFFFF;
+  --text: #1A1A1A;
+  --text-sub: #6B6B6B;
+  --text-light: #9B9B9B;
+  --border: #EAEAEA;
+  --border-light: #F0F0F0;
+  --success: #10B981;
+  --danger: #EF4444;
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.logo-mark {
+  width: 36px;
+  height: 36px;
+  background: var(--orange);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.logo-text {
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+}
+
+.logo-text .accent { color: var(--orange); }
+
+.header-link {
+  color: var(--text-sub);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.header-link:hover {
+  background: var(--border-light);
+  color: var(--text);
+}
+
+/* Hero */
+.page-hero {
+  background: white;
+  padding: 60px 32px 40px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-hero::before {
+  content: '';
+  position: absolute;
+  right: -80px;
+  top: -80px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--orange-light) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: var(--orange-light);
+  color: var(--orange-dark);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.page-hero h1 {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.page-hero p {
+  color: var(--text-sub);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Container */
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 32px 80px;
+}
+
+/* Category Selector */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.category-card {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 16px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.category-card:hover {
+  border-color: var(--orange);
+  transform: translateY(-2px);
+}
+
+.category-card.active {
+  border-color: var(--orange);
+  background: var(--orange-light);
+}
+
+.category-card.active .category-icon {
+  transform: scale(1.1);
+}
+
+.category-icon {
+  font-size: 30px;
+  margin-bottom: 8px;
+  transition: transform 0.2s;
+}
+
+.category-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.category-desc {
+  font-size: 11px;
+  color: var(--text-sub);
+}
+
+/* Form Card */
+.form-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+}
+
+.form-section + .form-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-light);
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  background: var(--orange);
+  border-radius: 2px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.form-group label .req {
+  color: var(--orange);
+  margin-left: 2px;
+}
+
+.form-group label .hint {
+  color: var(--text-light);
+  font-weight: 500;
+  margin-left: 6px;
+  font-size: 11px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255,107,26,0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 140px;
+  font-family: inherit;
+  line-height: 1.6;
+}
+
+.help-text {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+/* Submit */
+.submit-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.btn {
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--orange);
+  color: white;
+  flex: 1;
+}
+
+.btn-primary:hover {
+  background: var(--orange-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255,107,26,0.3);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-ghost {
+  background: var(--border-light);
+  color: var(--text);
+}
+
+.btn-ghost:hover {
+  background: var(--border);
+}
+
+/* Success Modal */
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 200;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.success-overlay.active {
+  display: flex;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.success-modal {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 460px;
+  padding: 36px 32px 28px;
+  text-align: center;
+  animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.success-icon {
+  width: 70px;
+  height: 70px;
+  background: var(--orange-light);
+  color: var(--orange);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 20px;
+  font-size: 36px;
+}
+
+.success-modal h2 {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.success-modal p {
+  color: var(--text-sub);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.code-box {
+  background: var(--bg);
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.code-label {
+  font-size: 11px;
+  color: var(--text-light);
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.code-value {
+  font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--orange-dark);
+  letter-spacing: 2px;
+  user-select: all;
+}
+
+.code-warning {
+  background: #FFF7ED;
+  border: 1px solid #FFEDD5;
+  color: #C2410C;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.success-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.success-buttons .btn {
+  flex: 1;
+  padding: 12px;
+  font-size: 14px;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--text);
+  color: white;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+  z-index: 300;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+
+/* Responsive */
+@media (max-width: 700px) {
+  .header-inner { padding: 14px 18px; }
+  .page-hero { padding: 40px 20px 30px; }
+  .page-hero h1 { font-size: 28px; }
+  .container { padding: 28px 18px 60px; }
+  .category-grid { grid-template-columns: 1fr; gap: 8px; }
+  .category-card { padding: 16px; display: flex; align-items: center; gap: 14px; text-align: left; }
+  .category-icon { font-size: 24px; margin-bottom: 0; }
+  .form-card { padding: 22px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .submit-row { flex-direction: column-reverse; }
+  .success-modal { padding: 28px 22px 22px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="dealer.html" class="logo">
+      <div class="logo-mark">H</div>
+      <div class="logo-text">HIGH<span class="accent">DEALER</span></div>
+    </a>
+    <a href="dealer-mypage.html" class="header-link">📬 내 민원 확인</a>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="hero-inner">
+    <div class="hero-badge">📮 민원 접수</div>
+    <h1>하이딜러 민원실</h1>
+    <p>차량 등록 문의, 일반 문의, 신고를 접수해주세요.<br>관리자가 확인 후 답변드립니다.</p>
+  </div>
+</section>
+
+<div class="container">
+  <!-- Category Selection -->
+  <div class="category-grid">
+    <button class="category-card active" data-category="차량등록" onclick="selectCategory(this)">
+      <div class="category-icon">🚗</div>
+      <div>
+        <div class="category-name">차량 등록 문의</div>
+        <div class="category-desc">내 차량을 매물로 등록</div>
+      </div>
+    </button>
+    <button class="category-card" data-category="일반문의" onclick="selectCategory(this)">
+      <div class="category-icon">💬</div>
+      <div>
+        <div class="category-name">일반 문의</div>
+        <div class="category-desc">서비스 관련 질문</div>
+      </div>
+    </button>
+    <button class="category-card" data-category="신고" onclick="selectCategory(this)">
+      <div class="category-icon">⚠️</div>
+      <div>
+        <div class="category-name">신고</div>
+        <div class="category-desc">사기/불법행위 신고</div>
+      </div>
+    </button>
+  </div>
+
+  <!-- Form -->
+  <div class="form-card">
+    <div class="form-section">
+      <div class="section-title">신청자 정보</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>이름/닉네임 <span class="req">*</span></label>
+          <input type="text" id="f_name" placeholder="홍길동" maxlength="30">
+        </div>
+        <div class="form-group">
+          <label>디스코드 ID <span class="req">*</span></label>
+          <input type="text" id="f_discord" placeholder="username" maxlength="50">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-title">문의 내용</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>제목 <span class="req">*</span></label>
+          <input type="text" id="f_title" placeholder="간단한 제목을 적어주세요" maxlength="80">
+        </div>
+        <div class="form-group full" id="carInfoGroup">
+          <label>차량 정보 <span class="hint">차량 등록 시 작성</span></label>
+          <input type="text" id="f_carInfo" placeholder="예: 페라리 296 GTB, 2023년식, 무사고" maxlength="150">
+        </div>
+        <div class="form-group full">
+          <label>상세 내용 <span class="req">*</span></label>
+          <textarea id="f_content" placeholder="자세한 내용을 적어주세요. (차량 상태, 옵션, 희망 가격 등 자세할수록 좋아요)" maxlength="2000"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-title">조회 비밀번호</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>비밀번호 <span class="req">*</span><span class="hint">4자 이상</span></label>
+          <input type="password" id="f_password" placeholder="민원 확인 시 사용할 비밀번호" maxlength="30">
+          <div class="help-text">
+            ⚠️ 비밀번호 분실 시 민원 확인이 불가합니다. 안전하게 보관해주세요.<br>
+            제출 후 발급되는 <strong>조회 코드</strong>와 함께 필요합니다.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <a href="dealer.html" class="btn btn-ghost">취소</a>
+      <button class="btn btn-primary" id="submitBtn" onclick="submitInquiry()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        민원 제출하기
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="success-overlay" id="successModal">
+  <div class="success-modal">
+    <div class="success-icon">✓</div>
+    <h2>민원이 접수되었어요!</h2>
+    <p>아래 조회 코드로 답변을 확인할 수 있어요.<br>코드는 잊지 않게 꼭 보관해주세요.</p>
+
+    <div class="code-box">
+      <div class="code-label">조회 코드</div>
+      <div class="code-value" id="successCode">MOCHI-XXXXXX</div>
+    </div>
+
+    <div class="code-warning">
+      <span>💡</span>
+      <span>이 코드와 비밀번호로 <strong>"내 민원 확인"</strong> 페이지에서 답변을 볼 수 있어요.</span>
+    </div>
+
+    <div class="success-buttons">
+      <button class="btn btn-ghost" onclick="copyCode()">코드 복사</button>
+      <a href="dealer-mypage.html" class="btn btn-primary">내 민원 확인</a>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBTuu8rGMbhg0iiYjg8RF9iExCOdugoSnU",
+  authDomain: "mochi-f81d3.firebaseapp.com",
+  databaseURL: "https://mochi-f81d3-default-rtdb.firebaseio.com",
+  projectId: "mochi-f81d3",
+  storageBucket: "mochi-f81d3.firebasestorage.app",
+  messagingSenderId: "506055701777",
+  appId: "1:506055701777:web:dbe0e5fd3d485607aa08b0",
+  measurementId: "G-JWBDHCFYW1"
+};
+
+// ⚠️ 디스코드 웹훅 URL
+const DISCORD_WEBHOOK = "YOUR_DISCORD_WEBHOOK_URL";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let selectedCategory = '차량등록';
+
+window.selectCategory = function(btn) {
+  document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  selectedCategory = btn.dataset.category;
+
+  // 차량 정보 필드는 차량등록일 때만 보이게
+  const carInfoGroup = document.getElementById('carInfoGroup');
+  carInfoGroup.style.display = selectedCategory === '차량등록' ? 'flex' : 'none';
+};
+
+// 조회 코드 생성 (MOCHI-XXXXXX 형태)
+function generateCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 헷갈리는 0/O/I/1 제외
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return `MOCHI-${code}`;
+}
+
+// 비밀번호 해시 (간단한 해시 - 실제 보안용 X)
+async function hashPassword(pw) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(pw + 'highdealer_salt_2026');
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+window.submitInquiry = async function() {
+  const name = document.getElementById('f_name').value.trim();
+  const discord = document.getElementById('f_discord').value.trim();
+  const title = document.getElementById('f_title').value.trim();
+  const carInfo = document.getElementById('f_carInfo').value.trim();
+  const content = document.getElementById('f_content').value.trim();
+  const password = document.getElementById('f_password').value;
+
+  if (!name) return showToast('이름/닉네임을 입력해주세요', 'error');
+  if (!discord) return showToast('디스코드 ID를 입력해주세요', 'error');
+  if (!title) return showToast('제목을 입력해주세요', 'error');
+  if (!content) return showToast('내용을 입력해주세요', 'error');
+  if (content.length < 10) return showToast('내용을 좀 더 자세히 적어주세요', 'error');
+  if (!password) return showToast('비밀번호를 입력해주세요', 'error');
+  if (password.length < 4) return showToast('비밀번호는 4자 이상이어야 해요', 'error');
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '제출 중...';
+
+  try {
+    const code = generateCode();
+    const passwordHash = await hashPassword(password);
+
+    const inquiryData = {
+      code,
+      passwordHash,
+      category: selectedCategory,
+      name,
+      discord,
+      title,
+      carInfo: selectedCategory === '차량등록' ? carInfo : '',
+      content,
+      status: 'pending', // pending | answered
+      reply: '',
+      replyAt: null,
+      createdAt: serverTimestamp()
+    };
+
+    const docRef = await addDoc(collection(db, 'inquiries'), inquiryData);
+
+    // 디스코드 웹훅 알림
+    if (DISCORD_WEBHOOK && DISCORD_WEBHOOK !== 'YOUR_DISCORD_WEBHOOK_URL') {
+      const categoryEmoji = {
+        '차량등록': '🚗',
+        '일반문의': '💬',
+        '신고': '⚠️'
+      }[selectedCategory] || '📮';
+
+      const categoryColor = {
+        '차량등록': 0xFF6B1A,
+        '일반문의': 0x3B82F6,
+        '신고': 0xEF4444
+      }[selectedCategory] || 0xFF6B1A;
+
+      try {
+        await fetch(DISCORD_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: 'HIGH DEALER 민원실',
+            embeds: [{
+              title: `${categoryEmoji} 새 민원이 등록되었어요!`,
+              description: `**[${selectedCategory}]** ${title}`,
+              color: categoryColor,
+              fields: [
+                { name: '🔖 조회 코드', value: `\`${code}\``, inline: true },
+                { name: '👤 신청자', value: name, inline: true },
+                { name: '💬 디스코드', value: discord, inline: true },
+                ...(selectedCategory === '차량등록' && carInfo ? [{ name: '🚗 차량 정보', value: carInfo }] : []),
+                { name: '📝 내용 미리보기', value: content.length > 200 ? content.substring(0, 200) + '...' : content }
+              ],
+              footer: { text: '관리자 페이지에서 답변 작성하세요' },
+              timestamp: new Date().toISOString()
+            }]
+          })
+        });
+      } catch (e) {
+        console.error('웹훅 전송 실패:', e);
+      }
+    }
+
+    // 성공 모달
+    document.getElementById('successCode').textContent = code;
+    document.getElementById('successModal').classList.add('active');
+  } catch (e) {
+    console.error(e);
+    showToast('제출 실패: ' + e.message, 'error');
+    btn.disabled = false;
+    btn.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      민원 제출하기
+    `;
+  }
+};
+
+window.copyCode = function() {
+  const code = document.getElementById('successCode').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    showToast('조회 코드가 복사되었어요', 'success');
+  });
+};
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+
+</body>
+</html>
