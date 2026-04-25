@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>차량 상세 - HIGH DEALER</title>
+
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+<style>
+:root {
+  --orange: #FF6B1A;
+  --orange-dark: #E55A0F;
+  --orange-light: #FFF4ED;
+  --bg: #FAFAFA;
+  --white: #FFFFFF;
+  --text: #1A1A1A;
+  --text-sub: #6B6B6B;
+  --text-light: #9B9B9B;
+  --border: #EAEAEA;
+  --border-light: #F0F0F0;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.logo-mark {
+  width: 36px;
+  height: 36px;
+  background: var(--orange);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.logo-text {
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+}
+
+.logo-text .accent { color: var(--orange); }
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--text-sub);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: var(--border-light);
+  color: var(--text);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 32px 0;
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+.breadcrumb a {
+  color: var(--text-sub);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover { color: var(--orange); }
+
+.breadcrumb .sep { margin: 0 8px; }
+
+/* Main */
+.main-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 30px 32px 80px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 48px;
+}
+
+/* Gallery */
+.gallery {
+  position: sticky;
+  top: 100px;
+  align-self: start;
+}
+
+.main-image {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.main-image-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-light);
+  font-size: 80px;
+}
+
+.sold-overlay-large {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: grid;
+  place-items: center;
+  z-index: 2;
+}
+
+.sold-stamp-large {
+  background: white;
+  color: #DC2626;
+  padding: 20px 50px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 36px;
+  letter-spacing: 4px;
+  border: 5px solid #DC2626;
+  transform: rotate(-8deg);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+
+.thumbnails {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.thumb {
+  aspect-ratio: 4/3;
+  background: var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumb.active {
+  border-color: var(--orange);
+}
+
+/* Info Panel */
+.info-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.car-header {
+  background: white;
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid var(--border);
+}
+
+.car-brand-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.car-brand-tag {
+  font-size: 12px;
+  color: var(--orange);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.status-badge.available {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.status-badge.sold {
+  background: #FFEBEE;
+  color: #C62828;
+}
+
+.car-name-large {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.car-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.car-tag {
+  background: var(--border-light);
+  padding: 5px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  color: var(--text-sub);
+  font-weight: 500;
+}
+
+.price-area {
+  padding: 20px;
+  background: var(--orange-light);
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.price-label {
+  font-size: 13px;
+  color: var(--text-sub);
+  font-weight: 600;
+}
+
+.price-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--orange-dark);
+  letter-spacing: -1px;
+}
+
+.price-value .unit {
+  font-size: 16px;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+/* Spec Grid */
+.spec-section {
+  background: white;
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid var(--border);
+}
+
+.spec-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spec-title::before {
+  content: '';
+  width: 4px;
+  height: 16px;
+  background: var(--orange);
+  border-radius: 2px;
+}
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.spec-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.spec-key {
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.spec-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Description */
+.description-section {
+  background: white;
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid var(--border);
+}
+
+.description-text {
+  font-size: 14px;
+  color: var(--text-sub);
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+/* CTA */
+.cta-section {
+  background: var(--text);
+  border-radius: 16px;
+  padding: 28px;
+  color: white;
+}
+
+.cta-title {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.cta-desc {
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.cta-btn {
+  flex: 1;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: none;
+}
+
+.cta-btn-primary {
+  background: var(--orange);
+  color: white;
+}
+
+.cta-btn-primary:hover {
+  background: var(--orange-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255,107,26,0.4);
+}
+
+.cta-btn-secondary {
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.cta-btn-secondary:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.cta-btn-disabled {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.5);
+  cursor: not-allowed;
+}
+
+.cta-btn-disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 200;
+  display: none;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+  overflow-y: auto;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-overlay.active {
+  display: flex;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.inquiry-modal {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+  overflow: hidden;
+  animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.modal-header-text h3 {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+
+.modal-header-text p {
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.modal-close-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  color: var(--text-sub);
+  flex-shrink: 0;
+}
+
+.modal-close-btn:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+.modal-body {
+  padding: 24px 28px;
+}
+
+.modal-car-preview {
+  background: var(--orange-light);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.modal-car-thumb {
+  width: 50px;
+  height: 38px;
+  border-radius: 6px;
+  background: white;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.modal-car-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-car-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.modal-car-brand {
+  font-size: 11px;
+  color: var(--orange-dark);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.modal-car-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.modal-car-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--orange-dark);
+  flex-shrink: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.form-group label .req {
+  color: var(--orange);
+  margin-left: 2px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.15s;
+  width: 100%;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255,107,26,0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.modal-footer {
+  padding: 16px 28px 22px;
+  display: flex;
+  gap: 10px;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 13px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.modal-btn-cancel {
+  background: var(--border-light);
+  color: var(--text-sub);
+}
+
+.modal-btn-cancel:hover {
+  background: var(--border);
+}
+
+.modal-btn-submit {
+  background: var(--orange);
+  color: white;
+  flex: 2;
+}
+
+.modal-btn-submit:hover {
+  background: var(--orange-dark);
+}
+
+.modal-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--text);
+  color: white;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+  z-index: 300;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.toast.success { background: #10B981; }
+.toast.error { background: #EF4444; }
+
+/* Loading */
+.loading-screen {
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--orange);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .header-inner { padding: 16px 20px; }
+  .main-container {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 20px;
+  }
+  .gallery { position: static; }
+  .car-name-large { font-size: 22px; }
+  .price-value { font-size: 26px; }
+  .spec-grid { grid-template-columns: 1fr; gap: 0; }
+  .cta-buttons { flex-direction: column; }
+  .breadcrumb { padding: 16px 20px 0; font-size: 12px; }
+  .main-image-placeholder { font-size: 60px; }
+  .sold-stamp-large { font-size: 24px; padding: 14px 32px; }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .modal-header, .modal-body { padding: 18px 20px; }
+  .modal-footer { padding: 12px 20px 18px; }
+  .inquiry-modal { border-radius: 16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="dealer.html" class="logo">
+      <div class="logo-mark">H</div>
+      <div class="logo-text">HIGH<span class="accent">DEALER</span></div>
+    </a>
+    <a href="dealer.html" class="back-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      목록으로
+    </a>
+  </div>
+</header>
+
+<div class="breadcrumb">
+  <a href="dealer.html">홈</a>
+  <span class="sep">›</span>
+  <a href="dealer.html">매물검색</a>
+  <span class="sep">›</span>
+  <span id="breadcrumbName">차량 상세</span>
+</div>
+
+<div id="content">
+  <div class="loading-screen">
+    <div class="spinner"></div>
+    <p style="color: var(--text-sub);">차량 정보를 불러오는 중...</p>
+  </div>
+</div>
+
+<!-- Inquiry Modal -->
+<div class="modal-overlay" id="inquiryModal">
+  <div class="inquiry-modal">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        <h3>차량 문의하기</h3>
+        <p>아래 정보를 입력해주시면 빠르게 답변드릴게요</p>
+      </div>
+      <button class="modal-close-btn" onclick="closeInquiryModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-car-preview" id="modalCarPreview">
+        <!-- 동적 생성 -->
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>이름/닉네임 <span class="req">*</span></label>
+          <input type="text" id="inq_name" placeholder="홍길동" maxlength="30">
+        </div>
+        <div class="form-group">
+          <label>디스코드 ID <span class="req">*</span></label>
+          <input type="text" id="inq_discord" placeholder="username" maxlength="50">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>연락 방법</label>
+        <select id="inq_contact">
+          <option value="디스코드 DM">디스코드 DM</option>
+          <option value="디스코드 음성채팅">디스코드 음성채팅</option>
+          <option value="게임 내">게임 내 (인게임)</option>
+          <option value="기타">기타</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>문의 내용 <span class="req">*</span></label>
+        <textarea id="inq_message" placeholder="시승 가능한가요? 추가 사진 받을 수 있을까요? 등 자유롭게 작성해주세요" maxlength="500"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn modal-btn-cancel" onclick="closeInquiryModal()">취소</button>
+      <button class="modal-btn modal-btn-submit" id="submitInquiryBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        문의 전송하기
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBTuu8rGMbhg0iiYjg8RF9iExCOdugoSnU",
+  authDomain: "mochi-f81d3.firebaseapp.com",
+  databaseURL: "https://mochi-f81d3-default-rtdb.firebaseio.com",
+  projectId: "mochi-f81d3",
+  storageBucket: "mochi-f81d3.firebasestorage.app",
+  messagingSenderId: "506055701777",
+  appId: "1:506055701777:web:dbe0e5fd3d485607aa08b0",
+  measurementId: "G-JWBDHCFYW1"
+};
+
+// ⚠️ 디스코드 웹훅 URL (문의 알림용)
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1497516768871186483/I2kvkl-gJhvMsCKXtJUhD8x3AHVqPNzX4Ve9kmxeOpqlyxuFM_UnvZsZMncVj5P4e4Qt";
+const DISCORD_INVITE = "https://discord.gg/mochi-rp";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const params = new URLSearchParams(window.location.search);
+const carId = params.get('id');
+
+async function loadCar() {
+  if (!carId) {
+    showError('차량 ID가 없습니다');
+    return;
+  }
+
+  try {
+    const snap = await getDoc(doc(db, 'cars', carId));
+    if (!snap.exists()) {
+      // 데모 데이터에서 찾기
+      const demo = getDemoCar(carId);
+      if (demo) return renderCar(demo);
+      showError('차량을 찾을 수 없습니다');
+      return;
+    }
+    renderCar({ id: snap.id, ...snap.data() });
+  } catch (e) {
+    console.error(e);
+    // Firebase 미설정 시 데모
+    const demo = getDemoCar(carId);
+    if (demo) return renderCar(demo);
+    showError('차량 정보를 불러올 수 없습니다');
+  }
+}
+
+function getDemoCar(id) {
+  const data = {
+    'demo1': { id, name: '롤스로이스 팬텀 EWB', seats: 5, price: 350000, status: 'available', isNew: true, image: '', images: [] },
+    'demo2': { id, name: '벤틀리 뮬산 스피드', seats: 5, price: 480000, status: 'available', image: '', images: [] },
+    'demo3': { id, name: '람보르기니 베네노 로드스터', seats: 2, price: 5800000, status: 'sold', image: '', images: [] },
+    'demo4': { id, name: '부가티 시론 슈퍼 스포츠', seats: 2, price: 4500000, status: 'available', isNew: true, image: '', images: [] },
+    'demo5': { id, name: '파가니 와이라 임페리얼', seats: 2, price: 8900000, status: 'available', image: '', images: [] },
+    'demo6': { id, name: '코닉세그 예스코 앱솔루트', seats: 2, price: 1450000, status: 'sold', image: '', images: [] },
+    'demo7': { id, name: '롤스로이스 브와뚜르 누아르', seats: 4, price: 150000000, status: 'available', isNew: true, image: '', images: [] },
+    'demo8': { id, name: '맥라렌 솔루스 GT', seats: 1, price: 380000, status: 'available', image: '', images: [] },
+  };
+  return data[id] || null;
+}
+
+function showError(msg) {
+  document.getElementById('content').innerHTML = `
+    <div class="loading-screen">
+      <div style="font-size: 48px; margin-bottom: 16px;">😢</div>
+      <h2 style="margin-bottom: 8px;">${msg}</h2>
+      <p style="color: var(--text-sub); margin-bottom: 24px;">다른 차량을 살펴보시는 건 어떨까요?</p>
+      <a href="dealer.html" style="display: inline-block; padding: 12px 24px; background: var(--orange); color: white; border-radius: 10px; text-decoration: none; font-weight: 700;">목록으로 돌아가기</a>
+    </div>
+  `;
+}
+
+function formatPrice(price) {
+  // 1조 = 100,000,000만원 / 1억 = 10,000만원
+  if (price >= 100000000) {
+    const jo = Math.floor(price / 100000000);
+    const remainder = price % 100000000;
+    const eok = Math.floor(remainder / 10000);
+    return eok > 0 ? `${jo}조 ${eok.toLocaleString()}억` : `${jo}조`;
+  }
+  if (price >= 10000) {
+    const eok = Math.floor(price / 10000);
+    const man = price % 10000;
+    return man > 0 ? `${eok}억 ${man.toLocaleString()}` : `${eok}억`;
+  }
+  return price.toLocaleString();
+}
+
+function renderCar(car) {
+  document.title = `${car.name} - HIGH DEALER`;
+  document.getElementById('breadcrumbName').textContent = car.name;
+
+  const isSold = car.status === 'sold';
+  const images = car.images && car.images.length > 0 ? car.images : (car.image ? [car.image] : []);
+  const mainImg = images[0] || '';
+
+  document.getElementById('content').innerHTML = `
+    <div class="main-container">
+      <!-- Gallery -->
+      <div class="gallery">
+        <div class="main-image">
+          ${mainImg
+            ? `<img id="mainImg" src="${mainImg}" alt="${car.name}">`
+            : `<div class="main-image-placeholder">🚗</div>`
+          }
+          ${isSold ? `
+            <div class="sold-overlay-large">
+              <div class="sold-stamp-large">SOLD OUT</div>
+            </div>
+          ` : ''}
+        </div>
+        ${images.length > 1 ? `
+          <div class="thumbnails">
+            ${images.map((img, i) => `
+              <div class="thumb ${i === 0 ? 'active' : ''}" data-img="${img}">
+                <img src="${img}" alt="${i+1}">
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
+
+      <!-- Info Panel -->
+      <div class="info-panel">
+        <div class="car-header">
+          <div class="car-brand-row">
+            <div class="car-brand-tag">HIGH DEALER</div>
+            <div class="status-badge ${isSold ? 'sold' : 'available'}">
+              ${isSold ? '● 판매완료' : '● 판매중'}
+            </div>
+          </div>
+          <h1 class="car-name-large">${car.name}</h1>
+          <div class="car-tags">
+            <div class="car-tag">👤 ${car.seats || '-'}명 탑승</div>
+            ${car.isNew ? '<div class="car-tag" style="background: var(--orange-light); color: var(--orange-dark);">NEW</div>' : ''}
+          </div>
+          <div class="price-area">
+            <div class="price-label">판매가</div>
+            <div class="price-value">${formatPrice(car.price)}${car.price < 10000 ? '<span class="unit">만원</span>' : ''}</div>
+          </div>
+        </div>
+
+        <div class="spec-section">
+          <div class="spec-title">차량 정보</div>
+          <div class="spec-grid">
+            <div class="spec-item"><div class="spec-key">탑승 인원</div><div class="spec-val">${car.seats || '-'}명</div></div>
+            <div class="spec-item"><div class="spec-key">판매 상태</div><div class="spec-val">${isSold ? '판매완료' : '판매중'}</div></div>
+          </div>
+        </div>
+
+        <div class="cta-section">
+          <div class="cta-title">${isSold ? '판매가 완료된 차량입니다' : '이 차량이 마음에 드시나요?'}</div>
+          <div class="cta-desc">
+            ${isSold
+              ? '아쉽지만 이 차량은 이미 판매되었어요. 다른 매물을 살펴보세요!'
+              : '디스코드로 문의 주시면 빠르게 답변드립니다.\n시승 및 추가 사진 요청 환영합니다.'
+            }
+          </div>
+          <div class="cta-buttons">
+            ${isSold ? `
+              <a href="dealer.html" class="cta-btn cta-btn-primary">
+                다른 차량 보기
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            ` : `
+              <button class="cta-btn cta-btn-primary" id="inquireBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                디스코드 문의
+              </button>
+              <a href="dealer.html" class="cta-btn cta-btn-secondary">목록으로</a>
+            `}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // 썸네일 클릭 이벤트
+  document.querySelectorAll('.thumb').forEach(thumb => {
+    thumb.addEventListener('click', () => {
+      document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+      thumb.classList.add('active');
+      const mainImg = document.getElementById('mainImg');
+      if (mainImg) mainImg.src = thumb.dataset.img;
+    });
+  });
+
+  // 문의 버튼
+  const inquireBtn = document.getElementById('inquireBtn');
+  if (inquireBtn) {
+    inquireBtn.addEventListener('click', () => sendInquiry(car));
+  }
+}
+
+async function sendInquiry(car) {
+  // 모달 열기
+  openInquiryModal(car);
+}
+
+let currentCar = null;
+
+window.openInquiryModal = function(car) {
+  currentCar = car;
+
+  // 차량 미리보기 채우기
+  const preview = document.getElementById('modalCarPreview');
+  preview.innerHTML = `
+    <div class="modal-car-thumb">
+      ${car.image ? `<img src="${car.image}">` : '🚗'}
+    </div>
+    <div class="modal-car-info">
+      <div class="modal-car-brand">👤 ${car.seats || '-'}명 탑승</div>
+      <div class="modal-car-name">${car.name}</div>
+    </div>
+    <div class="modal-car-price">
+      ${car.price >= 10000 ? formatPrice(car.price) : formatPrice(car.price) + '만원'}
+    </div>
+  `;
+
+  // 폼 초기화
+  document.getElementById('inq_name').value = '';
+  document.getElementById('inq_discord').value = '';
+  document.getElementById('inq_contact').value = '디스코드 DM';
+  document.getElementById('inq_message').value = '';
+
+  document.getElementById('inquiryModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  // 첫 입력란에 포커스
+  setTimeout(() => document.getElementById('inq_name').focus(), 100);
+};
+
+window.closeInquiryModal = function() {
+  document.getElementById('inquiryModal').classList.remove('active');
+  document.body.style.overflow = '';
+};
+
+async function submitInquiry() {
+  if (!currentCar) return;
+
+  const name = document.getElementById('inq_name').value.trim();
+  const discord = document.getElementById('inq_discord').value.trim();
+  const contact = document.getElementById('inq_contact').value;
+  const message = document.getElementById('inq_message').value.trim();
+
+  // 유효성 검사
+  if (!name) return showToast('이름/닉네임을 입력해주세요', 'error');
+  if (!discord) return showToast('디스코드 ID를 입력해주세요', 'error');
+  if (!message) return showToast('문의 내용을 입력해주세요', 'error');
+  if (message.length < 5) return showToast('문의 내용을 좀 더 자세히 적어주세요', 'error');
+
+  const btn = document.getElementById('submitInquiryBtn');
+  btn.disabled = true;
+  btn.innerHTML = '전송 중...';
+
+  if (!DISCORD_WEBHOOK || DISCORD_WEBHOOK === 'YOUR_DISCORD_WEBHOOK_URL') {
+    showToast('웹훅 설정이 안 되어 있어요', 'error');
+    btn.disabled = false;
+    btn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      문의 전송하기
+    `;
+    return;
+  }
+
+  try {
+    const priceText = currentCar.price >= 10000
+      ? formatPrice(currentCar.price)
+      : `${formatPrice(currentCar.price)}만원`;
+
+    const res = await fetch(DISCORD_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'HIGH DEALER 문의',
+        embeds: [{
+          title: `🔔 새로운 차량 문의가 왔어요!`,
+          description: `**${currentCar.name}** 차량에 대한 문의입니다.`,
+          color: 0xFF6B1A,
+          thumbnail: currentCar.image ? { url: currentCar.image } : undefined,
+          fields: [
+            { name: '👤 이름', value: name, inline: true },
+            { name: '💬 디스코드', value: discord, inline: true },
+            { name: '📞 연락 방법', value: contact, inline: true },
+            { name: '🚗 차량', value: currentCar.name, inline: true },
+            { name: '💰 가격', value: priceText, inline: true },
+            { name: '👥 탑승 인원', value: `${currentCar.seats || '-'}명`, inline: true },
+            { name: '📝 문의 내용', value: message },
+            { name: '🔗 매물 링크', value: window.location.href }
+          ],
+          footer: { text: 'HIGH DEALER • 모찌서버 공식 중고차' },
+          timestamp: new Date().toISOString()
+        }]
+      })
+    });
+
+    if (!res.ok) throw new Error('웹훅 전송 실패');
+
+    showToast('문의가 전송되었어요! 곧 답변드릴게요', 'success');
+    closeInquiryModal();
+  } catch (e) {
+    console.error('웹훅 오류:', e);
+    showToast('전송에 실패했어요. 다시 시도해주세요', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      문의 전송하기
+    `;
+  }
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// 모달 외부 클릭 시 닫기
+document.getElementById('inquiryModal').addEventListener('click', e => {
+  if (e.target.id === 'inquiryModal') closeInquiryModal();
+});
+
+// ESC 키로 닫기
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeInquiryModal();
+});
+
+// 전송 버튼 이벤트
+document.getElementById('submitInquiryBtn').addEventListener('click', submitInquiry);
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+loadCar();
+</script>
+
+</body>
+</html>

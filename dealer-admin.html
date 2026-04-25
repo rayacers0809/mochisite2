@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>관리자 - HIGH DEALER</title>
+
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+<style>
+:root {
+  --orange: #FF6B1A;
+  --orange-dark: #E55A0F;
+  --orange-light: #FFF4ED;
+  --bg: #FAFAFA;
+  --white: #FFFFFF;
+  --text: #1A1A1A;
+  --text-sub: #6B6B6B;
+  --text-light: #9B9B9B;
+  --border: #EAEAEA;
+  --border-light: #F0F0F0;
+  --success: #10B981;
+  --danger: #EF4444;
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header */
+header {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.logo-mark {
+  width: 36px;
+  height: 36px;
+  background: var(--orange);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.logo-text {
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.5px;
+}
+
+.logo-text .accent { color: var(--orange); }
+
+.admin-tag {
+  background: var(--text);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-left: 8px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.btn {
+  border: none;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--orange);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--orange-dark);
+}
+
+.btn-ghost {
+  background: var(--border-light);
+  color: var(--text);
+}
+
+.btn-ghost:hover {
+  background: var(--border);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #DC2626;
+}
+
+/* Login Screen */
+.login-screen {
+  min-height: calc(100vh - 70px);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.login-box {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+}
+
+.login-icon {
+  width: 60px;
+  height: 60px;
+  background: var(--orange-light);
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  margin: 0 auto 20px;
+}
+
+.login-box h2 {
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.login-box p {
+  text-align: center;
+  color: var(--text-sub);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  margin-bottom: 12px;
+}
+
+.login-box input:focus {
+  outline: none;
+  border-color: var(--orange);
+}
+
+.login-box button {
+  width: 100%;
+  padding: 14px;
+  background: var(--orange);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.login-box button:hover { background: var(--orange-dark); }
+
+/* Dashboard */
+.dashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.page-title h1 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 4px;
+}
+
+.page-title p {
+  color: var(--text-sub);
+  font-size: 14px;
+}
+
+/* Stats */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  right: -20px;
+  top: -20px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--orange-light);
+  opacity: 0.5;
+}
+
+.stat-card-label {
+  font-size: 12px;
+  color: var(--text-sub);
+  font-weight: 600;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.stat-card-num {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  position: relative;
+}
+
+.stat-card-num .unit {
+  font-size: 16px;
+  color: var(--text-sub);
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.stat-card.accent { border-color: var(--orange); }
+.stat-card.accent::after { background: var(--orange); opacity: 0.1; }
+.stat-card.accent .stat-card-num { color: var(--orange-dark); }
+
+/* Table */
+.table-card {
+  background: white;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.table-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.table-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.search-input {
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  width: 240px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--orange);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #FAFAFA;
+}
+
+th {
+  text-align: left;
+  padding: 14px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-sub);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+td {
+  padding: 16px 20px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+
+tr:hover td {
+  background: #FCFCFC;
+}
+
+.car-thumb-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.car-thumb {
+  width: 56px;
+  height: 42px;
+  border-radius: 6px;
+  background: var(--border-light);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.car-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.car-info-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.car-info-brand {
+  font-size: 11px;
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+.car-info-name {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.price-cell {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.status-pill {
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  border: 1.5px solid;
+  background: white;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.status-pill.available {
+  border-color: #BBF7D0;
+  background: #F0FDF4;
+  color: #16A34A;
+}
+
+.status-pill.available:hover {
+  background: #DCFCE7;
+}
+
+.status-pill.sold {
+  border-color: #FECACA;
+  background: #FEF2F2;
+  color: #DC2626;
+}
+
+.status-pill.sold:hover {
+  background: #FEE2E2;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  background: white;
+  border-radius: 7px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.2s;
+}
+
+.icon-btn:hover {
+  background: var(--border-light);
+}
+
+.icon-btn.danger:hover {
+  background: #FEE2E2;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+  display: none;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+  overflow-y: auto;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal {
+  background: white;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 720px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: modalIn 0.25s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  padding: 22px 28px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.modal-close {
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  color: var(--text-sub);
+}
+
+.modal-close:hover {
+  background: var(--border);
+}
+
+.modal-body {
+  padding: 28px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.2px;
+}
+
+.form-group label .required {
+  color: var(--orange);
+  margin-left: 2px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255,107,26,0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--border-light);
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.checkbox-row input { width: 18px; height: 18px; accent-color: var(--orange); }
+.checkbox-row label { font-size: 14px; font-weight: 600; cursor: pointer; }
+
+.modal-footer {
+  padding: 18px 28px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  background: #FAFAFA;
+}
+
+/* Empty */
+.empty-row {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-sub);
+}
+
+.empty-row .icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+  opacity: 0.4;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--text);
+  color: white;
+  padding: 14px 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  z-index: 300;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s;
+}
+
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .header-inner { padding: 14px 20px; }
+  .dashboard { padding: 20px; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .form-grid { grid-template-columns: 1fr; }
+  .table-header { flex-direction: column; align-items: stretch; }
+  .search-input { width: 100%; }
+  th, td { padding: 12px 14px; font-size: 13px; }
+  .modal-overlay { padding: 20px 12px; }
+  .modal-header, .modal-body, .modal-footer { padding: 18px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="dealer.html" class="logo">
+      <div class="logo-mark">H</div>
+      <div class="logo-text">HIGH<span class="accent">DEALER</span></div>
+      <span class="admin-tag">ADMIN</span>
+    </a>
+    <div class="header-actions" id="headerActions" style="display: none;">
+      <span class="user-info">👤 관리자</span>
+      <button class="btn btn-ghost" onclick="logout()">로그아웃</button>
+      <a href="dealer.html" class="btn btn-ghost">사이트 보기</a>
+    </div>
+  </div>
+</header>
+
+<!-- Login -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-icon">🔐</div>
+    <h2>관리자 로그인</h2>
+    <p>관리자 비밀번호를 입력하세요</p>
+    <input type="password" id="loginPassword" placeholder="비밀번호" onkeypress="if(event.key==='Enter')login()">
+    <button onclick="login()">로그인</button>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div class="dashboard" id="dashboard" style="display: none;">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>차량 관리</h1>
+      <p>차량을 등록하고 판매 상태를 관리하세요</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      차량 등록
+    </button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-card-label">전체 매물</div>
+      <div class="stat-card-num" id="statTotal">0<span class="unit">대</span></div>
+    </div>
+    <div class="stat-card accent">
+      <div class="stat-card-label">판매중</div>
+      <div class="stat-card-num" id="statAvailable">0<span class="unit">대</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">판매완료</div>
+      <div class="stat-card-num" id="statSold">0<span class="unit">대</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">총 가치</div>
+      <div class="stat-card-num" id="statValue">0<span class="unit">만원</span></div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">
+      <h3>전체 차량 목록</h3>
+      <input type="text" class="search-input" id="adminSearch" placeholder="차량명 검색..." oninput="renderTable()">
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 45%;">차량</th>
+            <th>탑승</th>
+            <th>가격</th>
+            <th>상태</th>
+            <th style="width: 100px;">관리</th>
+          </tr>
+        </thead>
+        <tbody id="carsTable"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">차량 등록</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>차량 이름 <span class="required">*</span></label>
+          <input type="text" id="f_name" placeholder="예: 롤스로이스 팬텀 EWB">
+        </div>
+        <div class="form-group">
+          <label>가격 (만원) <span class="required">*</span></label>
+          <input type="number" id="f_price" placeholder="300000 (= 30억)">
+        </div>
+        <div class="form-group">
+          <label>탑승 인원 <span class="required">*</span></label>
+          <input type="number" id="f_seats" placeholder="4" min="1" max="20">
+        </div>
+        <div class="form-group full">
+          <label>대표 이미지 URL</label>
+          <input type="text" id="f_image" placeholder="https://...">
+        </div>
+        <div class="form-group full">
+          <label>추가 이미지 URL (한 줄에 하나씩)</label>
+          <textarea id="f_images" placeholder="https://...
+https://..." style="min-height: 80px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="checkbox-row">
+            <input type="checkbox" id="f_isNew">
+            <label for="f_isNew" style="cursor: pointer;">NEW 배지 표시</label>
+          </label>
+        </div>
+        <div class="form-group">
+          <label>판매 상태</label>
+          <select id="f_status">
+            <option value="available">판매중</option>
+            <option value="sold">판매완료</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveCar()" id="saveBtn">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import {
+  getFirestore, collection, getDocs, doc, addDoc, updateDoc, deleteDoc,
+  serverTimestamp, query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+// ⚠️ Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyBTuu8rGMbhg0iiYjg8RF9iExCOdugoSnU",
+  authDomain: "mochi-f81d3.firebaseapp.com",
+  databaseURL: "https://mochi-f81d3-default-rtdb.firebaseio.com",
+  projectId: "mochi-f81d3",
+  storageBucket: "mochi-f81d3.firebasestorage.app",
+  messagingSenderId: "506055701777",
+  appId: "1:506055701777:web:dbe0e5fd3d485607aa08b0",
+  measurementId: "G-JWBDHCFYW1"
+};
+
+// ⚠️ 관리자 비밀번호 (실제로는 Firebase Auth 추천)
+const ADMIN_PASSWORD = "mochi1234";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let allCars = [];
+let editingId = null;
+
+// === Auth ===
+window.login = function() {
+  const pw = document.getElementById('loginPassword').value;
+  if (pw === ADMIN_PASSWORD) {
+    sessionStorage.setItem('hd_admin', 'true');
+    showDashboard();
+  } else {
+    showToast('비밀번호가 틀렸어요', 'error');
+  }
+};
+
+window.logout = function() {
+  sessionStorage.removeItem('hd_admin');
+  location.reload();
+};
+
+function showDashboard() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('headerActions').style.display = 'flex';
+  loadCars();
+}
+
+if (sessionStorage.getItem('hd_admin') === 'true') {
+  showDashboard();
+}
+
+// === CRUD ===
+async function loadCars() {
+  try {
+    const q = query(collection(db, 'cars'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    allCars = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (e) {
+    console.error(e);
+    showToast('Firebase 연결 실패. config 확인', 'error');
+    allCars = [];
+  }
+  renderTable();
+  updateStats();
+}
+
+window.renderTable = function() {
+  const search = document.getElementById('adminSearch').value.toLowerCase().trim();
+  const tbody = document.getElementById('carsTable');
+
+  let filtered = allCars;
+  if (search) {
+    filtered = allCars.filter(c =>
+      c.name.toLowerCase().includes(search)
+    );
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr><td colspan="7">
+        <div class="empty-row">
+          <div class="icon">📭</div>
+          <div>${search ? '검색 결과가 없어요' : '등록된 차량이 없어요'}</div>
+        </div>
+      </td></tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(car => `
+    <tr>
+      <td>
+        <div class="car-thumb-cell">
+          <div class="car-thumb">
+            ${car.image ? `<img src="${car.image}">` : '🚗'}
+          </div>
+          <div class="car-info-cell">
+            <div class="car-info-name">${escapeHtml(car.name)}</div>
+          </div>
+        </div>
+      </td>
+      <td>👤 ${car.seats || '-'}명</td>
+      <td class="price-cell">${car.price >= 10000 ? formatPrice(car.price) : formatPrice(car.price) + '만'}</td>
+      <td>
+        <button class="status-pill ${car.status}" onclick="toggleStatus('${car.id}')">
+          ● ${car.status === 'available' ? '판매중' : '판매완료'}
+        </button>
+      </td>
+      <td>
+        <div class="action-buttons">
+          <button class="icon-btn" onclick="editCar('${car.id}')" title="수정">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="icon-btn danger" onclick="deleteCar('${car.id}')" title="삭제">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+};
+
+function updateStats() {
+  document.getElementById('statTotal').innerHTML = `${allCars.length}<span class="unit">대</span>`;
+  const available = allCars.filter(c => c.status === 'available');
+  const sold = allCars.filter(c => c.status === 'sold');
+  document.getElementById('statAvailable').innerHTML = `${available.length}<span class="unit">대</span>`;
+  document.getElementById('statSold').innerHTML = `${sold.length}<span class="unit">대</span>`;
+  const totalValue = available.reduce((sum, c) => sum + (parseInt(c.price) || 0), 0);
+  document.getElementById('statValue').innerHTML = totalValue >= 10000
+    ? `${formatPrice(totalValue)}`
+    : `${formatPrice(totalValue)}<span class="unit">만원</span>`;
+}
+
+window.openModal = function() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = '차량 등록';
+  clearForm();
+  document.getElementById('modalOverlay').classList.add('active');
+};
+
+window.closeModal = function() {
+  document.getElementById('modalOverlay').classList.remove('active');
+};
+
+window.editCar = function(id) {
+  const car = allCars.find(c => c.id === id);
+  if (!car) return;
+
+  editingId = id;
+  document.getElementById('modalTitle').textContent = '차량 수정';
+
+  document.getElementById('f_name').value = car.name || '';
+  document.getElementById('f_price').value = car.price || '';
+  document.getElementById('f_seats').value = car.seats || '';
+  document.getElementById('f_image').value = car.image || '';
+  document.getElementById('f_images').value = (car.images || []).join('\n');
+  document.getElementById('f_isNew').checked = !!car.isNew;
+  document.getElementById('f_status').value = car.status || 'available';
+
+  document.getElementById('modalOverlay').classList.add('active');
+};
+
+function clearForm() {
+  ['f_name', 'f_price', 'f_seats', 'f_image', 'f_images'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f_isNew').checked = false;
+  document.getElementById('f_status').value = 'available';
+}
+
+window.saveCar = async function() {
+  const name = document.getElementById('f_name').value.trim();
+  const price = parseInt(document.getElementById('f_price').value);
+  const seats = parseInt(document.getElementById('f_seats').value);
+
+  if (!name) return showToast('차량 이름을 입력해주세요', 'error');
+  if (!price || price <= 0) return showToast('가격을 입력해주세요', 'error');
+  if (!seats || seats <= 0) return showToast('탑승 인원을 입력해주세요', 'error');
+
+  const imagesText = document.getElementById('f_images').value.trim();
+  const images = imagesText ? imagesText.split('\n').map(s => s.trim()).filter(s => s) : [];
+
+  const data = {
+    name,
+    price,
+    seats,
+    image: document.getElementById('f_image').value.trim(),
+    images,
+    isNew: document.getElementById('f_isNew').checked,
+    status: document.getElementById('f_status').value,
+  };
+
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.textContent = '저장 중...';
+
+  try {
+    if (editingId) {
+      await updateDoc(doc(db, 'cars', editingId), { ...data, updatedAt: serverTimestamp() });
+      showToast('수정되었어요', 'success');
+    } else {
+      await addDoc(collection(db, 'cars'), { ...data, createdAt: serverTimestamp() });
+      showToast('등록되었어요', 'success');
+    }
+    closeModal();
+    loadCars();
+  } catch (e) {
+    console.error(e);
+    showToast('저장 실패: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '저장';
+  }
+};
+
+window.deleteCar = async function(id) {
+  const car = allCars.find(c => c.id === id);
+  if (!confirm(`정말 "${car.name}" 차량을 삭제할까요?`)) return;
+
+  try {
+    await deleteDoc(doc(db, 'cars', id));
+    showToast('삭제되었어요', 'success');
+    loadCars();
+  } catch (e) {
+    showToast('삭제 실패: ' + e.message, 'error');
+  }
+};
+
+window.toggleStatus = async function(id) {
+  const car = allCars.find(c => c.id === id);
+  if (!car) return;
+  const newStatus = car.status === 'available' ? 'sold' : 'available';
+
+  try {
+    await updateDoc(doc(db, 'cars', id), { status: newStatus, updatedAt: serverTimestamp() });
+    showToast(newStatus === 'sold' ? '판매완료로 변경' : '판매중으로 변경', 'success');
+    loadCars();
+  } catch (e) {
+    showToast('상태 변경 실패', 'error');
+  }
+};
+
+// Modal close on overlay click
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target.id === 'modalOverlay') closeModal();
+});
+
+// === Helpers ===
+function formatPrice(price) {
+  if (price >= 100000000) {
+    const jo = Math.floor(price / 100000000);
+    const remainder = price % 100000000;
+    const eok = Math.floor(remainder / 10000);
+    return eok > 0 ? `${jo}조${eok.toLocaleString()}억` : `${jo}조`;
+  }
+  if (price >= 10000) {
+    const eok = Math.floor(price / 10000);
+    const man = price % 10000;
+    return man > 0 ? `${eok}억${man.toLocaleString()}` : `${eok}억`;
+  }
+  return (price || 0).toLocaleString();
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+
+</body>
+</html>
