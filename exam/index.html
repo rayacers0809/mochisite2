@@ -1,0 +1,2134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>모찌서버 법률 시험 시스템</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --navy-900: #0f172a;
+      --navy-800: #1e293b;
+      --navy-700: #334155;
+      --navy-600: #475569;
+      --navy-500: #64748b;
+      --navy-400: #94a3b8;
+      --navy-300: #cbd5e1;
+      --navy-200: #e2e8f0;
+      --navy-100: #f1f5f9;
+      --navy-50: #f8fafc;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    html { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+
+    body {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      color: var(--navy-900);
+      min-height: 100vh;
+      letter-spacing: -0.01em;
+    }
+
+    /* ========== Mode Selector ========== */
+    .mode-selector {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .mode-box {
+      background: white;
+      border-radius: 16px;
+      padding: 48px 40px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+      width: 100%;
+      max-width: 520px;
+      border: 1px solid var(--navy-200);
+    }
+
+    .mode-logo { text-align: center; margin-bottom: 32px; }
+    .mode-logo h1 { font-size: 24px; font-weight: 800; color: var(--navy-900); letter-spacing: -0.03em; }
+    .mode-logo p { font-size: 13px; color: var(--navy-500); margin-top: 6px; font-weight: 500; }
+
+    .mode-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .mode-btn {
+      padding: 24px 16px;
+      border: 2px solid var(--navy-200);
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      text-align: center;
+    }
+
+    .mode-btn:hover { border-color: var(--accent); background: var(--navy-50); }
+
+    .mode-btn .icon { font-size: 32px; margin-bottom: 8px; }
+    .mode-btn .title { font-size: 15px; font-weight: 700; color: var(--navy-900); margin-bottom: 4px; }
+    .mode-btn .desc { font-size: 12px; color: var(--navy-500); }
+
+    /* ========== Login Screens ========== */
+    .login-screen { display: none; min-height: 100vh; align-items: center; justify-content: center; padding: 20px; }
+    .login-screen.active { display: flex; }
+
+    .login-box {
+      background: white;
+      border-radius: 16px;
+      padding: 48px 40px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+      width: 100%;
+      max-width: 420px;
+      border: 1px solid var(--navy-200);
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .form-group label { font-size: 13px; font-weight: 600; color: var(--navy-700); }
+
+    .form-group input, .form-group textarea, .form-group select {
+      padding: 12px 14px;
+      border: 1px solid var(--navy-300);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.15s;
+      background: var(--navy-50);
+    }
+
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-group textarea { resize: vertical; min-height: 80px; font-family: inherit; }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-primary { background: var(--navy-900); color: white; }
+    .btn-primary:hover { background: var(--navy-800); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #059669; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-secondary { background: var(--navy-100); color: var(--navy-700); }
+    .btn-secondary:hover { background: var(--navy-200); }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-warning:hover { background: #d97706; }
+    .btn-block { width: 100%; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+    /* ========== Supervisor Dashboard ========== */
+    .supervisor-dashboard { display: none; min-height: 100vh; }
+    .supervisor-dashboard.active { display: flex; }
+
+    .sidebar { width: 240px; background: var(--navy-900); color: white; padding: 24px 16px; flex-shrink: 0; }
+
+    .sidebar-logo { padding: 0 12px 24px; border-bottom: 1px solid var(--navy-700); margin-bottom: 24px; }
+    .sidebar-logo h1 { font-size: 16px; font-weight: 800; }
+    .sidebar-logo p { font-size: 11px; color: var(--navy-400); margin-top: 4px; }
+
+    .sidebar-nav { display: flex; flex-direction: column; gap: 4px; }
+
+    .nav-item {
+      padding: 10px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--navy-300);
+      transition: all 0.15s;
+      font-weight: 500;
+    }
+
+    .nav-item:hover { background: var(--navy-800); color: white; }
+    .nav-item.active { background: var(--accent); color: white; }
+
+    .sidebar-footer { margin-top: auto; padding-top: 24px; border-top: 1px solid var(--navy-700); }
+
+    .user-info { padding: 8px 12px; font-size: 12px; color: var(--navy-400); }
+    .user-info strong { display: block; color: white; font-size: 14px; margin-bottom: 2px; }
+
+    .main-content { flex: 1; padding: 32px; overflow-y: auto; }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--navy-200);
+    }
+
+    .page-header h2 { font-size: 22px; font-weight: 700; }
+    .page-header p { font-size: 13px; color: var(--navy-500); margin-top: 4px; }
+    .page-actions { display: flex; gap: 8px; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid var(--navy-200); }
+    .stat-card .label { font-size: 12px; font-weight: 600; color: var(--navy-500); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-card .value { font-size: 28px; font-weight: 800; color: var(--navy-900); margin-top: 8px; }
+
+    .data-table { background: white; border-radius: 12px; border: 1px solid var(--navy-200); overflow: hidden; }
+    .table-header { padding: 16px 20px; border-bottom: 1px solid var(--navy-200); display: flex; justify-content: space-between; align-items: center; }
+    .table-header h3 { font-size: 15px; font-weight: 700; }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    th {
+      background: var(--navy-50);
+      padding: 12px 20px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--navy-600);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--navy-200);
+    }
+
+    td { padding: 14px 20px; font-size: 14px; border-bottom: 1px solid var(--navy-100); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover { background: var(--navy-50); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-progress { background: #dbeafe; color: #1e40af; }
+    .badge-completed { background: #d1fae5; color: #065f46; }
+    .badge-pass { background: #d1fae5; color: #065f46; }
+    .badge-fail { background: #fee2e2; color: #991b1b; }
+    .badge-set-1 { background: #e0e7ff; color: #3730a3; }
+    .badge-set-2 { background: #fef3c7; color: #92400e; }
+    .badge-set-3 { background: #fee2e2; color: #991b1b; }
+    .badge-set-default { background: var(--navy-100); color: var(--navy-700); }
+
+    .empty-state { padding: 60px 20px; text-align: center; color: var(--navy-500); }
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state .title { font-size: 16px; font-weight: 600; color: var(--navy-700); }
+
+    /* ========== Modal ========== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: white;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 520px;
+      padding: 28px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .modal p.subtitle { font-size: 13px; color: var(--navy-500); margin-bottom: 20px; }
+
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 24px; }
+
+    .credentials-display { background: var(--navy-900); color: white; padding: 24px; border-radius: 12px; margin: 16px 0; }
+    .credentials-display .row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--navy-700); }
+    .credentials-display .row:last-child { border-bottom: none; }
+    .credentials-display .label { font-size: 12px; color: var(--navy-400); text-transform: uppercase; letter-spacing: 0.05em; }
+    .credentials-display .value { font-family: 'Courier New', monospace; font-size: 18px; font-weight: 700; color: white; }
+
+    .toast {
+      position: fixed; top: 20px; right: 20px;
+      padding: 12px 20px;
+      background: var(--navy-900); color: white;
+      border-radius: 8px;
+      font-size: 13px; font-weight: 500;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      z-index: 9999;
+      transform: translateX(120%);
+      transition: transform 0.3s;
+    }
+
+    .toast.show { transform: translateX(0); }
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--danger); }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ========== Examinee Exam Screen ========== */
+    .exam-screen { display: none; min-height: 100vh; flex-direction: column; background: var(--navy-100); }
+    .exam-screen.active { display: flex; }
+
+    .exam-header {
+      background: var(--navy-900);
+      color: white;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 10;
+    }
+
+    .exam-header .info { display: flex; gap: 24px; align-items: center; }
+    .exam-header .info-item { font-size: 13px; }
+    .exam-header .info-item .label { color: var(--navy-400); margin-right: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .exam-header .info-item .value { font-weight: 700; }
+
+    .exam-timer {
+      font-family: 'Courier New', monospace;
+      font-size: 22px;
+      font-weight: 800;
+      padding: 8px 16px;
+      background: var(--navy-700);
+      border-radius: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    .exam-timer.warning { background: var(--warning); color: white; animation: pulse 1s infinite; }
+    .exam-timer.danger { background: var(--danger); color: white; animation: pulse 0.5s infinite; }
+
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+    .exam-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 16px;
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    .exam-paper {
+      background: white;
+      border-radius: 12px;
+      padding: 32px 40px;
+      overflow-y: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    .exam-paper h1 {
+      font-size: 22px;
+      font-weight: 800;
+      text-align: center;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--navy-900);
+      margin-bottom: 24px;
+    }
+
+    .exam-paper .test-info { text-align: center; font-size: 12px; color: var(--navy-500); margin-bottom: 32px; }
+
+    .question-block { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px dashed var(--navy-200); }
+    .question-block:last-child { border-bottom: none; margin-bottom: 0; }
+
+    .question-num {
+      display: inline-block;
+      background: var(--navy-900);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .question-num.essay { background: var(--warning); }
+    .question-text { font-size: 15px; font-weight: 600; line-height: 1.7; margin-bottom: 14px; }
+    .question-points { font-size: 11px; color: var(--navy-500); margin-left: 6px; font-weight: 500; }
+
+    .choices-list { display: flex; flex-direction: column; gap: 6px; padding-left: 8px; }
+    .choice-item { font-size: 14px; line-height: 1.6; color: var(--navy-700); padding: 6px 0; display: flex; gap: 8px; }
+    .choice-num { font-weight: 700; color: var(--navy-900); min-width: 20px; }
+
+    .essay-input {
+      width: 100%;
+      min-height: 100px;
+      padding: 12px;
+      border: 1px solid var(--navy-300);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+      background: var(--navy-50);
+    }
+
+    .essay-input:focus { outline: none; border-color: var(--accent); background: white; }
+
+    .omr-card { background: white; border-radius: 12px; padding: 20px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+
+    .omr-header { text-align: center; padding-bottom: 14px; border-bottom: 2px solid var(--navy-900); margin-bottom: 16px; }
+    .omr-header h3 { font-size: 16px; font-weight: 800; }
+    .omr-header p { font-size: 11px; color: var(--navy-500); margin-top: 2px; }
+
+    .omr-grid { display: flex; flex-direction: column; gap: 4px; }
+
+    .omr-row { display: grid; grid-template-columns: 36px repeat(5, 1fr); gap: 4px; align-items: center; }
+    .omr-row.essay { grid-template-columns: 36px 1fr; }
+
+    .omr-num {
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--navy-700);
+      background: var(--navy-100);
+      padding: 6px 0;
+      border-radius: 4px;
+    }
+
+    .omr-bubble {
+      width: 100%;
+      aspect-ratio: 1;
+      max-height: 32px;
+      border: 2px solid var(--navy-300);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy-500);
+      background: white;
+      transition: all 0.1s;
+    }
+
+    .omr-bubble:hover { border-color: var(--navy-500); }
+    .omr-bubble.checked { background: var(--navy-900); border-color: var(--navy-900); color: white; }
+
+    .omr-essay-mark {
+      font-size: 11px;
+      color: var(--navy-500);
+      padding: 6px 0;
+      text-align: center;
+      background: var(--navy-50);
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .omr-essay-mark.filled { background: #d1fae5; color: #065f46; }
+
+    .omr-section-title { font-size: 11px; font-weight: 700; color: var(--navy-500); text-transform: uppercase; letter-spacing: 0.05em; margin: 16px 0 6px; padding: 0 4px; }
+    .omr-section-title:first-child { margin-top: 0; }
+
+    .omr-actions { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--navy-200); }
+
+    .result-display { text-align: center; padding: 20px 0; }
+    .result-display .score { font-size: 48px; font-weight: 800; color: var(--accent); margin: 16px 0; }
+    .result-display .score-meta { font-size: 14px; color: var(--navy-600); }
+
+    /* Question editor */
+    .question-editor { max-width: 600px !important; }
+    .choices-editor { display: flex; flex-direction: column; gap: 6px; }
+    .choice-row { display: flex; gap: 6px; align-items: center; }
+    .choice-row input[type="text"] { flex: 1; }
+    .choice-row .answer-radio { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--navy-600); }
+
+    /* Set tabs */
+    .set-tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 2px solid var(--navy-200);
+      margin-bottom: 16px;
+      overflow-x: auto;
+    }
+
+    .set-tab {
+      padding: 10px 16px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy-500);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      white-space: nowrap;
+    }
+
+    .set-tab:hover { color: var(--navy-900); }
+    .set-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .set-info-box {
+      background: var(--navy-50);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .set-info-box .info-text { font-size: 13px; color: var(--navy-600); }
+    .set-info-box .info-text strong { color: var(--navy-900); }
+  </style>
+</head>
+<body>
+
+<!-- Mode Selector -->
+<div class="mode-selector" id="modeSelector">
+  <div class="mode-box">
+    <div class="mode-logo">
+      <h1>모찌서버 법률 시험</h1>
+      <p>EXAM SYSTEM</p>
+    </div>
+    <div class="mode-buttons">
+      <button class="mode-btn" id="modeSupervisor">
+        <div class="icon">🎓</div>
+        <div class="title">감독관</div>
+        <div class="desc">시험 발급 및 관리</div>
+      </button>
+      <button class="mode-btn" id="modeExaminee">
+        <div class="icon">✏️</div>
+        <div class="title">응시자</div>
+        <div class="desc">발급받은 계정으로 응시</div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Supervisor Login -->
+<div class="login-screen" id="supervisorLogin">
+  <div class="login-box">
+    <div class="mode-logo">
+      <h1>감독관 로그인</h1>
+      <p>SUPERVISOR LOGIN</p>
+    </div>
+    <form id="supervisorLoginForm">
+      <div class="form-group">
+        <label>아이디</label>
+        <input type="text" id="supId" required>
+      </div>
+      <div class="form-group">
+        <label>비밀번호</label>
+        <input type="password" id="supPw" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">로그인</button>
+      <button type="button" class="btn btn-secondary btn-block" style="margin-top:8px;" onclick="location.reload()">← 처음으로</button>
+    </form>
+  </div>
+</div>
+
+<!-- Examinee Login -->
+<div class="login-screen" id="examineeLogin">
+  <div class="login-box">
+    <div class="mode-logo">
+      <h1>응시자 로그인</h1>
+      <p>발급받은 계정으로 로그인하세요</p>
+    </div>
+    <form id="examineeLoginForm">
+      <div class="form-group">
+        <label>응시자 닉네임</label>
+        <input type="text" id="exName" placeholder="예: 수댕이" required>
+      </div>
+      <div class="form-group">
+        <label>응시자 고유번호</label>
+        <input type="text" id="exNumber" placeholder="예: 1973" required>
+      </div>
+      <div class="form-group">
+        <label>발급된 아이디</label>
+        <input type="text" id="exId" required>
+      </div>
+      <div class="form-group">
+        <label>발급된 비밀번호</label>
+        <input type="password" id="exPw" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">시험 시작</button>
+      <button type="button" class="btn btn-secondary btn-block" style="margin-top:8px;" onclick="location.reload()">← 처음으로</button>
+    </form>
+  </div>
+</div>
+
+<!-- Supervisor Dashboard -->
+<div class="supervisor-dashboard" id="supervisorDashboard">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h1>모찌 시험 시스템</h1>
+      <p>SUPERVISOR PANEL</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-page="accounts">🔑 계정 발급</div>
+      <div class="nav-item" data-page="results">📊 시험 결과</div>
+      <div class="nav-item" data-page="questions">📝 문제 관리</div>
+      <div class="nav-item" data-page="sets">📚 시험지 세트</div>
+      <div class="nav-item" data-page="settings">⚙️ 설정</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <strong id="currentSupervisor">감독관</strong>
+        <span>시험 감독</span>
+      </div>
+      <button class="btn btn-secondary btn-block" id="supLogoutBtn" style="margin-top: 12px;">로그아웃</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <!-- Accounts Page -->
+    <div class="page active" id="page-accounts">
+      <div class="page-header">
+        <div>
+          <h2>시험 계정 발급</h2>
+          <p>응시자 정보 입력 시 이전 시험 결과에 따라 자동으로 시험지가 배정됩니다</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" id="issueAccountBtn">+ 계정 발급</button>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="label">발급된 계정</div>
+          <div class="value" id="stat-issued">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">사용 대기</div>
+          <div class="value" id="stat-unused">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">시험 진행 중</div>
+          <div class="value" id="stat-inprogress">0</div>
+        </div>
+      </div>
+
+      <div class="data-table">
+        <div class="table-header">
+          <h3>발급 이력</h3>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>아이디</th>
+              <th>비밀번호</th>
+              <th>응시자</th>
+              <th>시험지</th>
+              <th>상태</th>
+              <th>발급 시각</th>
+              <th style="text-align: right;">액션</th>
+            </tr>
+          </thead>
+          <tbody id="accountsTableBody">
+            <tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div><div class="title">발급된 계정이 없습니다</div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Results Page -->
+    <div class="page" id="page-results">
+      <div class="page-header">
+        <div>
+          <h2>시험 결과</h2>
+          <p>완료된 시험 결과 및 채점 현황입니다</p>
+        </div>
+      </div>
+
+      <div class="data-table">
+        <div class="table-header">
+          <h3>전체 결과</h3>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>응시자</th>
+              <th>고유번호</th>
+              <th>시험지</th>
+              <th>제출 시각</th>
+              <th>객관식</th>
+              <th>서술형</th>
+              <th>총점</th>
+              <th>판정</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="resultsTableBody">
+            <tr><td colspan="9"><div class="empty-state"><div class="icon">📭</div><div class="title">제출된 시험이 없습니다</div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Questions Page -->
+    <div class="page" id="page-questions">
+      <div class="page-header">
+        <div>
+          <h2>문제 관리</h2>
+          <p>각 시험지 세트별로 문제를 추가, 수정, 삭제할 수 있습니다</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" id="addQuestionBtn">+ 문제 추가</button>
+        </div>
+      </div>
+
+      <div class="set-tabs" id="questionSetTabs"></div>
+
+      <div class="set-info-box" id="questionSetInfo">
+        <div class="info-text">
+          <strong id="qSetName">시험지를 선택하세요</strong>
+          · 총 <strong id="qSetCount">0</strong>문항
+          · 배점 합계 <strong id="qSetMaxScore">0</strong>점
+          · 합격 기준 <strong id="qSetPass">-</strong>점
+        </div>
+      </div>
+
+      <div class="data-table">
+        <div class="table-header">
+          <h3>등록된 문제</h3>
+        </div>
+        <div id="questionsList" style="padding: 8px;"></div>
+      </div>
+    </div>
+
+    <!-- Sets Page -->
+    <div class="page" id="page-sets">
+      <div class="page-header">
+        <div>
+          <h2>시험지 세트 관리</h2>
+          <p>1차/2차/3차 등 시험지 세트를 만들어 관리합니다</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" id="addSetBtn">+ 시험지 세트 추가</button>
+        </div>
+      </div>
+
+      <div class="data-table">
+        <div class="table-header">
+          <h3>시험지 세트 목록</h3>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>차수</th>
+              <th>시험지명</th>
+              <th>문항 수</th>
+              <th>총점</th>
+              <th>합격 기준</th>
+              <th>제한 시간</th>
+              <th style="text-align: right;">액션</th>
+            </tr>
+          </thead>
+          <tbody id="setsTableBody">
+            <tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div><div class="title">시험지 세트가 없습니다</div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Settings Page -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <div>
+          <h2>설정</h2>
+          <p>시험 시스템 전반 설정</p>
+        </div>
+      </div>
+
+      <div class="data-table">
+        <div style="padding: 24px;">
+          <div class="form-group">
+            <label>최대 응시 차수</label>
+            <select id="settingMaxAttempts">
+              <option value="2">2차까지</option>
+              <option value="3">3차까지</option>
+              <option value="5">5차까지</option>
+              <option value="999">제한 없음</option>
+            </select>
+            <p style="font-size: 12px; color: var(--navy-500); margin-top: 4px;">
+              해당 차수까지 모두 떨어진 응시자는 새 계정 발급이 차단됩니다
+            </p>
+          </div>
+          <button class="btn btn-primary" id="saveSettingsBtn" style="margin-top: 12px;">저장</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Issue Account Modal -->
+<div class="modal-overlay" id="issueModal">
+  <div class="modal">
+    <h3 id="issueModalTitle">시험 계정 발급</h3>
+    <p class="subtitle">응시자 정보를 입력하면 자동으로 시험지가 배정됩니다</p>
+
+    <div id="issueFormStep">
+      <div class="form-group">
+        <label>응시자 닉네임</label>
+        <input type="text" id="newExName" placeholder="예: 수댕이" required>
+      </div>
+      <div class="form-group">
+        <label>응시자 고유번호</label>
+        <input type="text" id="newExNumber" placeholder="예: 1973" required>
+      </div>
+      <div class="form-group">
+        <label>시험지 선택</label>
+        <select id="newExSet">
+          <option value="auto">⚡ 자동 배정 (권장)</option>
+        </select>
+        <p style="font-size: 12px; color: var(--navy-500); margin-top: 4px;">
+          자동 배정 시 이전 시험 결과에 따라 1차/2차/3차 시험지가 자동 선택됩니다
+        </p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancelIssueBtn">취소</button>
+        <button class="btn btn-primary" id="confirmIssueBtn">계정 발급</button>
+      </div>
+    </div>
+
+    <div id="issueResultStep" style="display:none;">
+      <div class="credentials-display">
+        <div class="row">
+          <span class="label">응시자</span>
+          <span class="value" id="issuedFor">-</span>
+        </div>
+        <div class="row">
+          <span class="label">시험지</span>
+          <span class="value" id="issuedSet">-</span>
+        </div>
+        <div class="row">
+          <span class="label">아이디</span>
+          <span class="value" id="issuedId">-</span>
+        </div>
+        <div class="row">
+          <span class="label">비밀번호</span>
+          <span class="value" id="issuedPw">-</span>
+        </div>
+      </div>
+      <p style="font-size: 12px; color: var(--navy-500); text-align: center; margin: 8px 0;">
+        위 정보를 응시자에게 전달하세요
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="copyCredsBtn">📋 복사</button>
+        <button class="btn btn-primary" id="closeIssueBtn">확인</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Set Editor Modal -->
+<div class="modal-overlay" id="setModal">
+  <div class="modal">
+    <h3 id="setModalTitle">시험지 세트 추가</h3>
+    <p class="subtitle">시험지 정보를 입력하세요</p>
+
+    <div class="form-group">
+      <label>차수 (1차, 2차...)</label>
+      <input type="number" id="setOrder" placeholder="1" min="1" required>
+    </div>
+    <div class="form-group">
+      <label>시험지명</label>
+      <input type="text" id="setName" placeholder="예: 1차 시험지 (기본)" required>
+    </div>
+    <div class="form-group">
+      <label>합격 기준 점수</label>
+      <input type="number" id="setPassScore" value="60" min="0" max="100" required>
+      <p style="font-size: 12px; color: var(--navy-500); margin-top: 4px;">
+        이 점수 이상이면 합격으로 판정됩니다
+      </p>
+    </div>
+    <div class="form-group">
+      <label>제한 시간 (분)</label>
+      <input type="number" id="setDuration" value="30" min="1" max="180" required>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="cancelSetBtn">취소</button>
+      <button class="btn btn-primary" id="saveSetBtn">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- Question Editor Modal -->
+<div class="modal-overlay" id="questionModal">
+  <div class="modal question-editor">
+    <h3 id="qModalTitle">문제 추가</h3>
+    <p class="subtitle" id="qModalSubtitle">시험 문제를 작성하세요</p>
+
+    <div class="form-group">
+      <label>문제 유형</label>
+      <select id="qType">
+        <option value="mc">객관식 (자동 채점)</option>
+        <option value="essay">서술형 (수동 채점)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>문제</label>
+      <textarea id="qText" placeholder="문제 내용을 입력하세요" required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>배점</label>
+      <input type="number" id="qPoints" value="5" min="1" max="100">
+    </div>
+
+    <div class="form-group" id="choicesGroup">
+      <label>선택지 (정답 라디오 버튼 선택)</label>
+      <div class="choices-editor">
+        <div class="choice-row"><span style="font-weight:700;">①</span><input type="text" class="choice-input" data-num="1" placeholder="선택지 1"><label class="answer-radio"><input type="radio" name="qAnswer" value="1"> 정답</label></div>
+        <div class="choice-row"><span style="font-weight:700;">②</span><input type="text" class="choice-input" data-num="2" placeholder="선택지 2"><label class="answer-radio"><input type="radio" name="qAnswer" value="2"> 정답</label></div>
+        <div class="choice-row"><span style="font-weight:700;">③</span><input type="text" class="choice-input" data-num="3" placeholder="선택지 3"><label class="answer-radio"><input type="radio" name="qAnswer" value="3"> 정답</label></div>
+        <div class="choice-row"><span style="font-weight:700;">④</span><input type="text" class="choice-input" data-num="4" placeholder="선택지 4"><label class="answer-radio"><input type="radio" name="qAnswer" value="4"> 정답</label></div>
+        <div class="choice-row"><span style="font-weight:700;">⑤</span><input type="text" class="choice-input" data-num="5" placeholder="선택지 5"><label class="answer-radio"><input type="radio" name="qAnswer" value="5"> 정답</label></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="cancelQBtn">취소</button>
+      <button class="btn btn-primary" id="saveQBtn">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- Manual Scoring Modal -->
+<div class="modal-overlay" id="scoringModal">
+  <div class="modal" style="max-width: 700px;">
+    <h3>서술형 채점 + 합격/불합격 판정</h3>
+    <p class="subtitle" id="scoringExamineeName">-</p>
+    <div id="scoringContent"></div>
+
+    <div style="background: var(--navy-50); padding: 16px; border-radius: 8px; margin-top: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-size: 13px; color: var(--navy-600);">객관식 점수 (자동)</span>
+        <strong id="scoringAutoScore">0점</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-size: 13px; color: var(--navy-600);">서술형 점수 (수동)</span>
+        <strong id="scoringEssayScore">0점</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid var(--navy-200);">
+        <span style="font-weight: 700;">총점 / 합격 기준</span>
+        <strong style="font-size: 16px;"><span id="scoringTotalScore">0</span> / <span id="scoringPassScore">60</span>점</strong>
+      </div>
+    </div>
+
+    <div class="modal-actions" style="justify-content: space-between;">
+      <button class="btn btn-secondary" id="cancelScoringBtn">취소</button>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-danger" id="markFailBtn">❌ 불합격</button>
+        <button class="btn btn-success" id="markPassBtn">✅ 합격</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Exam Screen -->
+<div class="exam-screen" id="examScreen">
+  <div class="exam-header">
+    <div class="info">
+      <div class="info-item"><span class="label">응시자</span><span class="value" id="examName">-</span></div>
+      <div class="info-item"><span class="label">고유번호</span><span class="value" id="examNumber">-</span></div>
+      <div class="info-item"><span class="label">시험지</span><span class="value" id="examSetName">-</span></div>
+      <div class="info-item"><span class="label">총 문항</span><span class="value" id="examTotalQ">-</span></div>
+    </div>
+    <div class="exam-timer" id="examTimer">30:00</div>
+  </div>
+
+  <div class="exam-body">
+    <div class="exam-paper" id="examPaper">
+      <h1 id="examPaperTitle">모찌서버 법률 시험</h1>
+      <p class="test-info">시간 종료 시 자동 제출됩니다.</p>
+      <div id="questionsContainer"></div>
+    </div>
+
+    <div class="omr-card">
+      <div class="omr-header">
+        <h3>OMR 답안카드</h3>
+        <p>해당 번호의 정답을 선택하세요</p>
+      </div>
+      <div id="omrGrid"></div>
+      <div class="omr-actions">
+        <button class="btn btn-success btn-block" id="submitExamBtn">시험 제출</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Result Modal -->
+<div class="modal-overlay" id="resultModal">
+  <div class="modal">
+    <h3 style="text-align:center;">시험 종료</h3>
+    <div class="result-display">
+      <p class="subtitle">제출 완료되었습니다.<br>최종 합격 여부는 감독관의 채점 후 안내받으세요.</p>
+      <div class="score" id="autoScoreDisplay">-</div>
+      <p class="score-meta">객관식 자동 채점 점수</p>
+    </div>
+    <div class="modal-actions" style="justify-content: center;">
+      <button class="btn btn-primary" onclick="location.reload()">확인</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+<script>
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyBTuu8rGMbhg0iiYjg8RF9iExCOdugoSnU",
+  authDomain: "mochi-f81d3.firebaseapp.com",
+  databaseURL: "https://mochi-f81d3-default-rtdb.firebaseio.com",
+  projectId: "mochi-f81d3",
+  storageBucket: "mochi-f81d3.firebasestorage.app",
+  messagingSenderId: "506055701777",
+  appId: "1:506055701777:web:dbe0e5fd3d485607aa08b0",
+  measurementId: "G-JWBDHCFYW1"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// State
+let currentSupervisor = null;
+let currentExaminee = null;
+let currentExamAccount = null;
+let currentExamSet = null;
+let examQuestions = [];
+let examAnswers = {};
+let examStartTime = null;
+let examTimerInterval = null;
+let editingQuestionId = null;
+let editingSetId = null;
+let allSets = [];
+let activeQuestionSet = null;
+let systemSettings = { maxAttempts: 3 };
+
+// Toast
+function showToast(msg, type = '') {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast show ' + type;
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ========== Mode ==========
+document.getElementById('modeSupervisor').addEventListener('click', () => {
+  document.getElementById('modeSelector').style.display = 'none';
+  document.getElementById('supervisorLogin').classList.add('active');
+});
+
+document.getElementById('modeExaminee').addEventListener('click', () => {
+  document.getElementById('modeSelector').style.display = 'none';
+  document.getElementById('examineeLogin').classList.add('active');
+});
+
+// ========== Supervisor Login ==========
+document.getElementById('supervisorLoginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('supId').value.trim();
+  const pw = document.getElementById('supPw').value;
+
+  try {
+    const snap = await db.collection('exam_supervisors').where('username', '==', id).limit(1).get();
+    if (snap.empty) { showToast('아이디 없음', 'error'); return; }
+
+    const sup = snap.docs[0].data();
+    if (sup.password !== pw) { showToast('비밀번호 불일치', 'error'); return; }
+
+    currentSupervisor = { id: snap.docs[0].id, ...sup };
+    document.getElementById('currentSupervisor').textContent = sup.name || id;
+
+    document.getElementById('supervisorLogin').classList.remove('active');
+    document.getElementById('supervisorDashboard').classList.add('active');
+
+    showToast('로그인 성공');
+    await loadSettings();
+    await loadSets();
+    await loadAccounts();
+    await loadResults();
+    await loadQuestions();
+  } catch (err) {
+    showToast('오류: ' + err.message, 'error');
+  }
+});
+
+document.getElementById('supLogoutBtn').addEventListener('click', () => location.reload());
+
+// Sidebar
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + item.dataset.page).classList.add('active');
+  });
+});
+
+// ========== Settings ==========
+async function loadSettings() {
+  try {
+    const doc = await db.collection('exam_settings').doc('global').get();
+    if (doc.exists) {
+      systemSettings = doc.data();
+    }
+    document.getElementById('settingMaxAttempts').value = systemSettings.maxAttempts || 3;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
+  const maxAttempts = parseInt(document.getElementById('settingMaxAttempts').value);
+  try {
+    await db.collection('exam_settings').doc('global').set({ maxAttempts }, { merge: true });
+    systemSettings.maxAttempts = maxAttempts;
+    showToast('저장되었습니다', 'success');
+  } catch (err) {
+    showToast('저장 실패', 'error');
+  }
+});
+
+// ========== Sets ==========
+async function loadSets() {
+  try {
+    const snap = await db.collection('exam_sets').orderBy('order', 'asc').get();
+    allSets = [];
+    snap.forEach(doc => allSets.push({ id: doc.id, ...doc.data() }));
+
+    renderSetsTable();
+    renderSetTabs();
+    populateSetSelectors();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function renderSetsTable() {
+  const tbody = document.getElementById('setsTableBody');
+
+  if (allSets.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div><div class="title">시험지 세트가 없습니다</div><div class="desc">"+ 시험지 세트 추가" 버튼을 눌러 시작하세요</div></div></td></tr>';
+    return;
+  }
+
+  let html = '';
+  allSets.forEach(s => {
+    const badgeCls = s.order === 1 ? 'badge-set-1' : s.order === 2 ? 'badge-set-2' : 'badge-set-3';
+    html += `<tr>
+      <td><span class="badge ${badgeCls}">${s.order}차</span></td>
+      <td><strong>${escapeHtml(s.name)}</strong></td>
+      <td><span style="color:var(--navy-500); font-size:13px;">${s.questionCount || 0}문항</span></td>
+      <td>${s.maxScore || 0}점</td>
+      <td><strong>${s.passScore}점 이상</strong></td>
+      <td>${s.duration}분</td>
+      <td style="text-align:right;">
+        <button class="btn btn-secondary btn-sm" onclick="editSet('${s.id}')">수정</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteSet('${s.id}')" style="margin-left:4px;">삭제</button>
+      </td>
+    </tr>`;
+  });
+
+  tbody.innerHTML = html;
+}
+
+function renderSetTabs() {
+  const tabs = document.getElementById('questionSetTabs');
+  if (allSets.length === 0) {
+    tabs.innerHTML = '<div style="padding: 24px; color: var(--navy-500); font-size: 13px;">시험지 세트를 먼저 추가하세요</div>';
+    document.getElementById('qSetName').textContent = '시험지가 없습니다';
+    return;
+  }
+
+  if (!activeQuestionSet || !allSets.find(s => s.id === activeQuestionSet)) {
+    activeQuestionSet = allSets[0].id;
+  }
+
+  let html = '';
+  allSets.forEach(s => {
+    const cls = s.id === activeQuestionSet ? 'set-tab active' : 'set-tab';
+    html += `<button class="${cls}" onclick="switchSetTab('${s.id}')">${s.order}차 · ${escapeHtml(s.name)}</button>`;
+  });
+  tabs.innerHTML = html;
+
+  updateSetInfo();
+}
+
+window.switchSetTab = function(setId) {
+  activeQuestionSet = setId;
+  renderSetTabs();
+  loadQuestions();
+};
+
+function updateSetInfo() {
+  const set = allSets.find(s => s.id === activeQuestionSet);
+  if (!set) return;
+  document.getElementById('qSetName').textContent = `${set.order}차 · ${set.name}`;
+  document.getElementById('qSetCount').textContent = set.questionCount || 0;
+  document.getElementById('qSetMaxScore').textContent = set.maxScore || 0;
+  document.getElementById('qSetPass').textContent = set.passScore;
+}
+
+function populateSetSelectors() {
+  const select = document.getElementById('newExSet');
+  let html = '<option value="auto">⚡ 자동 배정 (권장)</option>';
+  allSets.forEach(s => {
+    html += `<option value="${s.id}">${s.order}차 · ${escapeHtml(s.name)}</option>`;
+  });
+  select.innerHTML = html;
+}
+
+document.getElementById('addSetBtn').addEventListener('click', () => {
+  editingSetId = null;
+  document.getElementById('setModalTitle').textContent = '시험지 세트 추가';
+  document.getElementById('setOrder').value = allSets.length + 1;
+  document.getElementById('setName').value = `${allSets.length + 1}차 시험지`;
+  document.getElementById('setPassScore').value = 60;
+  document.getElementById('setDuration').value = 30;
+  document.getElementById('setModal').classList.add('active');
+});
+
+document.getElementById('cancelSetBtn').addEventListener('click', () => {
+  document.getElementById('setModal').classList.remove('active');
+});
+
+document.getElementById('saveSetBtn').addEventListener('click', async () => {
+  const order = parseInt(document.getElementById('setOrder').value);
+  const name = document.getElementById('setName').value.trim();
+  const passScore = parseInt(document.getElementById('setPassScore').value);
+  const duration = parseInt(document.getElementById('setDuration').value);
+
+  if (!name) { showToast('시험지명을 입력하세요', 'error'); return; }
+
+  const data = {
+    order,
+    name,
+    passScore,
+    duration,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  try {
+    if (editingSetId) {
+      await db.collection('exam_sets').doc(editingSetId).update(data);
+      showToast('수정 완료');
+    } else {
+      data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      data.questionCount = 0;
+      data.maxScore = 0;
+      await db.collection('exam_sets').add(data);
+      showToast('추가 완료');
+    }
+    document.getElementById('setModal').classList.remove('active');
+    await loadSets();
+    await loadAccounts();
+  } catch (err) {
+    showToast('저장 실패: ' + err.message, 'error');
+  }
+});
+
+window.editSet = function(id) {
+  const set = allSets.find(s => s.id === id);
+  if (!set) return;
+  editingSetId = id;
+  document.getElementById('setModalTitle').textContent = '시험지 세트 수정';
+  document.getElementById('setOrder').value = set.order;
+  document.getElementById('setName').value = set.name;
+  document.getElementById('setPassScore').value = set.passScore;
+  document.getElementById('setDuration').value = set.duration;
+  document.getElementById('setModal').classList.add('active');
+};
+
+window.deleteSet = async function(id) {
+  if (!confirm('이 시험지 세트를 삭제하시겠습니까?\n등록된 문제는 삭제되지 않지만 어디에도 속하지 않게 됩니다.')) return;
+  try {
+    await db.collection('exam_sets').doc(id).delete();
+    showToast('삭제되었습니다');
+    await loadSets();
+    await loadQuestions();
+  } catch (err) {
+    showToast('삭제 실패', 'error');
+  }
+};
+
+// ========== Account Issuing with Auto-set ==========
+function generateId() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let id = 'EX-';
+  for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+
+function generatePw() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let pw = '';
+  for (let i = 0; i < 6; i++) pw += chars[Math.floor(Math.random() * chars.length)];
+  return pw;
+}
+
+document.getElementById('issueAccountBtn').addEventListener('click', () => {
+  if (allSets.length === 0) {
+    showToast('시험지 세트를 먼저 추가하세요', 'error');
+    return;
+  }
+  document.getElementById('issueFormStep').style.display = 'block';
+  document.getElementById('issueResultStep').style.display = 'none';
+  document.getElementById('newExName').value = '';
+  document.getElementById('newExNumber').value = '';
+  document.getElementById('newExSet').value = 'auto';
+  document.getElementById('issueModal').classList.add('active');
+});
+
+document.getElementById('cancelIssueBtn').addEventListener('click', () => {
+  document.getElementById('issueModal').classList.remove('active');
+});
+
+// 응시자의 다음 차수 자동 결정
+async function determineNextSet(name, number) {
+  // 기존 결과 조회
+  const snap = await db.collection('exam_results')
+    .where('examineeName', '==', name)
+    .where('examineeNumber', '==', number)
+    .orderBy('submittedAt', 'desc')
+    .get();
+
+  // 합격 결과가 있으면 -> 더 이상 시험 불가
+  let highestPassedOrder = 0;
+  let highestAttemptedOrder = 0;
+
+  snap.forEach(doc => {
+    const r = doc.data();
+    if (r.setOrder) {
+      if (r.setOrder > highestAttemptedOrder) highestAttemptedOrder = r.setOrder;
+      if (r.passed === true && r.setOrder > highestPassedOrder) highestPassedOrder = r.setOrder;
+    }
+  });
+
+  if (highestPassedOrder > 0) {
+    return { error: '이미 합격한 응시자입니다.' };
+  }
+
+  const nextOrder = highestAttemptedOrder + 1;
+
+  if (nextOrder > systemSettings.maxAttempts) {
+    return { error: `최대 응시 차수(${systemSettings.maxAttempts}차)를 초과했습니다.` };
+  }
+
+  const targetSet = allSets.find(s => s.order === nextOrder);
+  if (!targetSet) {
+    return { error: `${nextOrder}차 시험지가 없습니다. 시험지 세트를 먼저 추가하세요.` };
+  }
+
+  return { set: targetSet, attemptNumber: nextOrder, previousAttempts: highestAttemptedOrder };
+}
+
+document.getElementById('confirmIssueBtn').addEventListener('click', async () => {
+  const name = document.getElementById('newExName').value.trim();
+  const number = document.getElementById('newExNumber').value.trim();
+  const setOption = document.getElementById('newExSet').value;
+
+  if (!name || !number) {
+    showToast('응시자 정보를 입력하세요', 'error');
+    return;
+  }
+
+  let targetSet;
+  let attemptNumber;
+
+  try {
+    if (setOption === 'auto') {
+      // 자동 배정
+      const result = await determineNextSet(name, number);
+      if (result.error) {
+        showToast(result.error, 'error');
+        return;
+      }
+      targetSet = result.set;
+      attemptNumber = result.attemptNumber;
+    } else {
+      // 수동 선택
+      targetSet = allSets.find(s => s.id === setOption);
+      attemptNumber = targetSet.order;
+    }
+
+    const id = generateId();
+    const pw = generatePw();
+
+    await db.collection('exam_accounts').add({
+      username: id,
+      password: pw,
+      supervisorId: currentSupervisor.id,
+      supervisorName: currentSupervisor.name,
+      examineeName: name,
+      examineeNumber: number,
+      setId: targetSet.id,
+      setOrder: targetSet.order,
+      setName: targetSet.name,
+      attemptNumber,
+      status: 'unused',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    document.getElementById('issuedFor').textContent = `${name} #${number}`;
+    document.getElementById('issuedSet').textContent = `${targetSet.order}차 · ${targetSet.name}`;
+    document.getElementById('issuedId').textContent = id;
+    document.getElementById('issuedPw').textContent = pw;
+
+    document.getElementById('issueFormStep').style.display = 'none';
+    document.getElementById('issueResultStep').style.display = 'block';
+
+    await loadAccounts();
+  } catch (err) {
+    showToast('발급 실패: ' + err.message, 'error');
+  }
+});
+
+document.getElementById('copyCredsBtn').addEventListener('click', () => {
+  const id = document.getElementById('issuedId').textContent;
+  const pw = document.getElementById('issuedPw').textContent;
+  const name = document.getElementById('issuedFor').textContent;
+  const set = document.getElementById('issuedSet').textContent;
+  navigator.clipboard.writeText(
+    `[모찌서버 시험 계정]\n응시자: ${name}\n시험지: ${set}\n아이디: ${id}\n비밀번호: ${pw}`
+  );
+  showToast('복사되었습니다', 'success');
+});
+
+document.getElementById('closeIssueBtn').addEventListener('click', () => {
+  document.getElementById('issueModal').classList.remove('active');
+});
+
+// ========== Load Accounts ==========
+async function loadAccounts() {
+  try {
+    const snap = await db.collection('exam_accounts').orderBy('createdAt', 'desc').limit(50).get();
+    const tbody = document.getElementById('accountsTableBody');
+
+    if (snap.empty) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="icon">📭</div><div class="title">발급된 계정이 없습니다</div></div></td></tr>';
+      document.getElementById('stat-issued').textContent = '0';
+      document.getElementById('stat-unused').textContent = '0';
+      document.getElementById('stat-inprogress').textContent = '0';
+      return;
+    }
+
+    let unused = 0, inProgress = 0;
+    let html = '';
+
+    snap.forEach(doc => {
+      const a = doc.data();
+      const ts = a.createdAt?.toDate ? a.createdAt.toDate() : new Date();
+      const dateStr = ts.toLocaleString('ko-KR', {month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit'});
+
+      const badges = {
+        unused: '<span class="badge badge-pending">미사용</span>',
+        in_progress: '<span class="badge badge-progress">시험 중</span>',
+        completed: '<span class="badge badge-completed">완료</span>'
+      };
+
+      if (a.status === 'unused') unused++;
+      if (a.status === 'in_progress') inProgress++;
+
+      const setBadgeCls = a.setOrder === 1 ? 'badge-set-1' : a.setOrder === 2 ? 'badge-set-2' : 'badge-set-3';
+      const setLabel = a.setOrder ? `<span class="badge ${setBadgeCls}">${a.setOrder}차</span> ${escapeHtml(a.setName || '')}` : '-';
+
+      const canRevoke = a.status === 'unused';
+
+      html += `<tr>
+        <td><code style="font-family:'Courier New',monospace; font-weight:700;">${escapeHtml(a.username)}</code></td>
+        <td><code style="font-family:'Courier New',monospace;">${escapeHtml(a.password)}</code></td>
+        <td><strong>${escapeHtml(a.examineeName || '-')}</strong> ${a.examineeNumber ? '<span style="color:var(--navy-400);">#' + escapeHtml(a.examineeNumber) + '</span>' : ''}</td>
+        <td>${setLabel}</td>
+        <td>${badges[a.status] || a.status}</td>
+        <td style="color:var(--navy-500); font-size:13px;">${dateStr}</td>
+        <td style="text-align:right;">
+          ${canRevoke ? `<button class="btn btn-secondary btn-sm" onclick="revokeAccount('${doc.id}')">취소</button>` : ''}
+        </td>
+      </tr>`;
+    });
+
+    tbody.innerHTML = html;
+    document.getElementById('stat-issued').textContent = snap.size;
+    document.getElementById('stat-unused').textContent = unused;
+    document.getElementById('stat-inprogress').textContent = inProgress;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+window.revokeAccount = async function(id) {
+  if (!confirm('이 계정을 취소(삭제)하시겠습니까?')) return;
+  try {
+    await db.collection('exam_accounts').doc(id).delete();
+    showToast('취소되었습니다');
+    loadAccounts();
+  } catch (err) {
+    showToast('실패', 'error');
+  }
+};
+
+// ========== Load Results ==========
+async function loadResults() {
+  try {
+    const snap = await db.collection('exam_results').orderBy('submittedAt', 'desc').limit(100).get();
+    const tbody = document.getElementById('resultsTableBody');
+
+    if (snap.empty) {
+      tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="icon">📭</div><div class="title">제출된 시험이 없습니다</div></div></td></tr>';
+      return;
+    }
+
+    let html = '';
+    snap.forEach(doc => {
+      const r = doc.data();
+      const ts = r.submittedAt?.toDate ? r.submittedAt.toDate() : new Date();
+      const dateStr = ts.toLocaleString('ko-KR', {month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit'});
+      const total = (r.autoScore || 0) + (r.manualScore || 0);
+
+      const setBadgeCls = r.setOrder === 1 ? 'badge-set-1' : r.setOrder === 2 ? 'badge-set-2' : 'badge-set-3';
+      const setLabel = r.setOrder ? `<span class="badge ${setBadgeCls}">${r.setOrder}차</span>` : '-';
+
+      let judgement = '';
+      if (r.passed === true) {
+        judgement = '<span class="badge badge-pass">✅ 합격</span>';
+      } else if (r.passed === false) {
+        judgement = '<span class="badge badge-fail">❌ 불합격</span>';
+      } else if (r.hasEssay && !r.manualScored) {
+        judgement = '<span class="badge badge-pending">서술형 채점 대기</span>';
+      } else {
+        judgement = '<span class="badge badge-pending">판정 대기</span>';
+      }
+
+      html += `<tr>
+        <td><strong>${escapeHtml(r.examineeName)}</strong></td>
+        <td><code>#${escapeHtml(r.examineeNumber)}</code></td>
+        <td>${setLabel}</td>
+        <td style="font-size:13px; color:var(--navy-500);">${dateStr}</td>
+        <td>${r.autoScore || 0}점</td>
+        <td>${r.manualScored ? r.manualScore + '점' : (r.hasEssay ? '대기' : '-')}</td>
+        <td><strong>${total}점 / ${r.maxScore || 100}점</strong></td>
+        <td>${judgement}</td>
+        <td>
+          ${r.passed === undefined || r.passed === null
+            ? `<button class="btn btn-primary btn-sm" onclick="openScoringModal('${doc.id}')">채점/판정</button>`
+            : `<button class="btn btn-secondary btn-sm" onclick="openScoringModal('${doc.id}')">수정</button>`}
+        </td>
+      </tr>`;
+    });
+
+    tbody.innerHTML = html;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// ========== Question Management ==========
+document.getElementById('addQuestionBtn').addEventListener('click', () => {
+  if (!activeQuestionSet) {
+    showToast('시험지 세트를 먼저 선택하세요', 'error');
+    return;
+  }
+  editingQuestionId = null;
+  const set = allSets.find(s => s.id === activeQuestionSet);
+  document.getElementById('qModalTitle').textContent = '문제 추가';
+  document.getElementById('qModalSubtitle').textContent = set ? `${set.order}차 · ${set.name}에 추가` : '';
+  document.getElementById('qType').value = 'mc';
+  document.getElementById('qText').value = '';
+  document.getElementById('qPoints').value = '5';
+  document.querySelectorAll('.choice-input').forEach(i => i.value = '');
+  document.querySelectorAll('input[name="qAnswer"]').forEach(r => r.checked = false);
+  toggleChoicesGroup();
+  document.getElementById('questionModal').classList.add('active');
+});
+
+document.getElementById('qType').addEventListener('change', toggleChoicesGroup);
+
+function toggleChoicesGroup() {
+  const type = document.getElementById('qType').value;
+  document.getElementById('choicesGroup').style.display = type === 'mc' ? 'flex' : 'none';
+}
+
+document.getElementById('cancelQBtn').addEventListener('click', () => {
+  document.getElementById('questionModal').classList.remove('active');
+});
+
+document.getElementById('saveQBtn').addEventListener('click', async () => {
+  const type = document.getElementById('qType').value;
+  const text = document.getElementById('qText').value.trim();
+  const points = parseInt(document.getElementById('qPoints').value) || 5;
+
+  if (!text) { showToast('문제를 입력하세요', 'error'); return; }
+  if (!activeQuestionSet) { showToast('시험지를 선택하세요', 'error'); return; }
+
+  let data = {
+    setId: activeQuestionSet,
+    type,
+    question: text,
+    points,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  if (type === 'mc') {
+    const choices = [];
+    document.querySelectorAll('.choice-input').forEach(i => {
+      if (i.value.trim()) choices.push(i.value.trim());
+    });
+    if (choices.length < 2) { showToast('선택지를 최소 2개 입력하세요', 'error'); return; }
+    const ans = document.querySelector('input[name="qAnswer"]:checked');
+    if (!ans) { showToast('정답을 선택하세요', 'error'); return; }
+    data.choices = choices;
+    data.answer = parseInt(ans.value);
+  }
+
+  try {
+    if (editingQuestionId) {
+      await db.collection('exam_questions').doc(editingQuestionId).update(data);
+      showToast('문제 수정 완료');
+    } else {
+      data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection('exam_questions').add(data);
+      showToast('문제 추가 완료');
+    }
+    document.getElementById('questionModal').classList.remove('active');
+    await loadQuestions();
+    await updateSetStats(activeQuestionSet);
+  } catch (err) {
+    showToast('저장 실패: ' + err.message, 'error');
+  }
+});
+
+async function updateSetStats(setId) {
+  // 해당 세트의 문제 통계 갱신
+  try {
+    const snap = await db.collection('exam_questions').where('setId', '==', setId).get();
+    let questionCount = 0;
+    let maxScore = 0;
+    snap.forEach(doc => {
+      questionCount++;
+      maxScore += doc.data().points || 5;
+    });
+    await db.collection('exam_sets').doc(setId).update({ questionCount, maxScore });
+    await loadSets();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function loadQuestions() {
+  if (!activeQuestionSet) {
+    document.getElementById('questionsList').innerHTML = '<div class="empty-state"><div class="icon">📭</div><div class="title">시험지를 선택하세요</div></div>';
+    return;
+  }
+
+  try {
+    const snap = await db.collection('exam_questions').where('setId', '==', activeQuestionSet).get();
+    const docs = [];
+    snap.forEach(doc => docs.push({ id: doc.id, ...doc.data() }));
+    docs.sort((a, b) => {
+      const aT = a.createdAt?.seconds || 0;
+      const bT = b.createdAt?.seconds || 0;
+      return aT - bT;
+    });
+
+    const list = document.getElementById('questionsList');
+
+    if (docs.length === 0) {
+      list.innerHTML = '<div class="empty-state"><div class="icon">📭</div><div class="title">등록된 문제가 없습니다</div></div>';
+      updateSetInfo();
+      return;
+    }
+
+    let html = '';
+    docs.forEach((q, idx) => {
+      const typeBadge = q.type === 'mc' ? '<span class="badge badge-progress">객관식</span>' : '<span class="badge badge-pending">서술형</span>';
+      html += `
+        <div style="padding:14px 18px; border-bottom:1px solid var(--navy-100); display:flex; gap:12px; align-items:flex-start;">
+          <div style="width:32px; height:32px; background:var(--navy-900); color:white; border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0;">${idx + 1}</div>
+          <div style="flex:1;">
+            <div style="display:flex; gap:8px; align-items:center; margin-bottom:6px;">
+              ${typeBadge}
+              <span style="font-size:12px; color:var(--navy-500);">${q.points || 5}점</span>
+            </div>
+            <div style="font-size:14px; font-weight:500; line-height:1.5;">${escapeHtml(q.question)}</div>
+            ${q.type === 'mc' && q.choices ? `<div style="margin-top:8px; font-size:13px; color:var(--navy-600);">${q.choices.map((c, i) => `<div style="padding:2px 0;">${(i+1) === q.answer ? '<strong style="color:var(--success);">✓ </strong>' : ''}${i+1}. ${escapeHtml(c)}</div>`).join('')}</div>` : ''}
+          </div>
+          <div style="display:flex; gap:4px; flex-shrink:0;">
+            <button class="btn btn-secondary btn-sm" onclick="editQuestion('${q.id}')">수정</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteQuestion('${q.id}')">삭제</button>
+          </div>
+        </div>
+      `;
+    });
+
+    list.innerHTML = html;
+    updateSetInfo();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+window.editQuestion = async function(id) {
+  try {
+    const doc = await db.collection('exam_questions').doc(id).get();
+    const q = doc.data();
+    editingQuestionId = id;
+    document.getElementById('qModalTitle').textContent = '문제 수정';
+    document.getElementById('qType').value = q.type;
+    document.getElementById('qText').value = q.question;
+    document.getElementById('qPoints').value = q.points || 5;
+
+    document.querySelectorAll('.choice-input').forEach(i => i.value = '');
+    document.querySelectorAll('input[name="qAnswer"]').forEach(r => r.checked = false);
+
+    if (q.type === 'mc' && q.choices) {
+      q.choices.forEach((c, idx) => {
+        const input = document.querySelector(`.choice-input[data-num="${idx+1}"]`);
+        if (input) input.value = c;
+      });
+      const ansRadio = document.querySelector(`input[name="qAnswer"][value="${q.answer}"]`);
+      if (ansRadio) ansRadio.checked = true;
+    }
+
+    toggleChoicesGroup();
+    document.getElementById('questionModal').classList.add('active');
+  } catch (err) {
+    showToast('로드 실패', 'error');
+  }
+};
+
+window.deleteQuestion = async function(id) {
+  if (!confirm('이 문제를 삭제하시겠습니까?')) return;
+  try {
+    const doc = await db.collection('exam_questions').doc(id).get();
+    const setId = doc.data().setId;
+    await db.collection('exam_questions').doc(id).delete();
+    showToast('삭제 완료');
+    await loadQuestions();
+    if (setId) await updateSetStats(setId);
+  } catch (err) {
+    showToast('삭제 실패', 'error');
+  }
+};
+
+// ========== Manual Scoring + Pass/Fail ==========
+let currentScoringResultId = null;
+
+window.openScoringModal = async function(resultId) {
+  try {
+    const doc = await db.collection('exam_results').doc(resultId).get();
+    const r = doc.data();
+    currentScoringResultId = resultId;
+
+    document.getElementById('scoringExamineeName').textContent =
+      `${r.examineeName} #${r.examineeNumber} · ${r.setName || ''}`;
+
+    let html = '';
+    let hasAnyEssay = false;
+    r.questions.forEach((q, idx) => {
+      if (q.type !== 'essay') return;
+      hasAnyEssay = true;
+      const ans = r.answers[idx] || '';
+      const existingScore = r.essayScores ? (r.essayScores[idx] || 0) : 0;
+      html += `
+        <div style="margin-bottom: 20px; padding: 16px; background: var(--navy-50); border-radius: 8px;">
+          <div style="font-weight: 700; margin-bottom: 8px;">문제 ${idx + 1} (배점: ${q.points || 5}점)</div>
+          <div style="font-size: 14px; margin-bottom: 8px; color: var(--navy-700);">${escapeHtml(q.question)}</div>
+          <div style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; min-height: 60px; white-space: pre-wrap;">${escapeHtml(ans) || '<span style="color: var(--navy-400);">(미응답)</span>'}</div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 12px; color: var(--navy-600);">획득 점수:</span>
+            <input type="number" class="essay-score-input" data-q-idx="${idx}" value="${existingScore}" min="0" max="${q.points || 5}" style="width: 100px; padding: 6px 10px; border: 1px solid var(--navy-300); border-radius: 4px;" oninput="recalcScoring()">
+            <span style="font-size: 12px; color: var(--navy-500);">/ ${q.points || 5}점</span>
+          </div>
+        </div>
+      `;
+    });
+
+    if (!hasAnyEssay) {
+      html = '<p style="color: var(--navy-500); font-size: 14px; padding: 20px; text-align: center;">서술형 문제가 없습니다. 합격/불합격 판정만 진행하세요.</p>';
+    }
+
+    document.getElementById('scoringContent').innerHTML = html;
+
+    // Find pass score from set
+    const set = allSets.find(s => s.id === r.setId);
+    const passScore = set ? set.passScore : 60;
+    document.getElementById('scoringPassScore').textContent = passScore;
+    document.getElementById('scoringAutoScore').textContent = (r.autoScore || 0) + '점';
+
+    // Existing manual score
+    if (r.manualScored) {
+      document.getElementById('scoringEssayScore').textContent = (r.manualScore || 0) + '점';
+      document.getElementById('scoringTotalScore').textContent = (r.autoScore || 0) + (r.manualScore || 0);
+    } else {
+      recalcScoring();
+    }
+
+    document.getElementById('scoringModal').classList.add('active');
+  } catch (err) {
+    showToast('로드 실패: ' + err.message, 'error');
+  }
+};
+
+window.recalcScoring = function() {
+  let manualScore = 0;
+  document.querySelectorAll('.essay-score-input').forEach(input => {
+    manualScore += parseInt(input.value) || 0;
+  });
+  const autoScore = parseInt(document.getElementById('scoringAutoScore').textContent) || 0;
+  document.getElementById('scoringEssayScore').textContent = manualScore + '점';
+  document.getElementById('scoringTotalScore').textContent = autoScore + manualScore;
+};
+
+document.getElementById('cancelScoringBtn').addEventListener('click', () => {
+  document.getElementById('scoringModal').classList.remove('active');
+  currentScoringResultId = null;
+});
+
+async function saveScoringAndJudgement(passed) {
+  if (!currentScoringResultId) return;
+
+  let manualScore = 0;
+  const essayScores = {};
+  document.querySelectorAll('.essay-score-input').forEach(input => {
+    const qIdx = input.dataset.qIdx;
+    const score = parseInt(input.value) || 0;
+    essayScores[qIdx] = score;
+    manualScore += score;
+  });
+
+  try {
+    await db.collection('exam_results').doc(currentScoringResultId).update({
+      manualScore,
+      essayScores,
+      manualScored: true,
+      passed,
+      manualScoredBy: currentSupervisor.id,
+      manualScoredByName: currentSupervisor.name,
+      manualScoredAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast(passed ? '✅ 합격 처리되었습니다' : '❌ 불합격 처리되었습니다', 'success');
+    document.getElementById('scoringModal').classList.remove('active');
+    currentScoringResultId = null;
+    await loadResults();
+  } catch (err) {
+    showToast('저장 실패: ' + err.message, 'error');
+  }
+}
+
+document.getElementById('markPassBtn').addEventListener('click', () => {
+  if (!confirm('이 응시자를 합격 처리하시겠습니까?')) return;
+  saveScoringAndJudgement(true);
+});
+
+document.getElementById('markFailBtn').addEventListener('click', () => {
+  if (!confirm('이 응시자를 불합격 처리하시겠습니까?\n해당 응시자는 다음 차수 시험을 응시할 수 있게 됩니다.')) return;
+  saveScoringAndJudgement(false);
+});
+
+// ========== Examinee Login ==========
+document.getElementById('examineeLoginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('exName').value.trim();
+  const number = document.getElementById('exNumber').value.trim();
+  const id = document.getElementById('exId').value.trim();
+  const pw = document.getElementById('exPw').value;
+
+  try {
+    const snap = await db.collection('exam_accounts').where('username', '==', id).limit(1).get();
+    if (snap.empty) { showToast('아이디 없음', 'error'); return; }
+
+    const account = snap.docs[0].data();
+    const accountId = snap.docs[0].id;
+
+    if (account.password !== pw) { showToast('비밀번호 불일치', 'error'); return; }
+    if (account.status !== 'unused') { showToast('이미 사용된 계정입니다', 'error'); return; }
+
+    // 응시자 본인 확인 — 발급 시 등록된 닉네임/번호와 일치해야 함
+    if (account.examineeName !== name || account.examineeNumber !== number) {
+      showToast('계정에 등록된 응시자 정보와 다릅니다', 'error');
+      return;
+    }
+
+    // 시험지 정보 로드
+    const setDoc = await db.collection('exam_sets').doc(account.setId).get();
+    if (!setDoc.exists) {
+      showToast('시험지를 찾을 수 없습니다', 'error');
+      return;
+    }
+    currentExamSet = { id: setDoc.id, ...setDoc.data() };
+
+    // Mark in_progress
+    await db.collection('exam_accounts').doc(accountId).update({
+      status: 'in_progress',
+      startedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    currentExamAccount = { id: accountId, ...account };
+    currentExaminee = { name, number };
+
+    document.getElementById('examineeLogin').classList.remove('active');
+    await startExam();
+  } catch (err) {
+    showToast('오류: ' + err.message, 'error');
+  }
+});
+
+async function startExam() {
+  try {
+    const snap = await db.collection('exam_questions').where('setId', '==', currentExamSet.id).get();
+    examQuestions = [];
+    snap.forEach(doc => examQuestions.push({ id: doc.id, ...doc.data() }));
+    examQuestions.sort((a, b) => {
+      const aT = a.createdAt?.seconds || 0;
+      const bT = b.createdAt?.seconds || 0;
+      return aT - bT;
+    });
+
+    if (examQuestions.length === 0) {
+      alert('이 시험지에 등록된 문제가 없습니다. 감독관에게 문의하세요.');
+      location.reload();
+      return;
+    }
+
+    examAnswers = {};
+    examStartTime = Date.now();
+    examDurationSec = (currentExamSet.duration || 30) * 60;
+
+    document.getElementById('examName').textContent = currentExaminee.name;
+    document.getElementById('examNumber').textContent = '#' + currentExaminee.number;
+    document.getElementById('examSetName').textContent = `${currentExamSet.order}차 · ${currentExamSet.name}`;
+    document.getElementById('examTotalQ').textContent = examQuestions.length + '문항';
+    document.getElementById('examPaperTitle').textContent = '모찌서버 법률 시험 — ' + currentExamSet.name;
+
+    renderExamPaper();
+    renderOMR();
+    startExamTimer();
+
+    document.getElementById('examScreen').classList.add('active');
+  } catch (err) {
+    showToast('문제 로드 실패: ' + err.message, 'error');
+  }
+}
+
+let examDurationSec = 1800;
+
+function renderExamPaper() {
+  const container = document.getElementById('questionsContainer');
+  let html = '';
+  examQuestions.forEach((q, idx) => {
+    html += `
+      <div class="question-block">
+        <span class="question-num ${q.type === 'essay' ? 'essay' : ''}">문제 ${idx + 1}${q.type === 'essay' ? ' (서술형)' : ''}</span>
+        <span class="question-points">${q.points || 5}점</span>
+        <div class="question-text">${escapeHtml(q.question)}</div>
+    `;
+    if (q.type === 'mc' && q.choices) {
+      html += `<div class="choices-list">`;
+      q.choices.forEach((c, i) => {
+        html += `<div class="choice-item"><span class="choice-num">${i+1}.</span> ${escapeHtml(c)}</div>`;
+      });
+      html += `</div>`;
+    } else if (q.type === 'essay') {
+      html += `<textarea class="essay-input" data-q-idx="${idx}" placeholder="답안을 작성하세요" oninput="updateEssayMark(${idx}, this.value)"></textarea>`;
+    }
+    html += `</div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderOMR() {
+  const grid = document.getElementById('omrGrid');
+  let html = '';
+
+  const mcQs = examQuestions.filter(q => q.type === 'mc');
+  if (mcQs.length > 0) {
+    html += '<div class="omr-section-title">객관식</div><div class="omr-grid">';
+    examQuestions.forEach((q, idx) => {
+      if (q.type !== 'mc') return;
+      html += `<div class="omr-row"><div class="omr-num">${idx + 1}</div>`;
+      for (let i = 1; i <= 5; i++) {
+        const exists = i <= (q.choices?.length || 5);
+        html += `<div class="omr-bubble" data-q-idx="${idx}" data-choice="${i}" ${!exists ? 'style="opacity:0.2; pointer-events:none;"' : ''} onclick="selectBubble(${idx}, ${i})">${i}</div>`;
+      }
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  const essayQs = examQuestions.filter(q => q.type === 'essay');
+  if (essayQs.length > 0) {
+    html += '<div class="omr-section-title">서술형</div><div class="omr-grid">';
+    examQuestions.forEach((q, idx) => {
+      if (q.type !== 'essay') return;
+      html += `<div class="omr-row essay">
+        <div class="omr-num">${idx + 1}</div>
+        <div class="omr-essay-mark" id="essay-mark-${idx}">미작성</div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  grid.innerHTML = html;
+}
+
+window.selectBubble = function(qIdx, choice) {
+  document.querySelectorAll(`.omr-bubble[data-q-idx="${qIdx}"]`).forEach(b => b.classList.remove('checked'));
+  const bubble = document.querySelector(`.omr-bubble[data-q-idx="${qIdx}"][data-choice="${choice}"]`);
+  if (bubble) bubble.classList.add('checked');
+  examAnswers[qIdx] = choice;
+};
+
+window.updateEssayMark = function(qIdx, value) {
+  examAnswers[qIdx] = value;
+  const mark = document.getElementById(`essay-mark-${qIdx}`);
+  if (value.trim()) {
+    mark.textContent = '작성됨';
+    mark.classList.add('filled');
+  } else {
+    mark.textContent = '미작성';
+    mark.classList.remove('filled');
+  }
+};
+
+function startExamTimer() {
+  if (examTimerInterval) clearInterval(examTimerInterval);
+  examTimerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - examStartTime) / 1000);
+    const remaining = examDurationSec - elapsed;
+
+    if (remaining <= 0) {
+      clearInterval(examTimerInterval);
+      submitExam(true);
+      return;
+    }
+
+    const min = Math.floor(remaining / 60);
+    const sec = remaining % 60;
+    const timer = document.getElementById('examTimer');
+    timer.textContent = `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+
+    timer.classList.remove('warning', 'danger');
+    if (remaining <= 60) timer.classList.add('danger');
+    else if (remaining <= 300) timer.classList.add('warning');
+  }, 1000);
+}
+
+document.getElementById('submitExamBtn').addEventListener('click', () => submitExam(false));
+
+async function submitExam(autoSubmitted) {
+  if (!autoSubmitted) {
+    if (!confirm('시험을 제출하시겠습니까?\n제출 후에는 수정할 수 없습니다.')) return;
+  }
+
+  if (examTimerInterval) clearInterval(examTimerInterval);
+
+  let autoScore = 0;
+  let maxScore = 0;
+  let hasEssay = false;
+  const detailedAnswers = {};
+
+  examQuestions.forEach((q, idx) => {
+    const points = q.points || 5;
+    maxScore += points;
+    detailedAnswers[idx] = examAnswers[idx] ?? null;
+
+    if (q.type === 'mc') {
+      if (examAnswers[idx] === q.answer) autoScore += points;
+    } else if (q.type === 'essay') {
+      hasEssay = true;
+    }
+  });
+
+  try {
+    const resultData = {
+      accountId: currentExamAccount.id,
+      examineeName: currentExaminee.name,
+      examineeNumber: currentExaminee.number,
+      setId: currentExamSet.id,
+      setOrder: currentExamSet.order,
+      setName: currentExamSet.name,
+      attemptNumber: currentExamAccount.attemptNumber,
+      questions: examQuestions.map(q => ({
+        type: q.type,
+        question: q.question,
+        choices: q.choices || null,
+        answer: q.answer || null,
+        points: q.points || 5
+      })),
+      answers: detailedAnswers,
+      autoScore,
+      manualScore: 0,
+      maxScore,
+      hasEssay,
+      manualScored: !hasEssay,
+      passed: null,    // 감독관이 수동 판정
+      autoSubmitted,
+      submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    await db.collection('exam_results').add(resultData);
+    await db.collection('exam_accounts').doc(currentExamAccount.id).update({
+      status: 'completed',
+      submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    document.getElementById('autoScoreDisplay').textContent = `${autoScore} / ${maxScore}점`;
+    document.getElementById('examScreen').classList.remove('active');
+    document.getElementById('resultModal').classList.add('active');
+  } catch (err) {
+    alert('제출 실패: ' + err.message + '\n페이지를 닫지 마세요.');
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  if (document.getElementById('examScreen').classList.contains('active')) {
+    e.preventDefault();
+    e.returnValue = '시험이 진행 중입니다.';
+  }
+});
+
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+</script>
+
+</body>
+</html>
