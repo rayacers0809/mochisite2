@@ -275,7 +275,7 @@
 
     // 한글 텍스트를 캔버스에 렌더링
     const tcv = document.createElement('canvas');
-    const scale = 3;
+    const scale = 2;
     const cwMm = pageW - 20; // 190mm
     const chMm = 240;        // 240mm
     const pxPerMm = 4 * scale;
@@ -359,8 +359,9 @@
     const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
     tx.fillText(today, 160, y);
 
-    const textImg = tcv.toDataURL('image/png');
-    doc.addImage(textImg, 'PNG', 10, 10, cwMm, chMm);
+    // PNG보다 JPEG가 압축률이 훨씬 좋음 (텍스트도 80~85 품질이면 충분히 깔끔)
+    const textImg = tcv.toDataURL('image/jpeg', 0.85);
+    doc.addImage(textImg, 'JPEG', 10, 10, cwMm, chMm, undefined, 'FAST');
 
     // 서명 영역
     doc.setDrawColor(200, 200, 200);
