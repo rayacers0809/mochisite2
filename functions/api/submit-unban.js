@@ -10,7 +10,7 @@
  *  - RATE_LIMIT        : Rate limit 저장용 KV namespace
  */
 
-const MAX_PDF_SIZE = 50 * 1024 * 1024; // 2MB
+const MAX_PDF_SIZE = 8 * 1024 * 1024; // 8MB (Discord 첨부 한도)
 const RATE_LIMIT_MAX = 3;              // 시간당 최대 요청 수
 const RATE_LIMIT_WINDOW = 60 * 60;     // 1시간 (초)
 
@@ -70,7 +70,7 @@ export async function onRequest(context) {
       return json({ error: 'PDF 파일이 필요합니다' }, 400);
     }
     if (pdf.size > MAX_PDF_SIZE) {
-      return json({ error: 'PDF 파일 크기 초과 (최대 2MB)' }, 400);
+      return json({ error: 'PDF 파일 크기 초과 (최대 8MB)' }, 400);
     }
     if (pdf.type && pdf.type !== 'application/pdf') {
       return json({ error: 'PDF 파일만 허용됩니다' }, 400);
