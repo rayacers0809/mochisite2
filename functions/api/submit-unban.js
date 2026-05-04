@@ -10,7 +10,7 @@
  *  - RATE_LIMIT        : Rate limit 저장용 KV namespace
  */
 
-const MAX_PDF_SIZE = 15 * 1024 * 1024; // 2MB
+const MAX_PDF_SIZE = 50 * 1024 * 1024; // 2MB
 const RATE_LIMIT_MAX = 3;              // 시간당 최대 요청 수
 const RATE_LIMIT_WINDOW = 60 * 60;     // 1시간 (초)
 
