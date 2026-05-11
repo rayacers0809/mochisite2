@@ -1759,27 +1759,101 @@ window.openScoringModal = async function(resultId) {
 
     let html = '';
     let hasAnyEssay = false;
+    let mcCorrect = 0, mcTotal = 0;
+
+    // 먼저 객관식 통계 계산
     r.questions.forEach((q, idx) => {
-      if (q.type !== 'essay') return;
-      hasAnyEssay = true;
-      const ans = r.answers[idx] || '';
-      const existingScore = r.essayScores ? (r.essayScores[idx] || 0) : 0;
-      html += `
-        <div style="margin-bottom: 20px; padding: 16px; background: var(--navy-50); border-radius: 8px;">
-          <div style="font-weight: 700; margin-bottom: 8px;">문제 ${idx + 1} (배점: ${q.points || 5}점)</div>
-          <div style="font-size: 14px; margin-bottom: 8px; color: var(--navy-700);">${escapeHtml(q.question)}</div>
-          <div style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; min-height: 60px; white-space: pre-wrap;">${escapeHtml(ans) || '<span style="color: var(--navy-400);">(미응답)</span>'}</div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 12px; color: var(--navy-600);">획득 점수:</span>
-            <input type="number" class="essay-score-input" data-q-idx="${idx}" value="${existingScore}" min="0" max="${q.points || 5}" style="width: 100px; padding: 6px 10px; border: 1px solid var(--navy-300); border-radius: 4px;" oninput="recalcScoring()">
-            <span style="font-size: 12px; color: var(--navy-500);">/ ${q.points || 5}점</span>
-          </div>
-        </div>
-      `;
+      if (q.type === 'mc') {
+        mcTotal++;
+        if (r.answers[idx] === q.answer) mcCorrect++;
+      }
     });
 
-    if (!hasAnyEssay) {
-      html = '<p style="color: var(--navy-500); font-size: 14px; padding: 20px; text-align: center;">서술형 문제가 없습니다. 합격/불합격 판정만 진행하세요.</p>';
+    // 객관식 요약 헤더
+    if (mcTotal > 0) {
+      html += `
+        <div style="margin-bottom: 16px; padding: 14px 16px; background: linear-gradient(135deg, var(--navy-50), white); border: 1px solid var(--navy-200); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-weight: 700; font-size: 14px; color: var(--navy-800);">📝 객관식 채점 결과</div>
+          <div style="font-size: 14px;"><strong style="color: var(--success);">${mcCorrect}</strong> / ${mcTotal} 정답</div>
+        </div>
+      `;
+    }
+
+    r.questions.forEach((q, idx) => {
+      const userAns = r.answers[idx];
+
+      if (q.type === 'mc') {
+        // 객관식: 시험자가 고른 답 + 정답 표시
+        const isCorrect = userAns === q.answer;
+        const borderColor = isCorrect ? 'var(--success)' : 'var(--danger, #ef4444)';
+        const bgColor = isCorrect ? 'rgba(34,197,94,0.05)' : 'rgba(239,68,68,0.05)';
+        const markIcon = isCorrect ? '⭕' : '❌';
+        const markColor = isCorrect ? 'var(--success)' : 'var(--danger, #ef4444)';
+
+        let choicesHtml = '';
+        if (q.choices && Array.isArray(q.choices)) {
+          choicesHtml = q.choices.map((c, i) => {
+            const num = i + 1;
+            const isAnswer = num === q.answer;
+            const isUserPick = num === userAns;
+            let style = 'padding:6px 10px; margin:3px 0; border-radius:5px; font-size:13px;';
+            let prefix = `${num}.`;
+            let suffix = '';
+
+            if (isAnswer && isUserPick) {
+              style += 'background: rgba(34,197,94,0.15); border: 1px solid var(--success); font-weight:600; color: var(--success);';
+              prefix = `✅ ${num}.`;
+              suffix = ' <span style="font-size:11px; color:var(--success);">(정답 · 선택함)</span>';
+            } else if (isAnswer) {
+              style += 'background: rgba(34,197,94,0.1); border: 1px dashed var(--success); color: var(--navy-700);';
+              prefix = `✓ ${num}.`;
+              suffix = ' <span style="font-size:11px; color:var(--success);">(정답)</span>';
+            } else if (isUserPick) {
+              style += 'background: rgba(239,68,68,0.1); border: 1px solid var(--danger, #ef4444); color: var(--navy-700);';
+              prefix = `✗ ${num}.`;
+              suffix = ' <span style="font-size:11px; color: var(--danger, #ef4444);">(선택함 · 오답)</span>';
+            } else {
+              style += 'background: white; border: 1px solid var(--navy-200); color: var(--navy-600);';
+            }
+
+            return `<div style="${style}">${prefix} ${escapeHtml(c)}${suffix}</div>`;
+          }).join('');
+        }
+
+        html += `
+          <div style="margin-bottom: 14px; padding: 14px 16px; background: ${bgColor}; border-left: 4px solid ${borderColor}; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div style="font-weight: 700; font-size: 14px;">문제 ${idx + 1} <span style="font-size:12px; color:var(--navy-500); font-weight:400;">(배점: ${q.points || 5}점)</span></div>
+              <div style="font-size: 18px; color: ${markColor};">${markIcon} ${isCorrect ? `+${q.points || 5}점` : '0점'}</div>
+            </div>
+            <div style="font-size: 14px; margin-bottom: 10px; color: var(--navy-700); white-space: pre-wrap;">${escapeHtml(q.question)}</div>
+            <div>${choicesHtml}</div>
+            ${userAns == null ? '<div style="margin-top:8px; padding:6px 10px; background: rgba(239,68,68,0.1); border-radius:4px; font-size:12px; color: var(--danger, #ef4444);">⚠ 응시자가 답을 선택하지 않았습니다</div>' : ''}
+          </div>
+        `;
+      } else if (q.type === 'essay') {
+        // 서술형: 기존대로 채점 인풋
+        hasAnyEssay = true;
+        const ans = userAns || '';
+        const existingScore = r.essayScores ? (r.essayScores[idx] || 0) : 0;
+        html += `
+          <div style="margin-bottom: 14px; padding: 14px 16px; background: var(--navy-50); border-left: 4px solid var(--navy-400); border-radius: 8px;">
+            <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">문제 ${idx + 1} <span style="font-size:12px; color:var(--navy-500); font-weight:400;">(서술형 · 배점: ${q.points || 5}점)</span></div>
+            <div style="font-size: 14px; margin-bottom: 8px; color: var(--navy-700); white-space: pre-wrap;">${escapeHtml(q.question)}</div>
+            <div style="font-size: 12px; color: var(--navy-500); margin-bottom: 4px;">응시자 답안:</div>
+            <div style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; min-height: 60px; white-space: pre-wrap; border: 1px solid var(--navy-200);">${escapeHtml(ans) || '<span style="color: var(--navy-400);">(미응답)</span>'}</div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 12px; color: var(--navy-600);">획득 점수:</span>
+              <input type="number" class="essay-score-input" data-q-idx="${idx}" value="${existingScore}" min="0" max="${q.points || 5}" style="width: 100px; padding: 6px 10px; border: 1px solid var(--navy-300); border-radius: 4px;" oninput="recalcScoring()">
+              <span style="font-size: 12px; color: var(--navy-500);">/ ${q.points || 5}점</span>
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    if (!html) {
+      html = '<p style="color: var(--navy-500); font-size: 14px; padding: 20px; text-align: center;">표시할 문제가 없습니다.</p>';
     }
 
     document.getElementById('scoringContent').innerHTML = html;
