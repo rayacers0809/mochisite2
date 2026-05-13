@@ -113,7 +113,7 @@ section{position:relative;z-index:10}
 /* ── 유튜브 (디스코드 임베드 스타일) ── */
 .yt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
 @media(max-width:880px){.yt-grid{grid-template-columns:1fr}}
-.yt-embed{background:rgba(28,24,31,.7);backdrop-filter:blur(8px);border-radius:8px;border-left:4px solid var(--pink);padding:14px 16px 16px;display:block;text-decoration:none;color:inherit;transition:transform .2s,box-shadow .2s,border-color .2s}
+.yt-embed{background:rgba(28,24,31,.7);backdrop-filter:blur(8px);border-radius:8px;border-left:4px solid var(--pink);padding:14px 16px 16px;display:block;text-decoration:none;color:inherit;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}
 .yt-embed:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4);border-left-color:var(--peach)}
 .yt-url{font-size:12px;color:var(--mu);margin-bottom:10px;word-break:break-all;line-height:1.4}
 .yt-url a{color:var(--mu);text-decoration:none}
@@ -333,7 +333,7 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
         <div class="sec-title">모찌 유튜브</div>
         <div class="sec-sub">모찌서버 공식 유튜브 채널의 영상들</div>
       </div>
-      <a href="https://www.youtube.com/@%EB%AA%A8%EC%B0%8C%EC%84%9C%EB%B2%84" target="_blank" rel="noopener" class="sec-more">채널 바로가기 →</a>
+      <a href="https://www.youtube.com/@mochi-server" target="_blank" rel="noopener" class="sec-more">채널 바로가기 →</a>
     </div>
     <div class="yt-grid" id="ytGrid">
       <div class="yt-loading"><span class="spin"></span> 영상 불러오는 중...</div>
@@ -628,8 +628,8 @@ function renderYoutube(videos){
     const channel=v.channel||'모찌서버';
     const title=v.title||'모찌서버 유튜브';
     const desc=v.desc||'';
-    return `<a href="javascript:void(0)" class="yt-embed" onclick="openYtModal('${vid}')">
-      <div class="yt-url"><a href="${fullUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${fullUrl}</a></div>
+    return `<div class="yt-embed" onclick="openYtModal('${vid}')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openYtModal('${vid}')">
+      <div class="yt-url"><a href="${fullUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(fullUrl)}</a></div>
       <div class="yt-channel">YouTube</div>
       <div class="yt-title">${esc(channel)}</div>
       ${desc?`<div class="yt-desc">${esc(desc)}</div>`:''}
@@ -637,7 +637,7 @@ function renderYoutube(videos){
         <img src="${thumb}" alt="${esc(title)}" onerror="this.src='https://i.ytimg.com/vi/${vid}/mqdefault.jpg'">
         <div class="yt-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       </div>
-    </a>`;
+    </div>`;
   }).join('');
 }
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
