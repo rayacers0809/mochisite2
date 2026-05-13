@@ -902,72 +902,6 @@ window.__initAdmin=async function(){
   window.__editTeam=async(id)=>{try{const d=await getDoc(doc(db,'team_members',id));if(!d.exists())return;const m=d.data();document.getElementById('teamFormCard').style.display='block';document.getElementById('teamFormTitle').textContent='팀원 수정';document.getElementById('tm_nick').value=m.nick||'';document.getElementById('tm_rank').value=m.rank||'';document.getElementById('tm_team').value=m.team||'';document.getElementById('tm_discord').value=m.discord||'';document.getElementById('tm_editId').value=id;document.getElementById('tm_existingPhoto').value=m.photo||'';if(m.photo){document.getElementById('tm_preview').src=m.photo;document.getElementById('tm_preview').style.display='block';document.getElementById('tm_ph').style.display='none';}else{document.getElementById('tm_preview').style.display='none';document.getElementById('tm_ph').style.display='flex';}}catch(e){showToast('불러오기 실패: '+e.message,'err');}};
   window.__delTeam=async(id)=>{if(!confirm('정말 삭제할까요?'))return;try{const d=await getDoc(doc(db,'team_members',id));if(d.exists()&&d.data().photo){try{await deleteObject(ref(storage,d.data().photo));}catch{}}await deleteDoc(doc(db,'team_members',id));showToast('삭제되었습니다.','ok');window.loadTeamMembers();}catch(e){showToast('삭제 실패: '+e.message,'err');}};
   window.saveTeamMember=async()=>{const nick=document.getElementById('tm_nick').value.trim();const rank=document.getElementById('tm_rank').value.trim();const team=document.getElementById('tm_team').value.trim();if(!nick||!rank||!team){showToast('닉네임, 직급, 팀은 필수입니다.','err');return;}const discord=document.getElementById('tm_discord').value.trim();const editId=document.getElementById('tm_editId').value;const existingPhoto=document.getElementById('tm_existingPhoto').value;const photoFile=document.getElementById('tm_photo').files[0];let photoUrl=existingPhoto;if(photoFile){try{const fname='team/'+Date.now()+'_'+nick.replace(/[^a-zA-Z0-9가-힣]/g,'_');await uploadBytes(ref(storage,fname),photoFile);photoUrl=await getDownloadURL(ref(storage,fname));if(existingPhoto){try{await deleteObject(ref(storage,existingPhoto));}catch{}}}catch(e){showToast('사진 업로드 실패: '+e.message,'err');return;}}const data={nick,rank,team,discord,photo:photoUrl||''};try{if(editId)await setDoc(doc(db,'team_members',editId),data);else await addDoc(collection(db,'team_members'),data);showToast(editId?'수정되었습니다.':'추가되었습니다.','ok');closeTeamForm();window.loadTeamMembers();}catch(e){showToast('저장 실패: '+e.message,'err');}};
-
-  // ── 유튜브 관리 ──
-  window.loadYt=async()=>{
-    const el=document.getElementById('ytList');
-    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--mu)"><span class="spin"></span> 불러오는 중...</div>';
-    try{
-      const sn=await getDocs(collection(db,'youtube_videos'));
-      const vids=sn.docs.map(d=>({id:d.id,...d.data()}));
-      vids.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-      window.__ytAdminVids=vids;
-      if(!vids.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--mu)">등록된 영상이 없습니다.</div>';return;}
-      el.innerHTML=`<table class="tbl"><thead><tr><th>썸네일</th><th>채널/제목</th><th>설명</th><th>URL</th><th>등록일</th><th>관리</th></tr></thead><tbody>${vids.map(v=>{
-        const vid=window.ytParseId(v.url);
-        const thumb=vid?`https://i.ytimg.com/vi/${vid}/mqdefault.jpg`:'';
-        return `<tr>
-          <td><div style="width:80px;aspect-ratio:16/9;border-radius:4px;overflow:hidden;background:#000">${thumb?`<img src="${thumb}" style="width:100%;height:100%;object-fit:cover">`:''}</div></td>
-          <td><strong style="color:var(--pink)">${v.channel||'모찌서버'}</strong><br><span style="font-size:11px;color:var(--mu)">${v.title||''}</span></td>
-          <td style="font-size:12px;color:var(--mu2);max-width:200px">${v.desc||'-'}</td>
-          <td style="font-size:11px;color:var(--mu);max-width:180px;word-break:break-all">${vid||'(잘못된 URL)'}</td>
-          <td style="color:var(--mu);font-size:12px">${v.createdAt?.seconds?new Date(v.createdAt.seconds*1000).toLocaleDateString('ko-KR'):'-'}</td>
-          <td><div class="abt"><button class="be" onclick="window.__editYt('${v.id}')">수정</button><button class="bdel2" onclick="window.__delYt('${v.id}')">삭제</button></div></td>
-        </tr>`;
-      }).join('')}</tbody></table>`;
-    }catch(e){el.innerHTML=`<div style="text-align:center;padding:40px;color:var(--red)">로드 실패: ${e.message}</div>`;}
-  };
-  window.__editYt=(id)=>{
-    const v=(window.__ytAdminVids||[]).find(x=>x.id===id);
-    if(!v)return;
-    openYtForm();
-    document.getElementById('ytFormTitle').textContent='영상 수정';
-    document.getElementById('yt_editId').value=id;
-    document.getElementById('yt_url').value=v.url||'';
-    document.getElementById('yt_channel').value=v.channel||'';
-    document.getElementById('yt_title').value=v.title||'';
-    document.getElementById('yt_desc').value=v.desc||'';
-    window.ytPreview();
-  };
-  window.__delYt=async(id)=>{
-    if(!confirm('영상을 삭제할까요?'))return;
-    try{await deleteDoc(doc(db,'youtube_videos',id));showToast('삭제되었습니다.','ok');window.loadYt();}
-    catch(e){showToast('삭제 실패: '+e.message,'err');}
-  };
-  window.__saveYt=async()=>{
-    const url=document.getElementById('yt_url').value.trim();
-    if(!url){showToast('유튜브 URL을 입력해주세요.','err');return;}
-    const vid=window.ytParseId(url);
-    if(!vid){showToast('올바른 유튜브 URL이 아닙니다.','err');return;}
-    const channel=document.getElementById('yt_channel').value.trim()||'모찌서버';
-    const title=document.getElementById('yt_title').value.trim();
-    const desc=document.getElementById('yt_desc').value.trim();
-    const editId=document.getElementById('yt_editId').value;
-    const btn=document.getElementById('ytSaveBtn');
-    btn.disabled=true;btn.innerHTML='<span class="spin"></span> 저장 중...';
-    try{
-      const data={url,channel,title,desc,videoId:vid};
-      if(editId){
-        await setDoc(doc(db,'youtube_videos',editId),{...data,updatedAt:serverTimestamp()},{merge:true});
-      }else{
-        await addDoc(collection(db,'youtube_videos'),{...data,createdAt:serverTimestamp()});
-      }
-      showToast('저장되었습니다! ✅','ok');
-      closeYtForm();
-      window.loadYt();
-    }catch(e){showToast('저장 실패: '+e.message,'err');}
-    finally{btn.disabled=false;btn.innerHTML='💾 저장하기';}
-  };
 };
 
 function renderDashP(patches){const TM2={new:{c:'tag-new',l:'신규'},fix:{c:'tag-fix',l:'버그수정'},change:{c:'tag-change',l:'변경'},remove:{c:'tag-remove',l:'삭제'}};document.getElementById('stT').textContent=patches.length||'0';document.getElementById('stL').textContent=patches[0]?.ver||'—';const m=new Date().getMonth()+1;document.getElementById('stM').textContent=patches.filter(p=>p.date?.includes(`${m}월`)).length||'0';document.getElementById('dashB').innerHTML=patches.slice(0,5).map(p=>`<tr><td><span class="vb">${p.ver||''}</span></td><td>${p.date||''}</td><td>${(p.tags||[]).map(t=>`<span class="tag ${TM2[t]?.c||''}" style="margin-right:4px">${TM2[t]?.l||t}</span>`).join('')}</td><td style="color:var(--mu);font-size:12px">${(p.blocks||[]).filter(b=>b.type==='text').length}T/${(p.blocks||[]).filter(b=>b.type==='image').length}I</td></tr>`).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--mu);padding:20px">없음</td></tr>';}
@@ -986,6 +920,112 @@ window.ytParseId=function(url){
   if(/^[a-zA-Z0-9_-]{11}$/.test(s))return s;
   return null;
 };
+
+// ── 유튜브 관리 (독립 Firebase 클라이언트) ──
+let __ytFB=null;
+async function __getYtFB(){
+  if(__ytFB)return __ytFB;
+  const {initializeApp,getApps}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+  const {getFirestore,collection,getDocs,addDoc,setDoc,deleteDoc,doc,serverTimestamp}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+  let app;
+  const existing=getApps().find(a=>a.name==='ytadmin');
+  if(existing){app=existing;}
+  else{
+    const res=await fetch('/api/config');
+    const cfg=await res.json();
+    app=initializeApp(cfg,'ytadmin');
+  }
+  const db=getFirestore(app);
+  __ytFB={db,collection,getDocs,addDoc,setDoc,deleteDoc,doc,serverTimestamp};
+  return __ytFB;
+}
+
+window.loadYt=async function(){
+  const el=document.getElementById('ytList');
+  if(!el)return;
+  el.innerHTML='<div style="text-align:center;padding:40px;color:var(--mu)"><span class="spin"></span> 불러오는 중...</div>';
+  try{
+    const {db,collection,getDocs}=await __getYtFB();
+    const sn=await getDocs(collection(db,'youtube_videos'));
+    const vids=sn.docs.map(d=>({id:d.id,...d.data()}));
+    vids.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    window.__ytAdminVids=vids;
+    if(!vids.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--mu)">등록된 영상이 없습니다.</div>';return;}
+    el.innerHTML='<table class="tbl"><thead><tr><th>썸네일</th><th>채널/제목</th><th>설명</th><th>영상ID</th><th>등록일</th><th>관리</th></tr></thead><tbody>'+vids.map(v=>{
+      const vid=window.ytParseId(v.url);
+      const thumb=vid?'https://i.ytimg.com/vi/'+vid+'/mqdefault.jpg':'';
+      const dateStr=v.createdAt?.seconds?new Date(v.createdAt.seconds*1000).toLocaleDateString('ko-KR'):'-';
+      return '<tr>'+
+        '<td><div style="width:80px;aspect-ratio:16/9;border-radius:4px;overflow:hidden;background:#000">'+(thumb?'<img src="'+thumb+'" style="width:100%;height:100%;object-fit:cover">':'')+'</div></td>'+
+        '<td><strong style="color:var(--pink)">'+(v.channel||'모찌서버')+'</strong><br><span style="font-size:11px;color:var(--mu)">'+(v.title||'')+'</span></td>'+
+        '<td style="font-size:12px;color:var(--mu2);max-width:200px">'+(v.desc||'-')+'</td>'+
+        '<td style="font-size:11px;color:var(--mu);font-family:monospace">'+(vid||'(잘못된 URL)')+'</td>'+
+        '<td style="color:var(--mu);font-size:12px">'+dateStr+'</td>'+
+        '<td><div class="abt"><button class="be" onclick="window.__editYt(\''+v.id+'\')">수정</button><button class="bdel2" onclick="window.__delYt(\''+v.id+'\')">삭제</button></div></td>'+
+      '</tr>';
+    }).join('')+'</tbody></table>';
+  }catch(e){
+    console.error('[유튜브 로드 실패]',e);
+    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--red)">로드 실패: '+e.message+'</div>';
+  }
+};
+
+window.__editYt=function(id){
+  const v=(window.__ytAdminVids||[]).find(x=>x.id===id);
+  if(!v)return;
+  openYtForm();
+  document.getElementById('ytFormTitle').textContent='영상 수정';
+  document.getElementById('yt_editId').value=id;
+  document.getElementById('yt_url').value=v.url||'';
+  document.getElementById('yt_channel').value=v.channel||'';
+  document.getElementById('yt_title').value=v.title||'';
+  document.getElementById('yt_desc').value=v.desc||'';
+  ytPreview();
+};
+
+window.__delYt=async function(id){
+  if(!confirm('영상을 삭제할까요?'))return;
+  try{
+    const {db,doc,deleteDoc}=await __getYtFB();
+    await deleteDoc(doc(db,'youtube_videos',id));
+    showToast('삭제되었습니다.','ok');
+    window.loadYt();
+  }catch(e){
+    console.error('[유튜브 삭제 실패]',e);
+    showToast('삭제 실패: '+e.message,'err');
+  }
+};
+
+window.__saveYt=async function(){
+  const url=document.getElementById('yt_url').value.trim();
+  if(!url){showToast('유튜브 URL을 입력해주세요.','err');return;}
+  const vid=window.ytParseId(url);
+  if(!vid){showToast('올바른 유튜브 URL이 아닙니다.','err');return;}
+  const channel=document.getElementById('yt_channel').value.trim()||'모찌서버';
+  const title=document.getElementById('yt_title').value.trim();
+  const desc=document.getElementById('yt_desc').value.trim();
+  const editId=document.getElementById('yt_editId').value;
+  const btn=document.getElementById('ytSaveBtn');
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span> 저장 중...';
+  try{
+    const {db,collection,addDoc,setDoc,doc,serverTimestamp}=await __getYtFB();
+    const data={url,channel,title,desc,videoId:vid};
+    if(editId){
+      await setDoc(doc(db,'youtube_videos',editId),Object.assign({},data,{updatedAt:serverTimestamp()}),{merge:true});
+    }else{
+      await addDoc(collection(db,'youtube_videos'),Object.assign({},data,{createdAt:serverTimestamp()}));
+    }
+    showToast('저장되었습니다! ✅','ok');
+    closeYtForm();
+    window.loadYt();
+  }catch(e){
+    console.error('[유튜브 저장 실패]',e);
+    showToast('저장 실패: '+e.message,'err');
+  }finally{
+    btn.disabled=false;btn.innerHTML='💾 저장하기';
+  }
+};
+
 function openYtForm(){
   document.getElementById('ytFormCard').style.display='block';
   document.getElementById('ytFormTitle').textContent='영상 추가';
@@ -1004,13 +1044,13 @@ function ytPreview(){
   const box=document.getElementById('yt_preview');
   if(vid){
     box.style.display='block';
-    document.getElementById('yt_thumb').src=`https://i.ytimg.com/vi/${vid}/mqdefault.jpg`;
+    document.getElementById('yt_thumb').src='https://i.ytimg.com/vi/'+vid+'/mqdefault.jpg';
     document.getElementById('yt_vid').textContent='영상 ID: '+vid;
   }else{
     box.style.display='none';
   }
 }
-function saveYt(){if(window.__saveYt)window.__saveYt();}
+function saveYt(){window.__saveYt();}
 window.openYtForm=openYtForm;window.closeYtForm=closeYtForm;window.ytPreview=ytPreview;window.saveYt=saveYt;
 </script>
 
