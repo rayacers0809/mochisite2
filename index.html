@@ -110,6 +110,33 @@ section{position:relative;z-index:10}
 .news-title{font-size:15px;font-weight:700;color:#fff;line-height:1.4;margin-bottom:6px}
 .news-desc{font-size:12.5px;color:var(--mu);line-height:1.6;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 
+/* ── 유튜브 (디스코드 임베드 스타일) ── */
+.yt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+@media(max-width:880px){.yt-grid{grid-template-columns:1fr}}
+.yt-embed{background:rgba(28,24,31,.7);backdrop-filter:blur(8px);border-radius:8px;border-left:4px solid var(--pink);padding:14px 16px 16px;display:block;text-decoration:none;color:inherit;transition:transform .2s,box-shadow .2s,border-color .2s}
+.yt-embed:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4);border-left-color:var(--peach)}
+.yt-url{font-size:12px;color:var(--mu);margin-bottom:10px;word-break:break-all;line-height:1.4}
+.yt-url a{color:var(--mu);text-decoration:none}
+.yt-url a:hover{text-decoration:underline}
+.yt-channel{font-size:12px;color:var(--mu2);margin-bottom:6px;font-weight:500}
+.yt-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.yt-desc{font-size:13px;color:var(--pink);font-weight:600;margin-bottom:12px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.yt-thumb-wrap{position:relative;width:100%;aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:#000}
+.yt-thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.yt-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s;pointer-events:none}
+.yt-embed:hover .yt-play{background:rgba(244,132,158,.9);transform:translate(-50%,-50%) scale(1.1)}
+.yt-play svg{width:28px;height:28px;fill:#fff;margin-left:3px}
+.yt-loading{grid-column:1/-1;text-align:center;padding:40px;color:var(--mu);font-size:14px}
+.yt-empty{grid-column:1/-1;text-align:center;padding:40px;color:var(--mu);font-size:14px}
+
+/* 유튜브 모달 (영상 재생) */
+.yt-modal-ov{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:20px;animation:pmFade .2s ease}
+.yt-modal-ov.open{display:flex}
+.yt-modal{position:relative;width:100%;max-width:960px;aspect-ratio:16/9;background:#000;border-radius:14px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.8)}
+.yt-modal iframe{width:100%;height:100%;border:0}
+.yt-modal-close{position:absolute;top:-44px;right:0;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid var(--border);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.yt-modal-close:hover{background:rgba(244,132,158,.3)}
+
 /* ── CTA 섹션 ── */
 .cta-sec{background:linear-gradient(135deg,rgba(244,132,158,.08),rgba(249,168,122,.05));border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 .cta-inner{max-width:700px;margin:0 auto;padding:100px 40px;text-align:center}
@@ -298,6 +325,22 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
   </div>
 </section>
 
+<!-- 유튜브 영상 -->
+<section>
+  <div class="sec-wrap">
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">모찌 유튜브</div>
+        <div class="sec-sub">모찌서버 공식 유튜브 채널의 영상들</div>
+      </div>
+      <a href="https://www.youtube.com/@%EB%AA%A8%EC%B0%8C%EC%84%9C%EB%B2%84" target="_blank" rel="noopener" class="sec-more">채널 바로가기 →</a>
+    </div>
+    <div class="yt-grid" id="ytGrid">
+      <div class="yt-loading"><span class="spin"></span> 영상 불러오는 중...</div>
+    </div>
+  </div>
+</section>
+
 <!-- 바로가기 -->
 <section>
   <div class="sec-wrap" style="padding-top:60px;padding-bottom:60px">
@@ -376,6 +419,14 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
   </div>
 </div>
 
+<!-- 유튜브 모달 -->
+<div class="yt-modal-ov" id="ytModalOv" onclick="closeYtModal(event)">
+  <div class="yt-modal" id="ytModal">
+    <button class="yt-modal-close" onclick="closeYtModal()" aria-label="닫기">✕</button>
+    <iframe id="ytIframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+</div>
+
 
 <!-- Firebase 자산 로드 -->
 <script type="module">
@@ -447,6 +498,14 @@ async function init(){
       const bgThumb=(cache.bgSlides&&cache.bgSlides[0])||'';
       renderNews(sorted, bgThumb);
     }catch(e){loadNews('Firestore 에러: '+e.message);}
+
+    // 유튜브 영상 로드
+    try{
+      const sn=await getDocs(collection(db,'youtube_videos'));
+      const vids=sn.docs.map(d=>({id:d.id,...d.data()}));
+      vids.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+      renderYoutube(vids.slice(0,4));
+    }catch(e){console.warn('[유튜브 로드 실패]',e);renderYoutube([]);}
 
     // 자산 캐시 업데이트
     const now=Date.now();
@@ -531,6 +590,76 @@ function loadNews(reason){
   console.warn('[패치노트 로드 실패]', reason);
   document.getElementById('newsGrid').innerHTML='<div class="news-loading" style="color:var(--mu)">소식을 불러올 수 없습니다.</div>';
 }
+
+// ── 유튜브 영상 렌더링 ──
+function ytParseId(url){
+  if(!url)return null;
+  const s=String(url).trim();
+  // youtu.be/VIDEO_ID
+  let m=s.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  if(m)return m[1];
+  // youtube.com/watch?v=VIDEO_ID
+  m=s.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+  if(m)return m[1];
+  // youtube.com/embed/VIDEO_ID
+  m=s.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/);
+  if(m)return m[1];
+  // youtube.com/shorts/VIDEO_ID
+  m=s.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/);
+  if(m)return m[1];
+  // 11자리 ID 직접 입력
+  if(/^[a-zA-Z0-9_-]{11}$/.test(s))return s;
+  return null;
+}
+window.__ytVideos=[];
+function renderYoutube(videos){
+  window.__ytVideos=videos;
+  const grid=document.getElementById('ytGrid');
+  if(!grid)return;
+  if(!videos.length){
+    grid.innerHTML='<div class="yt-empty">아직 등록된 영상이 없습니다.</div>';
+    return;
+  }
+  grid.innerHTML=videos.map((v,idx)=>{
+    const vid=ytParseId(v.url);
+    if(!vid)return '';
+    const thumb=`https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
+    const fullUrl=v.url||`https://www.youtube.com/watch?v=${vid}`;
+    const channel=v.channel||'모찌서버';
+    const title=v.title||'모찌서버 유튜브';
+    const desc=v.desc||'';
+    return `<a href="javascript:void(0)" class="yt-embed" onclick="openYtModal('${vid}')">
+      <div class="yt-url"><a href="${fullUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${fullUrl}</a></div>
+      <div class="yt-channel">YouTube</div>
+      <div class="yt-title">${esc(channel)}</div>
+      ${desc?`<div class="yt-desc">${esc(desc)}</div>`:''}
+      <div class="yt-thumb-wrap">
+        <img src="${thumb}" alt="${esc(title)}" onerror="this.src='https://i.ytimg.com/vi/${vid}/mqdefault.jpg'">
+        <div class="yt-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+    </a>`;
+  }).join('');
+}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+window.openYtModal=(vid)=>{
+  if(!vid)return;
+  const ov=document.getElementById('ytModalOv');
+  const iframe=document.getElementById('ytIframe');
+  iframe.src=`https://www.youtube.com/embed/${vid}?autoplay=1&rel=0`;
+  ov.classList.add('open');
+  document.body.style.overflow='hidden';
+};
+window.closeYtModal=(e)=>{
+  if(e&&e.target!==document.getElementById('ytModalOv')&&e.type==='click'&&e.currentTarget===document.getElementById('ytModalOv'))return;
+  const ov=document.getElementById('ytModalOv');
+  const iframe=document.getElementById('ytIframe');
+  iframe.src='';
+  ov.classList.remove('open');
+  document.body.style.overflow='';
+};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeYtModal();}});
+
 init();
 </script>
 
