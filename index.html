@@ -110,24 +110,39 @@ section{position:relative;z-index:10}
 .news-title{font-size:15px;font-weight:700;color:#fff;line-height:1.4;margin-bottom:6px}
 .news-desc{font-size:12.5px;color:var(--mu);line-height:1.6;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 
-/* ── 유튜브 (디스코드 임베드 스타일) ── */
-.yt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-@media(max-width:880px){.yt-grid{grid-template-columns:1fr}}
-.yt-embed{background:rgba(28,24,31,.7);backdrop-filter:blur(8px);border-radius:8px;border-left:4px solid var(--pink);padding:14px 16px 16px;display:block;text-decoration:none;color:inherit;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}
-.yt-embed:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4);border-left-color:var(--peach)}
-.yt-url{font-size:12px;color:var(--mu);margin-bottom:10px;word-break:break-all;line-height:1.4}
-.yt-url a{color:var(--mu);text-decoration:none}
-.yt-url a:hover{text-decoration:underline}
-.yt-channel{font-size:12px;color:var(--mu2);margin-bottom:6px;font-weight:500}
-.yt-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.yt-desc{font-size:13px;color:var(--pink);font-weight:600;margin-bottom:12px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.yt-thumb-wrap{position:relative;width:100%;aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:#000}
+/* ── 유튜브 (디스코드 임베드 스타일 + 슬라이더) ── */
+.yt-slider{position:relative}
+.yt-viewport{overflow:hidden;border-radius:14px}
+.yt-track{display:flex;gap:18px;transition:transform .45s cubic-bezier(.4,0,.2,1);will-change:transform}
+.yt-card{flex:0 0 calc((100% - 36px)/3);min-width:0;background:var(--card);border:1px solid var(--border);border-left:4px solid var(--pink);border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s;display:flex;flex-direction:column}
+.yt-card:hover{border-color:rgba(244,132,158,.4);border-left-color:var(--peach);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.yt-thumb-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden}
 .yt-thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block}
-.yt-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s;pointer-events:none}
-.yt-embed:hover .yt-play{background:rgba(244,132,158,.9);transform:translate(-50%,-50%) scale(1.1)}
-.yt-play svg{width:28px;height:28px;fill:#fff;margin-left:3px}
-.yt-loading{grid-column:1/-1;text-align:center;padding:40px;color:var(--mu);font-size:14px}
-.yt-empty{grid-column:1/-1;text-align:center;padding:40px;color:var(--mu);font-size:14px}
+.yt-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:50%;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s;pointer-events:none}
+.yt-card:hover .yt-play{background:rgba(244,132,158,.9);transform:translate(-50%,-50%) scale(1.1)}
+.yt-play svg{width:26px;height:26px;fill:#fff;margin-left:3px}
+.yt-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px}
+.yt-channel{font-size:11px;color:var(--mu);font-weight:600;letter-spacing:.04em}
+.yt-title{font-size:14.5px;font-weight:700;color:#fff;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.yt-desc{font-size:12.5px;color:var(--pink);font-weight:600;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.yt-url{font-size:11px;color:var(--mu);margin-top:4px;word-break:break-all;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.yt-url a{color:var(--mu);text-decoration:none}
+.yt-url a:hover{color:var(--pink);text-decoration:underline}
+
+/* 슬라이더 화살표 */
+.yt-arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(28,24,31,.9);border:1px solid var(--border2);backdrop-filter:blur(8px);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;transition:background .2s,border-color .2s,transform .2s;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+.yt-arrow:hover{background:var(--pink);border-color:var(--pink);transform:translateY(-50%) scale(1.08)}
+.yt-arrow:disabled{opacity:.35;cursor:not-allowed;background:rgba(28,24,31,.9);border-color:var(--border);transform:translateY(-50%)}
+.yt-arrow.prev{left:-22px}
+.yt-arrow.next{right:-22px}
+@media(max-width:1000px){.yt-arrow.prev{left:-10px}.yt-arrow.next{right:-10px}}
+
+/* 페이지 인디케이터 (점) */
+.yt-dots{display:flex;justify-content:center;gap:8px;margin-top:18px}
+.yt-dot{width:8px;height:8px;border-radius:50%;background:var(--border2);border:none;cursor:pointer;padding:0;transition:background .2s,width .2s}
+.yt-dot.active{background:var(--pink);width:24px;border-radius:4px}
+
+.yt-loading,.yt-empty{text-align:center;padding:40px;color:var(--mu);font-size:14px}
 
 /* 유튜브 모달 (영상 재생) */
 .yt-modal-ov{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:20px;animation:pmFade .2s ease}
@@ -196,6 +211,7 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
 @media(max-width:900px){
   .news-grid{grid-template-columns:1fr 1fr}
   .footer-inner{grid-template-columns:1fr 1fr;gap:28px}
+  .yt-card{flex:0 0 calc((100% - 18px)/2)}
 }
 @media(max-width:640px){
   nav{padding:0 16px}
@@ -211,6 +227,8 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
   .sec-wrap{padding:48px 16px}
   .sec-header{flex-direction:column;align-items:flex-start;gap:8px}
   .news-grid{grid-template-columns:1fr}
+  .yt-card{flex:0 0 100%}
+  .yt-track{gap:14px}
   .shortcut-grid{grid-template-columns:1fr}
   .cards{grid-template-columns:1fr 1fr}
   .cta-inner{padding:56px 16px}
@@ -335,8 +353,15 @@ footer{position:relative;z-index:10;background:rgba(8,6,9,.9);border-top:1px sol
       </div>
       <a href="https://www.youtube.com/@mochi-server" target="_blank" rel="noopener" class="sec-more">채널 바로가기 →</a>
     </div>
-    <div class="yt-grid" id="ytGrid">
-      <div class="yt-loading"><span class="spin"></span> 영상 불러오는 중...</div>
+    <div class="yt-slider" id="ytSlider">
+      <button class="yt-arrow prev" id="ytPrev" onclick="ytSlide(-1)" aria-label="이전" style="display:none">‹</button>
+      <div class="yt-viewport">
+        <div class="yt-track" id="ytTrack">
+          <div class="yt-loading"><span class="spin"></span> 영상 불러오는 중...</div>
+        </div>
+      </div>
+      <button class="yt-arrow next" id="ytNext" onclick="ytSlide(1)" aria-label="다음" style="display:none">›</button>
+      <div class="yt-dots" id="ytDots"></div>
     </div>
   </div>
 </section>
@@ -504,7 +529,7 @@ async function init(){
       const sn=await getDocs(collection(db,'youtube_videos'));
       const vids=sn.docs.map(d=>({id:d.id,...d.data()}));
       vids.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-      renderYoutube(vids.slice(0,4));
+      renderYoutube(vids);
     }catch(e){console.warn('[유튜브 로드 실패]',e);renderYoutube([]);}
 
     // 자산 캐시 업데이트
@@ -612,15 +637,28 @@ function ytParseId(url){
   return null;
 }
 window.__ytVideos=[];
+window.__ytState={page:0,perPage:3,total:0};
+function ytPerPage(){
+  const w=window.innerWidth;
+  if(w<=640)return 1;
+  if(w<=900)return 2;
+  return 3;
+}
 function renderYoutube(videos){
   window.__ytVideos=videos;
-  const grid=document.getElementById('ytGrid');
-  if(!grid)return;
+  const track=document.getElementById('ytTrack');
+  const prev=document.getElementById('ytPrev');
+  const next=document.getElementById('ytNext');
+  const dots=document.getElementById('ytDots');
+  if(!track)return;
   if(!videos.length){
-    grid.innerHTML='<div class="yt-empty">아직 등록된 영상이 없습니다.</div>';
+    track.innerHTML='<div class="yt-empty" style="width:100%">아직 등록된 영상이 없습니다.</div>';
+    if(prev)prev.style.display='none';
+    if(next)next.style.display='none';
+    if(dots)dots.innerHTML='';
     return;
   }
-  grid.innerHTML=videos.map((v,idx)=>{
+  track.innerHTML=videos.map((v)=>{
     const vid=ytParseId(v.url);
     if(!vid)return '';
     const thumb=`https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
@@ -628,18 +666,79 @@ function renderYoutube(videos){
     const channel=v.channel||'모찌서버';
     const title=v.title||'모찌서버 유튜브';
     const desc=v.desc||'';
-    return `<div class="yt-embed" onclick="openYtModal('${vid}')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openYtModal('${vid}')">
-      <div class="yt-url"><a href="${fullUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(fullUrl)}</a></div>
-      <div class="yt-channel">YouTube</div>
-      <div class="yt-title">${esc(channel)}</div>
-      ${desc?`<div class="yt-desc">${esc(desc)}</div>`:''}
+    return `<div class="yt-card" onclick="openYtModal('${vid}')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openYtModal('${vid}')">
       <div class="yt-thumb-wrap">
         <img src="${thumb}" alt="${esc(title)}" onerror="this.src='https://i.ytimg.com/vi/${vid}/mqdefault.jpg'">
         <div class="yt-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       </div>
+      <div class="yt-body">
+        <div class="yt-channel">YouTube · ${esc(channel)}</div>
+        <div class="yt-title">${esc(title)}</div>
+        ${desc?`<div class="yt-desc">${esc(desc)}</div>`:''}
+        <div class="yt-url"><a href="${fullUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(fullUrl)}</a></div>
+      </div>
     </div>`;
   }).join('');
+  window.__ytState.total=videos.length;
+  window.__ytState.page=0;
+  ytUpdateSlider();
 }
+function ytUpdateSlider(){
+  const track=document.getElementById('ytTrack');
+  const prev=document.getElementById('ytPrev');
+  const next=document.getElementById('ytNext');
+  const dots=document.getElementById('ytDots');
+  if(!track)return;
+  const per=ytPerPage();
+  window.__ytState.perPage=per;
+  const total=window.__ytState.total;
+  const pages=Math.max(1,Math.ceil(total/per));
+  if(window.__ytState.page>=pages)window.__ytState.page=pages-1;
+  if(window.__ytState.page<0)window.__ytState.page=0;
+  const cur=window.__ytState.page;
+  // 한 페이지에 per개씩, 페이지 단위로 이동
+  const cards=track.querySelectorAll('.yt-card');
+  if(!cards.length)return;
+  // 첫 카드 기준 한 카드의 너비+gap 계산
+  const card=cards[0];
+  const trackStyle=getComputedStyle(track);
+  const gap=parseFloat(trackStyle.gap)||18;
+  const cardW=card.getBoundingClientRect().width;
+  const step=(cardW+gap)*per;
+  // 마지막 페이지가 짧을 때 끝까지만 이동
+  const maxShift=Math.max(0,(cardW+gap)*total-gap-track.parentElement.getBoundingClientRect().width);
+  const shift=Math.min(step*cur,maxShift);
+  track.style.transform=`translateX(-${shift}px)`;
+  // 화살표 표시 여부
+  const showArrows=total>per;
+  if(prev){prev.style.display=showArrows?'flex':'none';prev.disabled=cur===0;}
+  if(next){next.style.display=showArrows?'flex':'none';next.disabled=cur>=pages-1;}
+  // 점
+  if(dots){
+    if(pages<=1){dots.innerHTML='';}
+    else{
+      let h='';
+      for(let i=0;i<pages;i++){
+        h+=`<button class="yt-dot${i===cur?' active':''}" onclick="ytGoPage(${i})" aria-label="${i+1}페이지"></button>`;
+      }
+      dots.innerHTML=h;
+    }
+  }
+}
+window.ytSlide=(dir)=>{
+  const total=window.__ytState.total;
+  const per=window.__ytState.perPage;
+  const pages=Math.max(1,Math.ceil(total/per));
+  window.__ytState.page=Math.max(0,Math.min(pages-1,window.__ytState.page+dir));
+  ytUpdateSlider();
+};
+window.ytGoPage=(p)=>{window.__ytState.page=p;ytUpdateSlider();};
+// 윈도우 리사이즈 시 슬라이더 재계산
+let __ytResizeT=null;
+window.addEventListener('resize',()=>{
+  clearTimeout(__ytResizeT);
+  __ytResizeT=setTimeout(ytUpdateSlider,150);
+});
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 window.openYtModal=(vid)=>{
